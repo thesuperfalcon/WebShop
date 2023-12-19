@@ -8,6 +8,8 @@ namespace WebShop
         static void Main(string[] args)
         {
             TheMenu.ShowMenu();   
+            //hejhej
+            
         }
     }
 }
