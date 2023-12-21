@@ -1,4 +1,6 @@
-﻿using WebShop.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Drawing;
+using WebShop.Models;
 
 namespace WebShop
 {
@@ -14,10 +16,10 @@ namespace WebShop
                 var cat4 = new Category() { CategoryName = "T-Shirt" };
                 var cat5 = new Category() { CategoryName = "Hoodie" };
 
-                var size1 = new Size() { SizeName = "S" };
-                var size2 = new Size() { SizeName = "M" };
-                var size3 = new Size() { SizeName = "L" };
-                var size4 = new Size() { SizeName = "XL" };
+                var size1 = new Models.Size() { SizeName = "S" };
+                var size2 = new Models.Size() { SizeName = "M" };
+                var size3 = new Models.Size() { SizeName = "L" };
+                var size4 = new Models.Size() { SizeName = "XL" };
 
                 var supp1 = new ProductSupplier() { SupplierName = "Cocktailorde" };
                 var supp2 = new ProductSupplier() { SupplierName = "Dressman" };
@@ -90,6 +92,83 @@ namespace WebShop
 
                 db.AddRange(delivery1, delivery2, deliveryType1, deliveryType2 , payment1, payment2, payment3, paymenttype1, paymenttype2);
                 db.SaveChanges();
+            }
+        }
+        public static void AddFirstCustomers()
+        {
+            using var db = new MyDbContext();
+            {
+                var customer1 = new Customer()
+                {
+                    FirstNameId = 1,
+                    LastNameId = 1,
+                    AdressId = 1,
+                    PhoneNumber = 0701234567,
+                    Email = "jens.svensson123@gmail.com",
+                    Password = "123",
+                    IsAdmin = false,
+                };
+                var customer2 = new Customer()
+                {
+                    FirstNameId = 2,
+                    LastNameId = 3,
+                    AdressId = 4,
+                    PhoneNumber = 0155352171,
+                    Email = "mariarocks555@hotmail.com",
+                    Password = "mariarocks555",
+                    IsAdmin = false,
+                };
+                var admin = new Customer()
+                {
+                    FirstNameId = 3,
+                    LastNameId = 2,
+                    AdressId = 6,
+                    PhoneNumber = null,
+                    Email = "päradmin@gmail.com",
+                    Password = "secretpassword",
+                    IsAdmin = true,
+                };
+                db.AddRange(customer1, customer2, admin);
+                db.SaveChanges();
+            }
+        }
+        public static void AddFirstProducts()
+        {
+            using var db = new MyDbContext();
+            {
+                var sizeName = new List<string> { "S", "M", "L", "XL" };
+                var categoryName = new List<string> { "Men", "Hoodie" };
+
+                var sizes = db.Sizes
+                .Where(s => sizeName.Contains(s.SizeName))
+                .ToList();
+
+                var categories = db.Categories
+                    .Where(c => categoryName.Contains(c.CategoryName))
+                    .ToList();
+
+                var colour1 = db.Colours.FirstOrDefault(c => c.ColourName == "Grey");
+                try
+                {
+                    var product1 = new Product()
+                    {
+                        Name = "Old-Fashioned",
+                        Description = "Stylish and cozy at the same time",
+                        Price = 599.99,
+                        Amount = 4,
+                        Sizes = sizes,
+                        Categories = categories,
+                        Colours = new List<Models.Colour> { colour1 },
+                        ProductSupplierId = 1,
+                        FeaturedProduct = true
+                    };
+                    db.Add(product1);
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Didnt Work");
+                }
             }
         }
     }

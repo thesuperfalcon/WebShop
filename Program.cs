@@ -7,9 +7,7 @@ namespace WebShop
     {
         static void Main(string[] args)
         {
-            AddData.AddCustomerInfo();
-            AddData.AddOrderInfo();
-            //AddData.AddProductInfo();
+            AddData.AddFirstProducts();
             //TheMenu.ShowMenu();   
             //hejhej
             
