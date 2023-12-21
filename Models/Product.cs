@@ -20,10 +20,11 @@ namespace WebShop.Models
         public int ProductSupplierId { get; set; }
         public bool FeaturedProduct { get; set; }
 
-        public virtual Size? Size { get; set; }
-        public virtual Category? Category { get; set; }
-        public virtual Colour? Colour { get; set; }
-        public virtual ProductSupplier? ProductSupplier { get; set; }
+        public virtual ICollection <Order> Orders { get; set; }
+        public virtual ICollection <Size> Sizes { get; set; }
+        public virtual ICollection <Category> Categories { get; set; }
+        public virtual ICollection <Colour> Colours { get; set; }
+        public virtual ICollection <ProductSupplier> ProductSuppliers { get; set; }
     }
     public partial class Size
     {
@@ -33,7 +34,7 @@ namespace WebShop.Models
         }
         public int Id { get; set; }
         public string SizeName { get; set; }
-        public ICollection<Product> Products { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
     }
     public partial class Category
     {

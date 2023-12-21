@@ -18,7 +18,7 @@ namespace WebShop.Models
         public int DeliveryId { get; set; }
         public double TotalPrice { get; set; }
 
-        public virtual Product Product { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
         public virtual Customer Customer { get; set; }
         public virtual Payment Payment { get; set; }
 
