@@ -4,132 +4,93 @@ namespace WebShop
 {
     internal class AddData
     {
-        public static void AddFirstProduct()
+        public static void AddProductInfo()
         {
             using var db = new MyDbContext();
-            Category category1 = new Category()
             {
-                CategoryName = "T-Shirt"
+                var cat1 = new Category() { CategoryName = "Men" };
+                var cat2 = new Category() { CategoryName = "Women" };
+                var cat3 = new Category() { CategoryName = "Pants" };
+                var cat4 = new Category() { CategoryName = "T-Shirt" };
+                var cat5 = new Category() { CategoryName = "Hoodie" };
+
+                var size1 = new Size() { SizeName = "S" };
+                var size2 = new Size() { SizeName = "M" };
+                var size3 = new Size() { SizeName = "L" };
+                var size4 = new Size() { SizeName = "XL" };
+
+                var supp1 = new ProductSupplier() { SupplierName = "Cocktailorde" };
+                var supp2 = new ProductSupplier() { SupplierName = "Dressman" };
+                var supp3 = new ProductSupplier() { SupplierName = "Gucci" };
+
+                var colour1 = new Colour() { ColourName = "Red" };
+                var colour2 = new Colour() { ColourName = "Blue" };
+                var colour3 = new Colour() { ColourName = "Green" };
+                var colour4 = new Colour() { ColourName = "Black" };
+                var colour5 = new Colour() { ColourName = "Gray" };
+
+                db.AddRange(cat1, cat2, cat3, cat4, cat5, size1, size2, size3, size4, supp1, supp2, supp3, colour1, colour2, colour3, colour4, colour5);
+                db.SaveChanges();
             };
-            db.Add(category1);
-            db.SaveChanges();
-            ProductSupplier supplier = new ProductSupplier()
-            {
-                SupplierName = "Gucci"
-            };
-            db.Add(supplier);
-            db.SaveChanges();
-            Colour colour = new Colour()
-            {
-                ColourName = "Red"
-            };
-            db.Add(colour);
-            db.SaveChanges();
-            Size size = new Size()
-            {
-                SizeName = "L",
-            };
-            db.Add(size);
-            db.SaveChanges();
-            Product product = new Product()
-            {
-                Name = "Gucci-Shirt",
-                Description = "Is expensive",
-                Price = (1999.9),
-                Amount = 12,
-                SizeId = 1,
-                CategoryId = 1,
-                ColourId = 1,
-                ProductSupplierId = 1,
-                FeaturedProduct = true,
-            };
-            db.Add(product);
-            db.SaveChanges();
         }
-        public static void AddFirstCustomer()
+        public static void AddCustomerInfo()
         {
             using var db = new MyDbContext();
+            {
+                var country1 = new Country() { CountryName = "Sweden" };
+                var country2 = new Country() { CountryName = "Norway" };
 
-            Country sweden = new Country()
-            {
-                CountryName = "Sweden"
-            };
-            db.Add(sweden);
-            db.SaveChanges();
-            City nykoping = new City()
-            {
-                CityName = "Nyköping",
-                CountryId = 1,
+                var city1 = new City() { CityName = "Nyköping", Country = country1 };
+                var city2 = new City() { CityName = "Stockholm", Country = country1 };
+                var city3 = new City() { CityName = "Göteborg" , Country = country1 };
+                var city4 = new City() { CityName = "Uppsala" , Country = country1 };
+                var city5 = new City() { CityName = "Umeå" , Country = country1 };
+                var city6 = new City() { CityName = "Oslo" , Country = country2 };
 
+                var adress1 = new Adress() { AdressName = "Kungsgatan 21" , City = city2};
+                var adress2 = new Adress() { AdressName = "Storgatan 42" , City = city3};
+                var adress3 = new Adress() { AdressName = "Bränntorp 1" , City = city2};
+                var adress4 = new Adress() { AdressName = "Skogsvägen 19" , City = city6};
+                var adress5 = new Adress() { AdressName = "Drottninggatan 89" , City = city4};
+                var adress6 = new Adress() { AdressName = "Nyköpingsvägen 10" , City = city1};
+
+                var firstname1 = new FirstName() { Name = "Jens" };
+                var firstname2 = new FirstName() { Name = "Maria" };
+                var firstname3 = new FirstName() { Name = "Pär" };
+                var firstname4 = new FirstName() { Name = "Johanna" };
+                var firstname5 = new FirstName() { Name = "Kalle" };
+
+                var lastname1 = new LastName() { Name = "Svensson" };
+                var lastname2 = new LastName() { Name = "Göransson" };
+                var lastname3 = new LastName() { Name = "Eklund" };
+                var lastname4 = new LastName() { Name = "Karlsson" };
+                var lastname5 = new LastName() { Name = "Stridh" };
+
+                db.AddRange(country1, country2, city1, city2, city3, city4, city5, city6, adress1, adress2, adress3, adress4, adress5, adress6,
+                    firstname1, firstname2, firstname3, firstname4, firstname5, lastname1, lastname2, lastname3, lastname4, lastname5);
+                db.SaveChanges();
             };
-            db.Add(nykoping); db.SaveChanges();
-            Adress adress = new Adress()
-            {
-                CityId = 1,
-                AdressName = "Kungsstigen 23",
-                PostalCode = 61214,
-            };
-            db.Add(adress); db.SaveChanges();
-            FirstName erik = new FirstName()
-            {
-                Name = "Erik"
-            };
-            db.Add(erik); db.SaveChanges();
-            LastName persson = new LastName()
-            {
-                Name = "Persson",
-            };
-            db.Add(persson); db.SaveChanges();
-            Customer firstCustomer = new Customer()
-            {
-                FirstNameId = 1,
-                LastNameId = 1,
-                AdressId = 1,
-                PhoneNumber = 0735432189,
-                Email = "perssonErik@gmail.com",
-                Password = "abc123",
-                IsAdmin = false,
-            };
-            db.Add(firstCustomer); db.SaveChanges();
         }
-        public static void AddFirstOrder()
+        public static void AddOrderInfo()
         {
             using var db = new MyDbContext();
+            {
+                var deliveryType1 = new DeliveryType() { DeliveryTypeName = "Sending to home", DeliveryPrice = 119 };
+                var deliveryType2 = new DeliveryType() { DeliveryTypeName = "Pick-up at nearest store", DeliveryPrice = 79 };
 
-            DeliveryType deliveryType = new DeliveryType()
-            {
-                DeliveryTypeName = "Home-Delivery",
-                DeliveryPrice = 119,
-            };
-            db.Add(deliveryType); db.SaveChanges();
+                var delivery1 = new Delivery() { DeliveryName = "DHL" };
+                var delivery2 = new Delivery() { DeliveryName = "Postnord" };
 
-            Delivery delivery = new Delivery()
-            {
-                DeliveryName = "PostNord",
-                DeliveryTypeId = 1,
-            };
-            db.Add(delivery); db.SaveChanges();
-            PaymentType paymentType = new PaymentType()
-            {
-                PaymentTypeName = "Pay-today"
-            };
-            db.Add(paymentType); db.SaveChanges();
-            Payment payment = new Payment()
-            {
-                PaymentTypeId = 1,
-                PaymentName = "Klarna",
-            };
-            db.Add(payment); db.SaveChanges();
-            Order order = new Order()
-            {
-                ProductId = 1,
-                OrderAmount = 3,
-                CustomerId = 1,
-                PaymentId = 1,
-                DeliveryId = 1,
-                TotalPrice = 6118.7,
-            };
-            db.Add(order); db.SaveChanges();
+                var paymenttype1 = new PaymentType() { PaymentTypeName = "Invoice 30-days" };
+                var paymenttype2 = new PaymentType() { PaymentTypeName = "Direct payment" };
+
+                var payment1 = new Payment() { PaymentName = "Klarna" };
+                var payment2 = new Payment() { PaymentName = "PayPal" };
+                var payment3 = new Payment() { PaymentName = "Credit card" };
+
+                db.AddRange(delivery1, delivery2, deliveryType1, deliveryType2 , payment1, payment2, payment3, paymenttype1, paymenttype2);
+                db.SaveChanges();
+            }
         }
     }
 }

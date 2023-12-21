@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.Models;
 
@@ -11,9 +12,11 @@ using WebShop.Models;
 namespace WebShop.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231221093141_ChangedName")]
+    partial class ChangedName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,21 +55,6 @@ namespace WebShop.Migrations
                     b.ToTable("ColourProduct");
                 });
 
-            modelBuilder.Entity("DeliveryDeliveryType", b =>
-                {
-                    b.Property<int>("DeliveriesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DeliveryTypesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("DeliveriesId", "DeliveryTypesId");
-
-                    b.HasIndex("DeliveryTypesId");
-
-                    b.ToTable("DeliveryDeliveryType");
-                });
-
             modelBuilder.Entity("OrderProduct", b =>
                 {
                     b.Property<int>("OrdersId")
@@ -80,21 +68,6 @@ namespace WebShop.Migrations
                     b.HasIndex("ProductsId");
 
                     b.ToTable("OrderProduct");
-                });
-
-            modelBuilder.Entity("PaymentPaymentType", b =>
-                {
-                    b.Property<int>("PaymentTypesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PaymentsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PaymentTypesId", "PaymentsId");
-
-                    b.HasIndex("PaymentsId");
-
-                    b.ToTable("PaymentPaymentType");
                 });
 
             modelBuilder.Entity("ProductSize", b =>
@@ -269,6 +242,8 @@ namespace WebShop.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeliveryTypeId");
+
                     b.ToTable("Deliveries");
                 });
 
@@ -379,6 +354,8 @@ namespace WebShop.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PaymentTypeId");
 
                     b.ToTable("Payments");
                 });
@@ -506,21 +483,6 @@ namespace WebShop.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DeliveryDeliveryType", b =>
-                {
-                    b.HasOne("WebShop.Models.Delivery", null)
-                        .WithMany()
-                        .HasForeignKey("DeliveriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebShop.Models.DeliveryType", null)
-                        .WithMany()
-                        .HasForeignKey("DeliveryTypesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("OrderProduct", b =>
                 {
                     b.HasOne("WebShop.Models.Order", null)
@@ -532,21 +494,6 @@ namespace WebShop.Migrations
                     b.HasOne("WebShop.Models.Product", null)
                         .WithMany()
                         .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PaymentPaymentType", b =>
-                {
-                    b.HasOne("WebShop.Models.PaymentType", null)
-                        .WithMany()
-                        .HasForeignKey("PaymentTypesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebShop.Models.Payment", null)
-                        .WithMany()
-                        .HasForeignKey("PaymentsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -615,6 +562,17 @@ namespace WebShop.Migrations
                     b.Navigation("LastName");
                 });
 
+            modelBuilder.Entity("WebShop.Models.Delivery", b =>
+                {
+                    b.HasOne("WebShop.Models.DeliveryType", "DeliveryType")
+                        .WithMany("Deliveries")
+                        .HasForeignKey("DeliveryTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DeliveryType");
+                });
+
             modelBuilder.Entity("WebShop.Models.Order", b =>
                 {
                     b.HasOne("WebShop.Models.Customer", "Customer")
@@ -623,7 +581,7 @@ namespace WebShop.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebShop.Models.Delivery", "Delivery")
+                    b.HasOne("WebShop.Models.Delivery", null)
                         .WithMany("Orders")
                         .HasForeignKey("DeliveryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -637,9 +595,18 @@ namespace WebShop.Migrations
 
                     b.Navigation("Customer");
 
-                    b.Navigation("Delivery");
-
                     b.Navigation("Payment");
+                });
+
+            modelBuilder.Entity("WebShop.Models.Payment", b =>
+                {
+                    b.HasOne("WebShop.Models.PaymentType", "PaymentType")
+                        .WithMany("Payments")
+                        .HasForeignKey("PaymentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PaymentType");
                 });
 
             modelBuilder.Entity("WebShop.Models.Product", b =>
@@ -673,6 +640,11 @@ namespace WebShop.Migrations
                     b.Navigation("Orders");
                 });
 
+            modelBuilder.Entity("WebShop.Models.DeliveryType", b =>
+                {
+                    b.Navigation("Deliveries");
+                });
+
             modelBuilder.Entity("WebShop.Models.FirstName", b =>
                 {
                     b.Navigation("Customers");
@@ -686,6 +658,11 @@ namespace WebShop.Migrations
             modelBuilder.Entity("WebShop.Models.Payment", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("WebShop.Models.PaymentType", b =>
+                {
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("WebShop.Models.ProductSupplier", b =>

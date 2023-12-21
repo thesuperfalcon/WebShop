@@ -19,12 +19,11 @@ namespace WebShop.Models
         public int ColourId { get; set; }
         public int ProductSupplierId { get; set; }
         public bool FeaturedProduct { get; set; }
-
+        public virtual ProductSupplier? ProductSupplier { get; set; }
         public virtual ICollection <Order> Orders { get; set; }
         public virtual ICollection <Size> Sizes { get; set; }
         public virtual ICollection <Category> Categories { get; set; }
         public virtual ICollection <Colour> Colours { get; set; }
-        public virtual ICollection <ProductSupplier> ProductSuppliers { get; set; }
     }
     public partial class Size
     {

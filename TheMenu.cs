@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
@@ -17,9 +18,29 @@ namespace WebShop
             {
                 using var db = new MyDbContext();
 
-                var products = db.Products;
+                var products = db.Products.Include(x => x.Categories).
+                    Include(y => y.Colours).
+                    Where(z => z.FeaturedProduct == true);
 
-                foreach(int i in Enum.GetValues(typeof(MyEnums.Menu)))
+                foreach (var product in products)
+                {
+                    Console.WriteLine(product.Name);
+                    Console.WriteLine(product.Price);
+                    foreach (var category in product.Categories)
+                    {
+                        Console.WriteLine(category.CategoryName);
+                    }
+                    foreach(var colour in  product.Colours)
+                    {
+                        Console.WriteLine(colour.ColourName);
+                    }
+                }
+                int x = 0;
+                    /*query.Include(x => x.Collection.Select(y => y.Property1).Select(z => z.Property2))
+*/
+
+
+                foreach (int i in Enum.GetValues(typeof(MyEnums.Menu)))
                 {
                     Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.Menu), i).Replace('_', ' '));
                 }

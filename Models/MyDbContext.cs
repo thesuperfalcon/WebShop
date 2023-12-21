@@ -13,7 +13,7 @@ namespace WebShop.Models
         public DbSet<Size> Sizes { get; set;}
         public DbSet<Category> Categories { get; set;}
         public DbSet<Colour> Colours { get; set;}
-        public DbSet<ProductSupplier> Suppliers { get; set;}
+        public DbSet<ProductSupplier> ProductSuppliers { get; set;}
         public DbSet<Customer> Customers { get; set;}
         public DbSet<FirstName> FirstName { get; set;}
         public DbSet<LastName> LastName { get; set;}
@@ -28,7 +28,7 @@ namespace WebShop.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=WebShopTest;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=WebShop;Trusted_Connection=True;TrustServerCertificate=True;");
         }
     }
 }

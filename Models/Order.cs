@@ -21,6 +21,7 @@ namespace WebShop.Models
         public virtual ICollection<Product> Products { get; set; }
         public virtual Customer Customer { get; set; }
         public virtual Payment Payment { get; set; }
+        public virtual Delivery Delivery { get; set; }
 
     }
     public partial class Delivery
@@ -32,7 +33,8 @@ namespace WebShop.Models
         public int Id { get; set; } 
         public string DeliveryName { get; set; }
         public int DeliveryTypeId { get; set; }
-        public virtual DeliveryType DeliveryType { get; set; }
+
+        public virtual ICollection<DeliveryType> DeliveryTypes { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
     }
     public partial class DeliveryType
@@ -55,7 +57,7 @@ namespace WebShop.Models
         public int Id { get; set; }
         public string PaymentName { get; set; }
         public int PaymentTypeId { get; set; }
-        public PaymentType PaymentType { get; set; }
+        public virtual ICollection<PaymentType> PaymentTypes { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
     }
     public partial class PaymentType
