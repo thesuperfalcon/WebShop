@@ -20,7 +20,7 @@ namespace WebShop.Models
         public DbSet<Adress> Adresses { get; set;}
         public DbSet<City> Cities { get; set;}
         public DbSet<Country> Countries { get; set;}
-        public DbSet<Order> Orders { get; set;}
+        public DbSet<FinalOrder> Orders { get; set;}
         public DbSet<Delivery> Deliveries { get; set;}
         public DbSet<DeliveryType> DeliveryTypes { get; set;}
         public DbSet<Payment> Payments { get; set;}
@@ -28,7 +28,7 @@ namespace WebShop.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=WebShop;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=WebShopTest1;Trusted_Connection=True;TrustServerCertificate=True;");
         }
     }
 }

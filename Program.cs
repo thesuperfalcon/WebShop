@@ -7,10 +7,13 @@ namespace WebShop
     {
         static void Main(string[] args)
         {
-            AddData.AddFirstProducts();
-            //TheMenu.ShowMenu();   
-            //hejhej
-            
+            //AddData.AddCustomerInfo();
+            //AddData.AddProductInfo();
+            //AddData.AddOrderInfo();
+            //AddData.AddFirstProducts();
+            //AddData.AddMultipleProducts();
+            TheMenu.ShowMenu();
+
         }
     }
 }

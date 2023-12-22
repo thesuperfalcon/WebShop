@@ -8,17 +8,15 @@ using System.Threading.Tasks;
 
 namespace WebShop.Models
 {
-    public partial class Order
+    public partial class FinalOrder
     {
         public int Id { get; set; }
-        public int ProductId { get; set; }
-        public int OrderAmount { get; set; }
         public int CustomerId { get; set; }
         public int PaymentId { get; set; }
         public int DeliveryId { get; set; }
         public double TotalPrice { get; set; }
 
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<ProductOrder> ProductOrders { get; set; }
         public virtual Customer Customer { get; set; }
         public virtual Payment Payment { get; set; }
         public virtual Delivery Delivery { get; set; }
@@ -28,14 +26,13 @@ namespace WebShop.Models
     {
         public Delivery() 
         {
-            Orders = new HashSet<Order>();
+            FinalOrders = new HashSet<FinalOrder>();
         }   
         public int Id { get; set; } 
         public string DeliveryName { get; set; }
-        public int DeliveryTypeId { get; set; }
 
         public virtual ICollection<DeliveryType> DeliveryTypes { get; set; }
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<FinalOrder> FinalOrders { get; set; }
     }
     public partial class DeliveryType
     {
@@ -52,13 +49,12 @@ namespace WebShop.Models
     {
         public Payment()
         {
-            Orders = new HashSet<Order>();
+            FinalOrders = new HashSet<FinalOrder>();
         }
         public int Id { get; set; }
         public string PaymentName { get; set; }
-        public int PaymentTypeId { get; set; }
         public virtual ICollection<PaymentType> PaymentTypes { get; set; }
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<FinalOrder> FinalOrders { get; set; }
     }
     public partial class PaymentType
     {

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.Models;
 
@@ -11,9 +12,11 @@ using WebShop.Models;
 namespace WebShop.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231222083631_RemovedSizeIdAndCategoryId")]
+    partial class RemovedSizeIdAndCategoryId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,19 +70,19 @@ namespace WebShop.Migrations
                     b.ToTable("DeliveryDeliveryType");
                 });
 
-            modelBuilder.Entity("FinalOrderProductOrder", b =>
+            modelBuilder.Entity("OrderProduct", b =>
                 {
-                    b.Property<int>("FinalOrdersId")
+                    b.Property<int>("OrdersId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductOrdersId")
+                    b.Property<int>("ProductsId")
                         .HasColumnType("int");
 
-                    b.HasKey("FinalOrdersId", "ProductOrdersId");
+                    b.HasKey("OrdersId", "ProductsId");
 
-                    b.HasIndex("ProductOrdersId");
+                    b.HasIndex("ProductsId");
 
-                    b.ToTable("FinalOrderProductOrder");
+                    b.ToTable("OrderProduct");
                 });
 
             modelBuilder.Entity("PaymentPaymentType", b =>
@@ -264,6 +267,9 @@ namespace WebShop.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("DeliveryTypeId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Deliveries");
@@ -287,42 +293,6 @@ namespace WebShop.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DeliveryTypes");
-                });
-
-            modelBuilder.Entity("WebShop.Models.FinalOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DeliveryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PaymentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("TotalPrice")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("DeliveryId");
-
-                    b.HasIndex("PaymentId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("WebShop.Models.FirstName", b =>
@@ -359,6 +329,43 @@ namespace WebShop.Migrations
                     b.ToTable("LastName");
                 });
 
+            modelBuilder.Entity("WebShop.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeliveryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderAmount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TotalPrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("DeliveryId");
+
+                    b.HasIndex("PaymentId");
+
+                    b.ToTable("Orders");
+                });
+
             modelBuilder.Entity("WebShop.Models.Payment", b =>
                 {
                     b.Property<int>("Id")
@@ -370,6 +377,9 @@ namespace WebShop.Migrations
                     b.Property<string>("PaymentName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentTypeId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -404,6 +414,9 @@ namespace WebShop.Migrations
                     b.Property<int?>("Amount")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ColourId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -424,33 +437,6 @@ namespace WebShop.Migrations
                     b.HasIndex("ProductSupplierId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("WebShop.Models.ProductOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SizeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductOrder");
                 });
 
             modelBuilder.Entity("WebShop.Models.ProductSupplier", b =>
@@ -532,17 +518,17 @@ namespace WebShop.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FinalOrderProductOrder", b =>
+            modelBuilder.Entity("OrderProduct", b =>
                 {
-                    b.HasOne("WebShop.Models.FinalOrder", null)
+                    b.HasOne("WebShop.Models.Order", null)
                         .WithMany()
-                        .HasForeignKey("FinalOrdersId")
+                        .HasForeignKey("OrdersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebShop.Models.ProductOrder", null)
+                    b.HasOne("WebShop.Models.Product", null)
                         .WithMany()
-                        .HasForeignKey("ProductOrdersId")
+                        .HasForeignKey("ProductsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -626,7 +612,7 @@ namespace WebShop.Migrations
                     b.Navigation("LastName");
                 });
 
-            modelBuilder.Entity("WebShop.Models.FinalOrder", b =>
+            modelBuilder.Entity("WebShop.Models.Order", b =>
                 {
                     b.HasOne("WebShop.Models.Customer", "Customer")
                         .WithMany()
@@ -635,20 +621,16 @@ namespace WebShop.Migrations
                         .IsRequired();
 
                     b.HasOne("WebShop.Models.Delivery", "Delivery")
-                        .WithMany("FinalOrders")
+                        .WithMany("Orders")
                         .HasForeignKey("DeliveryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("WebShop.Models.Payment", "Payment")
-                        .WithMany("FinalOrders")
+                        .WithMany("Orders")
                         .HasForeignKey("PaymentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("WebShop.Models.Product", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("ProductId");
 
                     b.Navigation("Customer");
 
@@ -664,17 +646,6 @@ namespace WebShop.Migrations
                         .HasForeignKey("ProductSupplierId");
 
                     b.Navigation("ProductSupplier");
-                });
-
-            modelBuilder.Entity("WebShop.Models.ProductOrder", b =>
-                {
-                    b.HasOne("WebShop.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("WebShop.Models.Adress", b =>
@@ -694,7 +665,7 @@ namespace WebShop.Migrations
 
             modelBuilder.Entity("WebShop.Models.Delivery", b =>
                 {
-                    b.Navigation("FinalOrders");
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("WebShop.Models.FirstName", b =>
@@ -708,11 +679,6 @@ namespace WebShop.Migrations
                 });
 
             modelBuilder.Entity("WebShop.Models.Payment", b =>
-                {
-                    b.Navigation("FinalOrders");
-                });
-
-            modelBuilder.Entity("WebShop.Models.Product", b =>
                 {
                     b.Navigation("Orders");
                 });

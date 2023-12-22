@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Drawing;
-using WebShop.Models;
+﻿using WebShop.Models;
 
 namespace WebShop
 {
@@ -44,17 +42,17 @@ namespace WebShop
 
                 var city1 = new City() { CityName = "Nyköping", Country = country1 };
                 var city2 = new City() { CityName = "Stockholm", Country = country1 };
-                var city3 = new City() { CityName = "Göteborg" , Country = country1 };
-                var city4 = new City() { CityName = "Uppsala" , Country = country1 };
-                var city5 = new City() { CityName = "Umeå" , Country = country1 };
-                var city6 = new City() { CityName = "Oslo" , Country = country2 };
+                var city3 = new City() { CityName = "Göteborg", Country = country1 };
+                var city4 = new City() { CityName = "Uppsala", Country = country1 };
+                var city5 = new City() { CityName = "Umeå", Country = country1 };
+                var city6 = new City() { CityName = "Oslo", Country = country2 };
 
-                var adress1 = new Adress() { AdressName = "Kungsgatan 21" , City = city2};
-                var adress2 = new Adress() { AdressName = "Storgatan 42" , City = city3};
-                var adress3 = new Adress() { AdressName = "Bränntorp 1" , City = city2};
-                var adress4 = new Adress() { AdressName = "Skogsvägen 19" , City = city6};
-                var adress5 = new Adress() { AdressName = "Drottninggatan 89" , City = city4};
-                var adress6 = new Adress() { AdressName = "Nyköpingsvägen 10" , City = city1};
+                var adress1 = new Adress() { AdressName = "Kungsgatan 21", City = city2 };
+                var adress2 = new Adress() { AdressName = "Storgatan 42", City = city3 };
+                var adress3 = new Adress() { AdressName = "Bränntorp 1", City = city2 };
+                var adress4 = new Adress() { AdressName = "Skogsvägen 19", City = city6 };
+                var adress5 = new Adress() { AdressName = "Drottninggatan 89", City = city4 };
+                var adress6 = new Adress() { AdressName = "Nyköpingsvägen 10", City = city1 };
 
                 var firstname1 = new FirstName() { Name = "Jens" };
                 var firstname2 = new FirstName() { Name = "Maria" };
@@ -90,7 +88,7 @@ namespace WebShop
                 var payment2 = new Payment() { PaymentName = "PayPal" };
                 var payment3 = new Payment() { PaymentName = "Credit card" };
 
-                db.AddRange(delivery1, delivery2, deliveryType1, deliveryType2 , payment1, payment2, payment3, paymenttype1, paymenttype2);
+                db.AddRange(delivery1, delivery2, deliveryType1, deliveryType2, payment1, payment2, payment3, paymenttype1, paymenttype2);
                 db.SaveChanges();
             }
         }
@@ -134,7 +132,7 @@ namespace WebShop
         }
         public static void AddFirstProducts()
         {
-            using var db = new MyDbContext();
+            using (var db = new MyDbContext())
             {
                 var sizeName = new List<string> { "S", "M", "L", "XL" };
                 var categoryName = new List<string> { "Men", "Hoodie" };
@@ -147,28 +145,55 @@ namespace WebShop
                     .Where(c => categoryName.Contains(c.CategoryName))
                     .ToList();
 
-                var colour1 = db.Colours.FirstOrDefault(c => c.ColourName == "Grey");
-                try
+                var colour1 = db.Colours.FirstOrDefault(c => c.ColourName == "Gray");
+
+                var product1 = new Product()
                 {
-                    var product1 = new Product()
-                    {
-                        Name = "Old-Fashioned",
-                        Description = "Stylish and cozy at the same time",
-                        Price = 599.99,
-                        Amount = 4,
-                        Sizes = sizes,
-                        Categories = categories,
-                        Colours = new List<Models.Colour> { colour1 },
-                        ProductSupplierId = 1,
-                        FeaturedProduct = true
-                    };
-                    db.Add(product1);
-                    db.SaveChanges();
-                }
-                catch (Exception ex)
+                    Name = "Old-Fashioned",
+                    Description = "Stylish and cozy at the same time",
+                    Price = 599.99,
+                    Amount = 4,
+                    Sizes = sizes,
+                    Categories = categories,
+                    Colours = new List<Models.Colour> { colour1 },
+                    ProductSupplierId = 1,
+                    FeaturedProduct = true
+                };
+                db.Add(product1);
+                db.SaveChanges();
+            }
+        }
+        public static void AddMultipleProducts()
+        {
+            using (var db = new MyDbContext())
+            {
+                var sizeName = new List<string> { "S", "M", "L", "XL" };
+                var categoryName = new List<string> { "Women", "T-Shirt" };
+                var colourName = new List<string> { "Red", "Blue" };
+
+                var size = db.Sizes
+                    .Where(s => sizeName.Contains(s.SizeName))
+                    .ToList();
+                var categories1 = db.Categories
+                    .Where(c => categoryName.Contains(c.CategoryName))
+                    .ToList();
+                var colour = db.Colours
+                    .Where(c => colourName.Contains(c.ColourName))
+                    .ToList();
+                var product1 = new Product()
                 {
-                    Console.WriteLine("Didnt Work");
-                }
+                    Name = "Pantalones",
+                    Description = "Cute, but expensive",
+                    Price = 1119.75,
+                    Amount = 11,
+                    Sizes = size,
+                    Categories = categories1,
+                    Colours = colour,
+                    ProductSupplierId = 3,
+                    FeaturedProduct = true
+                };
+                db.Add(product1);   
+                db.SaveChanges();
             }
         }
     }
