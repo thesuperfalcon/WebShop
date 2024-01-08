@@ -13,6 +13,7 @@ namespace WebShop.Models
         public int Quantity { get; set; }
         public double Price { get; set; }
         public int SizeId { get; set; }
+        public int ColourId { get; set; }
         public virtual ICollection<FinalOrder> FinalOrders { get; set; }
         public virtual Product Product { get; set; }
     }

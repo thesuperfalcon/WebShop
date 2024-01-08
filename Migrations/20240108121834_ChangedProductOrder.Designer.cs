@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.Models;
 
@@ -11,9 +12,11 @@ using WebShop.Models;
 namespace WebShop.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240108121834_ChangedProductOrder")]
+    partial class ChangedProductOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -317,7 +320,7 @@ namespace WebShop.Migrations
 
                     b.HasIndex("PaymentId");
 
-                    b.ToTable("FinalOrder");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("WebShop.Models.FirstName", b =>

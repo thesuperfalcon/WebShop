@@ -25,6 +25,7 @@ namespace WebShop.Models
         public DbSet<DeliveryType> DeliveryTypes { get; set;}
         public DbSet<Payment> Payments { get; set;}
         public DbSet<PaymentType> PaymentTypes { get; set;}
+        public DbSet<FinalOrder> FinalOrders { get; set;}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

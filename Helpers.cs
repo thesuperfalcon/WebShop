@@ -28,5 +28,9 @@ namespace WebShop
 
             return colourId;
         }
+        public static int GetGeneralId()
+        {
+            return InputHelpers.GetIntegerInput("Id: ");
+        }
     }
 }
