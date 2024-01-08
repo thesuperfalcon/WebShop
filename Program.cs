@@ -12,6 +12,7 @@ namespace WebShop
             //AddData.AddOrderInfo();
             //AddData.AddFirstProducts();
             //AddData.AddMultipleProducts();
+            //AddData.AddFirstCustomers();
             TheMenu.ShowMenu();
 
         }

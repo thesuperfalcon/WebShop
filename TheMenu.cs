@@ -138,21 +138,31 @@ namespace WebShop
 
                     if (product.Sizes.Any(x => size.Contains(x.SizeName)))
                     {
-                        var quantity = InputHelpers.GetIntegerInput("How many?: ");
 
-                        var productOrder = new ProductOrder()
+                        if(product.Colours.Count > 1)
                         {
-                            ProductId = product.Id,
-                            Quantity = quantity,
-                            Price = (product.Price * quantity).Value,
-                            SizeId = Helpers.GetSizeId(size, product),
-                        };
-                        db.Add(productOrder);
-                        bool addCart = InputHelpers.GetYesOrNo("Finished?: ");
-                        if (addCart == true)
-                        {
-                            basket.Add(productOrder);
-                            db.SaveChanges();
+                            var colour = InputHelpers.GetInput("Which colour?: ");
+
+                            if (product.Colours.Any(x => colour.Contains(x.ColourName)))
+                            {
+
+                                var quantity = InputHelpers.GetIntegerInput("How many?: ");
+
+                                var productOrder = new ProductOrder()
+                                {
+                                    ProductId = product.Id,
+                                    Quantity = quantity,
+                                    Price = (product.Price * quantity).Value,
+                                    SizeId = Helpers.GetSizeId(size, product),
+                                };
+                                db.Add(productOrder);
+                                bool addCart = InputHelpers.GetYesOrNo("Finished?: ");
+                                if (addCart == true)
+                                {
+                                    basket.Add(productOrder);
+                                    //db.SaveChanges();
+                                }
+                            }
                         }
                     }
                 }
@@ -162,12 +172,34 @@ namespace WebShop
         {
             using (var db = new MyDbContext())
             {
+                int number = 1;
+                double totalPrice = 0;
                 foreach(var item in basket)
                 {
-                    Console.WriteLine(item.ProductId);
-                    Console.WriteLine(item.Quantity);
-                    Console.WriteLine(item.Price);
+                    Console.WriteLine(number + ".");
+
+                    var product = db.Products.Include(x => x.Categories)
+                        .Include(x => x.Colours)
+                        .Where(x => x.Id == item.ProductId).FirstOrDefault();
+
+                    var size = db.Sizes.Where(x => x.Id == item.ProductId)
+                        .Select(x => x.SizeName).FirstOrDefault();
+
+                    Console.WriteLine($"Product: {product.Name}");
+                    Console.WriteLine($"Description: {product.Description}");
+                    Console.WriteLine($"Size: {size}");
+                    Console.Write($"Colour: ");
+                    foreach(var colour in product.Colours)
+                    {
+                        Console.Write(colour.ColourName + " ");
+                    }
+                    Console.WriteLine();
+                    Console.WriteLine($"Quantity: {item.Quantity}");
+                    Console.WriteLine($"Price: {item.Price}:-");
+                    totalPrice += item.Price;
+                    number++;
                 }
+                Console.WriteLine($"Total price: {totalPrice}:-");
                 Console.WriteLine();
             }
         }

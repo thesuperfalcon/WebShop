@@ -28,7 +28,7 @@ namespace WebShop.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=WebShopTest1;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=WebShopTest1;Trusted_Connection=True;TrustServerCertificate=True;");
         }
     }
 }

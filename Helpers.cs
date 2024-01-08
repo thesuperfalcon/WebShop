@@ -19,5 +19,14 @@ namespace WebShop
 
             return sizeId;
         }
+        public static int GetColourId(string colour, Product product)
+        {
+            using var db = new MyDbContext();
+
+            var colourId = product.Colours.Where(x => colour.Contains(x.ColourName))
+                .Select(x => x.Id).FirstOrDefault();
+
+            return colourId;
+        }
     }
 }
