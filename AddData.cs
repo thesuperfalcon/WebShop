@@ -1,4 +1,5 @@
-﻿using WebShop.Models;
+﻿using System.Text.RegularExpressions;
+using WebShop.Models;
 
 namespace WebShop
 {
@@ -192,9 +193,115 @@ namespace WebShop
                     ProductSupplierId = 3,
                     FeaturedProduct = true
                 };
-                db.Add(product1);   
+                db.Add(product1);
                 db.SaveChanges();
             }
         }
+        public static void AddNewCustomerWithInput()
+        {
+            using var db = new MyDbContext();
+
+            Console.Write("Enter first name: ");
+            string firstName = Helpers.ValidateInput(Console.ReadLine());
+
+            Console.Write("Enter last name: ");
+            string lastName = Helpers.ValidateInput(Console.ReadLine());
+
+            Console.Write("Enter address name: ");
+            string addressName = Helpers.ValidateInput(Console.ReadLine());
+
+            Console.Write("Enter postal code: ");
+            int postalCode = Helpers.ValidateIntInput(Console.ReadLine());
+
+            Console.Write("Enter city name: ");
+            string cityName = Helpers.ValidateInput(Console.ReadLine());
+
+            Console.Write("Enter country name: ");
+            string countryName = Helpers.ValidateInput(Console.ReadLine());
+
+            Console.Write("Enter phone number (or press Enter to skip): ");
+            string phoneNumberInput = Console.ReadLine();
+            int? phoneNumber = string.IsNullOrEmpty(phoneNumberInput) ? null : Helpers.ValidateIntInput(phoneNumberInput);
+
+            Console.Write("Enter email: ");
+            string email = Helpers.ValidateInput(Console.ReadLine());
+
+            Console.Write("Enter password: ");
+            string password = Helpers.ValidateInput(Console.ReadLine());
+
+            Console.Write("Is admin? (true/false): ");
+            bool isAdmin = Helpers.ValidateBoolInput(Console.ReadLine());
+
+
+            var existingCountry = db.Countries.FirstOrDefault(c => c.CountryName == countryName);
+            if (existingCountry == null)
+            {
+                existingCountry = new Country() { CountryName = countryName };
+                db.Countries.Add(existingCountry);
+                db.SaveChanges();
+            }
+
+
+            var existingCity = db.Cities.FirstOrDefault(ct => ct.CityName == cityName && ct.CountryId == existingCountry.Id);
+            if (existingCity == null)
+            {
+                existingCity = new City() { CityName = cityName, CountryId = existingCountry.Id };
+                db.Cities.Add(existingCity);
+                db.SaveChanges();
+            }
+
+
+            var existingAddress = db.Adresses.FirstOrDefault(a => a.AdressName == addressName && a.CityId == existingCity.Id);
+            if (existingAddress == null)
+            {
+                existingAddress = new Adress() { AdressName = addressName, CityId = existingCity.Id };
+                db.Adresses.Add(existingAddress);
+                db.SaveChanges();
+            }
+            else
+            {
+
+                if (postalCode != existingAddress.PostalCode)
+                {
+                    existingAddress.PostalCode = postalCode;
+                    db.SaveChanges();
+                }
+            }
+
+
+            var existingFirstName = db.FirstName.FirstOrDefault(fn => fn.Name == firstName);
+            if (existingFirstName == null)
+            {
+                existingFirstName = new FirstName() { Name = firstName };
+                db.FirstName.Add(existingFirstName);
+                db.SaveChanges();
+            }
+
+
+            var existingLastName = db.LastName.FirstOrDefault(ln => ln.Name == lastName);
+            if (existingLastName == null)
+            {
+                existingLastName = new LastName() { Name = lastName };
+                db.LastName.Add(existingLastName);
+                db.SaveChanges();
+            }
+
+
+            var newCustomer = new Customer()
+            {
+                FirstNameId = existingFirstName.Id,
+                LastNameId = existingLastName.Id,
+                AdressId = existingAddress.Id,
+                PhoneNumber = phoneNumber,
+                Email = email,
+                Password = password,
+                IsAdmin = isAdmin,
+            };
+
+            db.Customers.Add(newCustomer);
+            db.SaveChanges();
+        }
+
+
     }
 }

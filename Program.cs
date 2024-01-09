@@ -7,13 +7,20 @@ namespace WebShop
     {
         static void Main(string[] args)
         {
+            using var db = new MyDbContext();
             //AddData.AddCustomerInfo();
             //AddData.AddProductInfo();
             //AddData.AddOrderInfo();
             //AddData.AddFirstProducts();
             //AddData.AddMultipleProducts();
-            AddData.AddFirstCustomers();
-            TheMenu.ShowMenu();
+            //AddData.AddNewCustomerWithInput();
+            //AddData.AddFirstCustomers();
+
+            LoginManager loginManager = new LoginManager(db);
+
+            Customer customer = loginManager.Login(db);
+
+            TheMenu.ShowMenu(customer);
 
         }
     }

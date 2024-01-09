@@ -8,7 +8,7 @@ namespace WebShop
     {
         static List<ProductOrder> basket = new List<ProductOrder>();
 
-        public static void ShowMenu()
+        public static void ShowMenu(Customer customer)
         {
             bool loop = true;
             while (loop)
