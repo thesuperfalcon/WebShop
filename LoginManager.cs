@@ -8,23 +8,14 @@ using WebShop.Models;
 
 namespace WebShop
 {
-
-    public class LoginManager
+    internal class LoginManager
     {
-        public MyDbContext dbContext;
-
-        public LoginManager(MyDbContext context)
-        {
-            dbContext = context;
-        }
-
-        public Customer Login(MyDbContext dbContext)
+        public static Customer Login(MyDbContext dbContext)
         {
             var customer = new Customer();
-            while (true)
+            bool success = false;
+            while (!success)
             {
-               
-                
                 Console.Write("Enter your email: ");
                 string enteredEmail = Console.ReadLine().ToLower();
                 Console.Write("Enter your password: ");
@@ -36,8 +27,6 @@ namespace WebShop
 
                     customer = dbContext.Customers.Where(x => x.Email == enteredEmail && x.Password == enteredPassword).FirstOrDefault();
 
-                    
-
                     if (isAdmin)
                     {
                         Console.WriteLine($"Welcome to the admin page {displayName}");
@@ -45,24 +34,22 @@ namespace WebShop
                     else
                     {
                         Console.WriteLine($"Welcome {displayName}");
-                        TheMenu.ShowMenu( customer );
-                       
+                        TheMenu.ShowMenu(customer);
                     }
+                    success = true;
                 }
                 else
                 {
                     Console.WriteLine("Invalid email or password. Try again.");
                 }
-
                 Console.ReadLine();
             }
             return customer;
-            
-            
         }
 
-        private bool ValidateLogin(string enteredEmail, string enteredPassword, out bool isAdmin, out string displayName, out Customer loggedInCustomer)
+        private static bool ValidateLogin(string enteredEmail, string enteredPassword, out bool isAdmin, out string displayName, out Customer loggedInCustomer)
         {
+            using var dbContext = new MyDbContext();
             isAdmin = false;
             displayName = string.Empty;
             loggedInCustomer = null;
@@ -79,8 +66,8 @@ namespace WebShop
                 loggedInCustomer = customer;
                 return true;
             }
-
             return false;
         }
     }
 }
+

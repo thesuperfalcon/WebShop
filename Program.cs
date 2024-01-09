@@ -16,9 +16,7 @@ namespace WebShop
             //AddData.AddNewCustomerWithInput();
             //AddData.AddFirstCustomers();
 
-            LoginManager loginManager = new LoginManager(db);
-
-            Customer customer = loginManager.Login(db);
+            Customer customer = LoginManager.Login(db);
 
             TheMenu.ShowMenu(customer);
 
