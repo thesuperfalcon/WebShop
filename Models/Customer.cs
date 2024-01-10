@@ -23,7 +23,7 @@ namespace WebShop.Models
     }
     public partial class FirstName
     {
-        public FirstName() 
+        public FirstName()
         {
             Customers = new HashSet<Customer>();
         }
@@ -43,10 +43,10 @@ namespace WebShop.Models
     }
     public partial class Adress
     {
-        public Adress() 
+        public Adress()
         {
             Customers = new HashSet<Customer>();
-        } 
+        }
         public int Id { get; set; }
         public string AdressName { get; set; }
         public int PostalCode { get; set; }
@@ -68,12 +68,12 @@ namespace WebShop.Models
     }
     public partial class Country
     {
-        public Country() 
+        public Country()
         {
             Cities = new HashSet<City>();
         }
         public int Id { get; set; }
-        public string CountryName { get; set; } 
+        public string CountryName { get; set; }
         public virtual ICollection<City> Cities { get; set; }
     }
 }

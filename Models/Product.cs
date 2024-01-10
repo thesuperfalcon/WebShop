@@ -7,8 +7,23 @@ using static WebShop.Models.Size;
 
 namespace WebShop.Models
 {
+    public partial class ProductVariant
+    {
+        public int Id { get; set; }
+        public int ProductId { get; set; }
+        public int ColourId { get; set; }
+        public int SizeId { get; set; }
+        public int Quantity { get; set; }
+        public virtual Product Product { get; set; }
+        public virtual Colour Colour { get; set; }
+        public virtual Size Size { get; set; }
+    }
     public partial class Product
     {
+        public Product()
+        {
+            ProductVariants = new HashSet<ProductVariant>();
+        }
         public int Id { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
@@ -17,20 +32,18 @@ namespace WebShop.Models
         public int? ProductSupplierId { get; set; }
         public bool FeaturedProduct { get; set; }
         public virtual ProductSupplier? ProductSupplier { get; set; }
-        public virtual ICollection <ProductOrder> ProductOrders { get; set; }
-        public virtual ICollection <Size> Sizes { get; set; }
-        public virtual ICollection <Category> Categories { get; set; }
-        public virtual ICollection <Colour> Colours { get; set; }
+        public virtual ICollection<Category> Categories { get; set; }
+        public virtual ICollection<ProductVariant> ProductVariants { get; set; }
     }
     public partial class Size
     {
         public Size()
         {
-            Products = new HashSet<Product>();
+            ProductVariants = new HashSet<ProductVariant>();
         }
         public int Id { get; set; }
         public string SizeName { get; set; }
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<ProductVariant> ProductVariants { get; set; }
     }
     public partial class Category
     {
@@ -46,11 +59,11 @@ namespace WebShop.Models
     {
         public Colour()
         {
-            Products = new HashSet<Product>();
+            ProductVariants = new HashSet<ProductVariant>();
         }
         public int Id { get; set; }
         public string ColourName { get; set; }
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<ProductVariant> ProductVariants { get; set; }
     }
     public partial class ProductSupplier
     {

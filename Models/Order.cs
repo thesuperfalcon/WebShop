@@ -1,12 +1,4 @@
-﻿using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WebShop.Models
+﻿namespace WebShop.Models
 {
     public partial class FinalOrder
     {
@@ -24,15 +16,26 @@ namespace WebShop.Models
     }
     public partial class Delivery
     {
-        public Delivery() 
+        public Delivery()
         {
             FinalOrders = new HashSet<FinalOrder>();
-        }   
-        public int Id { get; set; } 
-        public string DeliveryName { get; set; }
-
-        public virtual ICollection<DeliveryType> DeliveryTypes { get; set; }
+        }
+        public int Id { get; set; }
+        public int DeliveryNameId { get; set; }
+        public int DeliveryTypeId { get; set; }
         public virtual ICollection<FinalOrder> FinalOrders { get; set; }
+        public virtual DeliveryType DeliveryType { get; set; }
+        public virtual DeliveryName DeliveryName { get; set; }
+    }
+    public partial class DeliveryName
+    {
+        public DeliveryName()
+        {
+            Deliveries = new HashSet<Delivery>();
+        }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public virtual ICollection<Delivery> Deliveries { get; set; }
     }
     public partial class DeliveryType
     {
@@ -41,7 +44,7 @@ namespace WebShop.Models
             Deliveries = new HashSet<Delivery>();
         }
         public int Id { get; set; }
-        public string DeliveryTypeName { get; set; }
+        public string DeliveryName { get; set; }
         public double DeliveryPrice { get; set; }
         public virtual ICollection<Delivery> Deliveries { get; set; }
     }
@@ -52,9 +55,21 @@ namespace WebShop.Models
             FinalOrders = new HashSet<FinalOrder>();
         }
         public int Id { get; set; }
-        public string PaymentName { get; set; }
-        public virtual ICollection<PaymentType> PaymentTypes { get; set; }
+        public int PaymentNameId { get; set; }
+        public int PaymentTypeId { get; set; }
         public virtual ICollection<FinalOrder> FinalOrders { get; set; }
+        public virtual PaymentName PaymentName { get; set; }
+        public virtual PaymentType PaymentType { get; set; }
+    }
+    public partial class PaymentName
+    {
+        public PaymentName()
+        {
+            Payments = new HashSet<Payment>();
+        }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public virtual ICollection<Payment> Payments { get; set; }
     }
     public partial class PaymentType
     {

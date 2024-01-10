@@ -18,7 +18,7 @@ namespace WebShop
 
             Customer customer = LoginManager.Login(db);
 
-            TheMenu.ShowMenu(customer);
+            //TheMenu.ShowMenu(customer);
 
         }
     }

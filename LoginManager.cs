@@ -34,7 +34,7 @@ namespace WebShop
                     else
                     {
                         Console.WriteLine($"Welcome {displayName}");
-                        TheMenu.ShowMenu(customer);
+                        //TheMenu.ShowMenu(customer);
                     }
                     success = true;
                 }

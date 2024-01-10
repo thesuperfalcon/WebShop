@@ -72,27 +72,27 @@ namespace WebShop
                 db.SaveChanges();
             };
         }
-        public static void AddOrderInfo()
-        {
-            using var db = new MyDbContext();
-            {
-                var deliveryType1 = new DeliveryType() { DeliveryTypeName = "Sending to home", DeliveryPrice = 119 };
-                var deliveryType2 = new DeliveryType() { DeliveryTypeName = "Pick-up at nearest store", DeliveryPrice = 79 };
+        //public static void AddOrderInfo()
+        //{
+        //    using var db = new MyDbContext();
+        //    {
+        //        var deliveryType1 = new DeliveryType() { DeliveryTypeName = "Sending to home", DeliveryPrice = 119 };
+        //        var deliveryType2 = new DeliveryType() { DeliveryTypeName = "Pick-up at nearest store", DeliveryPrice = 79 };
 
-                var delivery1 = new Delivery() { DeliveryName = "DHL" };
-                var delivery2 = new Delivery() { DeliveryName = "Postnord" };
+        //        var delivery1 = new Delivery() { DeliveryName = "DHL" };
+        //        var delivery2 = new Delivery() { DeliveryName = "Postnord" };
 
-                var paymenttype1 = new PaymentType() { PaymentTypeName = "Invoice 30-days" };
-                var paymenttype2 = new PaymentType() { PaymentTypeName = "Direct payment" };
+        //        var paymenttype1 = new PaymentType() { PaymentTypeName = "Invoice 30-days" };
+        //        var paymenttype2 = new PaymentType() { PaymentTypeName = "Direct payment" };
 
-                var payment1 = new Payment() { PaymentName = "Klarna" };
-                var payment2 = new Payment() { PaymentName = "PayPal" };
-                var payment3 = new Payment() { PaymentName = "Credit card" };
+        //        var payment1 = new Payment() { PaymentName = "Klarna" };
+        //        var payment2 = new Payment() { PaymentName = "PayPal" };
+        //        var payment3 = new Payment() { PaymentName = "Credit card" };
 
-                db.AddRange(delivery1, delivery2, deliveryType1, deliveryType2, payment1, payment2, payment3, paymenttype1, paymenttype2);
-                db.SaveChanges();
-            }
-        }
+        //        db.AddRange(delivery1, delivery2, deliveryType1, deliveryType2, payment1, payment2, payment3, paymenttype1, paymenttype2);
+        //        db.SaveChanges();
+        //    }
+        //}
         public static void AddFirstCustomers()
         {
             using var db = new MyDbContext();
@@ -131,72 +131,72 @@ namespace WebShop
                 db.SaveChanges();
             }
         }
-        public static void AddFirstProducts()
-        {
-            using (var db = new MyDbContext())
-            {
-                var sizeName = new List<string> { "S", "M", "L", "XL" };
-                var categoryName = new List<string> { "Men", "Hoodie" };
+        //public static void AddFirstProducts()
+        //{
+        //    using (var db = new MyDbContext())
+        //    {
+        //        var sizeName = new List<string> { "S", "M", "L", "XL" };
+        //        var categoryName = new List<string> { "Men", "Hoodie" };
 
-                var sizes = db.Sizes
-                .Where(s => sizeName.Contains(s.SizeName))
-                .ToList();
+        //        var sizes = db.Sizes
+        //        .Where(s => sizeName.Contains(s.SizeName))
+        //        .ToList();
 
-                var categories = db.Categories
-                    .Where(c => categoryName.Contains(c.CategoryName))
-                    .ToList();
+        //        var categories = db.Categories
+        //            .Where(c => categoryName.Contains(c.CategoryName))
+        //            .ToList();
 
-                var colour1 = db.Colours.FirstOrDefault(c => c.ColourName == "Gray");
+        //        var colour1 = db.Colours.FirstOrDefault(c => c.ColourName == "Gray");
 
-                var product1 = new Product()
-                {
-                    Name = "Old-Fashioned",
-                    Description = "Stylish and cozy at the same time",
-                    Price = 599.99,
-                    Amount = 4,
-                    Sizes = sizes,
-                    Categories = categories,
-                    Colours = new List<Models.Colour> { colour1 },
-                    ProductSupplierId = 1,
-                    FeaturedProduct = true
-                };
-                db.Add(product1);
-                db.SaveChanges();
-            }
-        }
-        public static void AddMultipleProducts()
-        {
-            using (var db = new MyDbContext())
-            {
-                var sizeName = new List<string> { "S", "M", "L", "XL" };
-                var categoryName = new List<string> { "Women", "T-Shirt" };
-                var colourName = new List<string> { "Red", "Blue" };
+        //        var product1 = new Product()
+        //        {
+        //            Name = "Old-Fashioned",
+        //            Description = "Stylish and cozy at the same time",
+        //            Price = 599.99,
+        //            Amount = 4,
+        //            Sizes = sizes,
+        //            Categories = categories,
+        //            Colours = new List<Models.Colour> { colour1 },
+        //            ProductSupplierId = 1,
+        //            FeaturedProduct = true
+        //        };
+        //        db.Add(product1);
+        //        db.SaveChanges();
+        //    }
+        //}
+        //public static void AddMultipleProducts()
+        //{
+        //    using (var db = new MyDbContext())
+        //    {
+        //        var sizeName = new List<string> { "S", "M", "L", "XL" };
+        //        var categoryName = new List<string> { "Women", "T-Shirt" };
+        //        var colourName = new List<string> { "Red", "Blue" };
 
-                var size = db.Sizes
-                    .Where(s => sizeName.Contains(s.SizeName))
-                    .ToList();
-                var categories1 = db.Categories
-                    .Where(c => categoryName.Contains(c.CategoryName))
-                    .ToList();
-                var colour = db.Colours
-                    .Where(c => colourName.Contains(c.ColourName))
-                    .ToList();
-                var product1 = new Product()
-                {
-                    Name = "Pantalones",
-                    Description = "Cute, but expensive",
-                    Price = 1119.75,
-                    Amount = 11,
-                    Sizes = size,
-                    Categories = categories1,
-                    Colours = colour,
-                    ProductSupplierId = 3,
-                    FeaturedProduct = true
-                };
-                db.Add(product1);
-                db.SaveChanges();
-            }
-        }
+        //        var size = db.Sizes
+        //            .Where(s => sizeName.Contains(s.SizeName))
+        //            .ToList();
+        //        var categories1 = db.Categories
+        //            .Where(c => categoryName.Contains(c.CategoryName))
+        //            .ToList();
+        //        var colour = db.Colours
+        //            .Where(c => colourName.Contains(c.ColourName))
+        //            .ToList();
+        //        var product1 = new Product()
+        //        {
+        //            Name = "Pantalones",
+        //            Description = "Cute, but expensive",
+        //            Price = 1119.75,
+        //            Amount = 11,
+        //            Sizes = size,
+        //            Categories = categories1,
+        //            Colours = colour,
+        //            ProductSupplierId = 3,
+        //            FeaturedProduct = true
+        //        };
+        //        db.Add(product1);
+        //        db.SaveChanges();
+        //    }
+        //}
         public static void AddNewCustomerWithInput()
         {
             using var db = new MyDbContext();
