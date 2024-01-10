@@ -16,10 +16,12 @@ namespace WebShop
             //AddData.AddNewCustomerWithInput();
             //AddData.AddFirstCustomers();
 
-            Customer customer = LoginManager.Login(db);
+            //Customer customer = LoginManager.Login(db);
 
             //TheMenu.ShowMenu(customer);
 
+            Search.CategorySearch();
+            //Search.SearchFunction();
         }
     }
 }

@@ -129,6 +129,7 @@ namespace WebShop
                 };
                 db.AddRange(customer1, customer2, admin);
                 db.SaveChanges();
+
             }
         }
         //public static void AddFirstProducts()
@@ -187,9 +188,7 @@ namespace WebShop
         //            Description = "Cute, but expensive",
         //            Price = 1119.75,
         //            Amount = 11,
-        //            Sizes = size,
         //            Categories = categories1,
-        //            Colours = colour,
         //            ProductSupplierId = 3,
         //            FeaturedProduct = true
         //        };
@@ -197,6 +196,9 @@ namespace WebShop
         //        db.SaveChanges();
         //    }
         //}
+
+        
+
         public static void AddNewCustomerWithInput()
         {
             using var db = new MyDbContext();
