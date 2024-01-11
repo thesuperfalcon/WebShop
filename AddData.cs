@@ -132,72 +132,77 @@ namespace WebShop
 
             }
         }
-        //public static void AddFirstProducts()
-        //{
-        //    using (var db = new MyDbContext())
-        //    {
-        //        var sizeName = new List<string> { "S", "M", "L", "XL" };
-        //        var categoryName = new List<string> { "Men", "Hoodie" };
+        public static void AddMultipleProducts()
+        {
+            using (var db = new MyDbContext())
+            {
+                var product1 = CreateProduct("Unicorn", "Fancy unicorn shirt", 99.99, false, 3, new[] { "Women", "T-Shirt" }, db);
+                var product2 = CreateProduct("tröja", "fin tröja", 199.99, false, 3, new[] { "Women", "T-Shirt" }, db);
+                var product3 = CreateProduct("Hoodie", "fin tröja med luva", 49.99, false, 3, new[] { "Women", "T-Shirt" }, db);
+                var product4 = CreateProduct("klänning", "Mysig klänning att vara fin i", 79.99, false, 3, new[] { "Women", "T-Shirt" }, db);
+                var product5 = CreateProduct("Men's Shirt", "Stylish men's shirt", 59.99, false, 3, new[] { "Men", "Shirt" }, db);
+                var product6 = CreateProduct("Men's Jeans", "Comfortable men's jeans", 89.99, false, 3, new[] { "Men", "Jeans" }, db);
+                var product7 = CreateProduct("Men's Jacket", "Warm men's jacket", 129.99, false, 3, new[] { "Men", "Jacket" }, db);
+                var product8 = CreateProduct("Men's Sweater", "Cozy men's sweater", 69.99, false, 3, new[] { "Men", "Sweater" }, db);
 
-        //        var sizes = db.Sizes
-        //        .Where(s => sizeName.Contains(s.SizeName))
-        //        .ToList();
+                AddProductVariants(db, product1, ("Red", "S", 12), ("Red", "M", 33), ("Red", "L", 2), ("Red", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
+                AddProductVariants(db, product2, ("Red", "S", 12), ("Red", "M", 33), ("Red", "L", 2), ("Red", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
+                AddProductVariants(db, product3, ("Yellow", "S", 12), ("Yellow", "M", 33), ("Yellow", "L", 2), ("Yellow", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
+                AddProductVariants(db, product4, ("Black", "S", 2), ("Black", "M", 10), ("Black", "L", 3), ("Black", "XL", 7), ("Purple", "S", 12), ("Purple", "M", 10), ("Purple", "L", 8), ("Purple", "XL", 0));
+                AddProductVariants(db, product5, ("Red", "S", 12), ("Red", "M", 33), ("Red", "L", 2), ("Red", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
+                AddProductVariants(db, product6, ("Green", "S", 15), ("Green", "M", 28), ("Green", "L", 3), ("Green", "XL", 8), ("Black", "S", 12), ("Black", "M", 5), ("Black", "L", 10), ("Black", "XL", 2));
+                AddProductVariants(db, product7, ("Gray", "S", 10), ("Gray", "M", 20), ("Gray", "L", 4), ("Gray", "XL", 6), ("Brown", "S", 8), ("Brown", "M", 15), ("Brown", "L", 5), ("Brown", "XL", 3));
+                AddProductVariants(db, product8, ("Navy", "S", 18), ("Navy", "M", 25), ("Navy", "L", 7), ("Navy", "XL", 4), ("White", "S", 20), ("White", "M", 22), ("White", "L", 6), ("White", "XL", 1));
+                db.AddRange(product1, product2, product3, product4, product5, product6, product7, product8);
 
-        //        var categories = db.Categories
-        //            .Where(c => categoryName.Contains(c.CategoryName))
-        //            .ToList();
+                db.SaveChanges();
+            }
+        }
 
-        //        var colour1 = db.Colours.FirstOrDefault(c => c.ColourName == "Gray");
+        private static void AddProductVariants(MyDbContext db, Product product, params (string Color, string Size, int Quantity)[] variants)
+        {
+            var colors = db.Colours.Where(c => variants.Select(v => v.Color).Contains(c.ColourName)).ToList();
+            var sizes = db.Sizes.Where(s => variants.Select(v => v.Size).Contains(s.SizeName)).ToList();
 
-        //        var product1 = new Product()
-        //        {
-        //            Name = "Old-Fashioned",
-        //            Description = "Stylish and cozy at the same time",
-        //            Price = 599.99,
-        //            Amount = 4,
-        //            Sizes = sizes,
-        //            Categories = categories,
-        //            Colours = new List<Models.Colour> { colour1 },
-        //            ProductSupplierId = 1,
-        //            FeaturedProduct = true
-        //        };
-        //        db.Add(product1);
-        //        db.SaveChanges();
-        //    }
-        //}
-        //public static void AddMultipleProducts()
-        //{
-        //    using (var db = new MyDbContext())
-        //    {
-        //        var sizeName = new List<string> { "S", "M", "L", "XL" };
-        //        var categoryName = new List<string> { "Women", "T-Shirt" };
-        //        var colourName = new List<string> { "Red", "Blue" };
+            product.ProductVariants = variants
+                .Select(v => new ProductVariant
+                {
+                    Colour = colors.First(c => c.ColourName == v.Color),
+                    Size = sizes.First(s => s.SizeName == v.Size),
+                    Quantity = v.Quantity
+                })
+                .ToList();
+        }
 
-        //        var size = db.Sizes
-        //            .Where(s => sizeName.Contains(s.SizeName))
-        //            .ToList();
-        //        var categories1 = db.Categories
-        //            .Where(c => categoryName.Contains(c.CategoryName))
-        //            .ToList();
-        //        var colour = db.Colours
-        //            .Where(c => colourName.Contains(c.ColourName))
-        //            .ToList();
-        //        var product1 = new Product()
-        //        {
-        //            Name = "Pantalones",
-        //            Description = "Cute, but expensive",
-        //            Price = 1119.75,
-        //            Amount = 11,
-        //            Categories = categories1,
-        //            ProductSupplierId = 3,
-        //            FeaturedProduct = true
-        //        };
-        //        db.Add(product1);
-        //        db.SaveChanges();
-        //    }
-        //}
+        private static Product CreateProduct(string name, string description, double price, bool featured, int supplierId, string[] categoryNames, MyDbContext db)
+        {
+            var categories = new List<Category>();
 
-        
+            foreach (var categoryName in categoryNames)
+            {
+                var category = db.Categories.FirstOrDefault(c => c.CategoryName == categoryName);
+
+                if (category == null)
+                {
+                    category = new Category { CategoryName = categoryName };
+                    db.Categories.Add(category);
+                    db.SaveChanges();
+                }
+
+                categories.Add(category);
+            }
+
+            return new Product
+            {
+                Name = name,
+                Description = description,
+                Price = price,
+                Categories = categories,
+                ProductSupplierId = supplierId,
+                FeaturedProduct = featured
+            };
+        }
+
 
         public static void AddNewCustomerWithInput()
         {
