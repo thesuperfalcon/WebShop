@@ -9,6 +9,10 @@ namespace WebShop.Models
 {
     public partial class ProductVariant
     {
+        public ProductVariant() 
+        { 
+            ProductOrders = new HashSet<ProductOrder>();
+        }
         public int Id { get; set; }
         public int ProductId { get; set; }
         public int ColourId { get; set; }
@@ -17,6 +21,7 @@ namespace WebShop.Models
         public virtual Product Product { get; set; }
         public virtual Colour Colour { get; set; }
         public virtual Size Size { get; set; }
+        public ICollection<ProductOrder> ProductOrders { get; set; }
     }
     public partial class Product
     {

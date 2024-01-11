@@ -36,6 +36,8 @@ namespace WebShop
 
                 Console.WriteLine();
 
+                var productBasket = new ProductOrder();
+
                 foreach (int i in Enum.GetValues(typeof(MyEnums.Menu)))
                 {
                     Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.Menu), i).Replace('_', ' '));
@@ -47,7 +49,7 @@ namespace WebShop
 
                     switch (menuSelection)
                     {
-                        case MyEnums.Menu.Search: basket.Add(Search.SearchFunction()); break;
+                        case MyEnums.Menu.Search: productBasket = Search.SearchFunction(); break;
                         case MyEnums.Menu.Category: ShowCategories(); break;
                         case MyEnums.Menu.Cart: ShowBasket(); break;
                         //case MyEnums.Menu.CheckOut: CheckOut(); break;
@@ -55,10 +57,20 @@ namespace WebShop
                             loop = false;
                             break;
                     }
+                    basket.Add(productBasket);
                 }
                 else
                 {
                     Console.WriteLine("Wrong input: ");
+                }
+
+                foreach (var item in basket)
+                {
+                    var productName = db.ProductOrders.Include(x => x.ProductVariant).Where(x => x.ProductVariantId == item.ProductVariantId).FirstOrDefault();
+                    Console.WriteLine(productName.ProductVariant.Product.Name);
+                    //Console.WriteLine(item.ProductVariant.Colour.ColourName);
+                    //Console.WriteLine(item.ProductVariant.Size.SizeName);
+                    //Console.WriteLine(item.Quantity);
                 }
                 Console.ReadLine();
                 Console.Clear();
@@ -183,40 +195,48 @@ namespace WebShop
         {
             using var Db = new MyDbContext();
             
-            Search.ShowProductFromSearch(product);
             var addProduct = InputHelpers.GetYesOrNo("Add to cart?");
             if (addProduct == true)
             {
+
                 var colourChoice = Db.ProductVariants.Where(x => x.ProductId == product.Id).Select(x => x.Colour).ToList();
-                foreach (var colour in colourChoice)
+                var colourChoiceEtt = colourChoice.Distinct().ToList();
+
+                foreach (var colour in colourChoiceEtt)
                 {
                     Console.WriteLine(colour.Id + " " + colour.ColourName);
                 }
                 var colourIdInput = InputHelpers.GetIntegerInput("ColourId");
                 var selectedColour = Db.Colours.FirstOrDefault(x => x.Id == colourIdInput);
-                var sizeChoice = Db.ProductVariants.Where(x => x.ColourId == colourIdInput && x.ProductId == product.Id).ToList();
-                foreach (var size in sizeChoice)
+
+                var sizeChoice = Db.ProductVariants.Where(x => x.ColourId == selectedColour.Id && x.ProductId == product.Id).Select(x => x.Size).ToList();
+                var sizeChoiceEtt = sizeChoice.Distinct().ToList();
+                foreach (var size in sizeChoiceEtt)
                 {
-                    Console.WriteLine(size.Id + " " + size.Size.SizeName);
+                    Console.WriteLine(size.Id + " " + size.SizeName);
                 }
                 var sizeIdInput = InputHelpers.GetIntegerInput("SizeId");
                 var selectedSize = Db.Sizes.FirstOrDefault(x => x.Id == sizeIdInput);
                 var quantity = InputHelpers.GetIntegerInput("Amount?");
 
-                Console.WriteLine(product.Name);
-                Console.WriteLine(selectedColour.ColourName);
-                Console.WriteLine(selectedSize.SizeName);
+                ProductVariant productOrder = Db.ProductVariants.Where(x => x.ColourId == selectedColour.Id && x.ProductId == product.Id && x.SizeId == selectedSize.Id).FirstOrDefault();
+
+                var test = Db.ProductVariants.Where(x => x.Id == productOrder.Id).FirstOrDefault();
+                Console.WriteLine(test.Id);
+                Console.WriteLine(test.ProductId);
+                Console.WriteLine(test.ColourId);
+                Console.WriteLine(test.SizeId);
                 Console.WriteLine(quantity);
 
-                var productOrder = Db.ProductVariants.Where(x => x.ColourId == selectedColour.Id && x.ProductId == product.Id && x.SizeId == selectedSize.Id).FirstOrDefault();
+                
                 var addToBasket = InputHelpers.GetYesOrNo("Add to basket?");
                 if (addToBasket == true)
                 {
                     var selectedProduct = new ProductOrder()
                     {
-                        ProductVariantId = productOrder.Id,
+                        ProductVariantId = test.Id,
                         Quantity = quantity,
-                        TotalPrice = (productOrder.Product.Price * quantity).Value,
+                        TotalPrice = 1,
                     };
                     return selectedProduct;
                 }
@@ -405,7 +425,7 @@ namespace WebShop
             Console.WriteLine("Available Delivery Types:");
             foreach (var allDeliveryType in allDeliveryTypes)
             {
-                Console.WriteLine(allDeliveryType.Id + " " + allDeliveryType.DeliveryTypeName + " " + allDeliveryType.DeliveryPrice + ":-");
+                Console.WriteLine(allDeliveryType.Id + " " + allDeliveryType.DeliveryName + " " + allDeliveryType.DeliveryPrice + ":-");
             }
 
 
@@ -435,7 +455,7 @@ namespace WebShop
 
             foreach (var product in basket)
             {
-                totalAmount += product.Price;
+                totalAmount += product.ProductVariant.Product.Price.Value;
             }
 
             //---------------------------Visa sammanfattning---------------------------
@@ -444,7 +464,7 @@ namespace WebShop
             Console.WriteLine($"Payment: {selectedPayment.PaymentName}");
             Console.WriteLine($"Payment_Type: {selectedPaymentType.PaymentTypeName}");
             Console.WriteLine($"Delivery: {selectedDelivery.DeliveryName}");
-            Console.WriteLine($"Delivery_Type: {selectedDeliveryType.DeliveryTypeName}");
+            Console.WriteLine($"Delivery_Type: {selectedDeliveryType.DeliveryName}");
             Console.WriteLine($"Delivery_Cost: {selectedDeliveryType.DeliveryPrice}:-");
             Console.WriteLine($"Total_Cost: {totalAmount}:-");
 
