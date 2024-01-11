@@ -66,124 +66,124 @@ namespace WebShop
         //        Console.Clear();
         //    }
         //}
-        public static void SearchMenu()
-        {
-            using (var db = new MyDbContext())
-            {
-                Console.Clear();
+        //public static void SearchMenu()
+        //{
+        //    using (var db = new MyDbContext())
+        //    {
+        //        Console.Clear();
 
-                var productName = InputHelpers.GetInput("Search: ");
+        //        var productName = InputHelpers.GetInput("Search: ");
 
-                var specificProduct = db.ProductVariants.Include(x => x.Product.Categories)
-                    .Include(x => x.Colour)
-                    .Include(x => x.Size)
-                    .Where(x => productName.Contains(x.Product.Name)).FirstOrDefault();
+        //        var specificProduct = db.ProductVariants.Include(x => x.Product.Categories)
+        //            .Include(x => x.Colour)
+        //            .Include(x => x.Size)
+        //            .Where(x => productName.Contains(x.Product.Name)).FirstOrDefault();
 
-                if (specificProduct != null)
-                {
-                    ShowProduct(specificProduct);
-                }
-            }
-        }
-        public static void ShowCategories()
-        {
-            using (var db = new MyDbContext())
-            {
-                Console.Clear();
+        //        if (specificProduct != null)
+        //        {
+        //            ShowProduct(specificProduct);
+        //        }
+        //    }
+        //}
+        //public static void ShowCategories()
+        //{
+        //    using (var db = new MyDbContext())
+        //    {
+        //        Console.Clear();
 
-                var categories = db.Categories.Where(x => x.Products.Count() > 0).ToList();
+        //        var categories = db.Categories.Where(x => x.Products.Count() > 0).ToList();
 
-                foreach (var category in categories)
-                {
-                    Console.WriteLine(category.CategoryName);
-                }
-                Console.Read();
-            }
-        }
-        public static void ShowProduct(Product product)
-        {
-            using (var db = new MyDbContext())
-            {
-                Console.Clear();
+        //        foreach (var category in categories)
+        //        {
+        //            Console.WriteLine(category.CategoryName);
+        //        }
+        //        Console.Read();
+        //    }
+        //}
+        //public static void ShowProduct(Product product)
+        //{
+        //    using (var db = new MyDbContext())
+        //    {
+        //        Console.Clear();
 
-                Console.WriteLine($"Name: {product.Name}");
-                Console.WriteLine($"Price: {product.Price}");
-                Console.Write("Categories: ");
+        //        Console.WriteLine($"Name: {product.Name}");
+        //        Console.WriteLine($"Price: {product.Price}");
+        //        Console.Write("Categories: ");
 
-                foreach (var category in product.Categories)
-                {
-                    Console.Write($"{category.CategoryName} ");
-                }
-                Console.WriteLine();
+        //        foreach (var category in product.Categories)
+        //        {
+        //            Console.Write($"{category.CategoryName} ");
+        //        }
+        //        Console.WriteLine();
 
-                var productVariants = db.ProductVariants
-                                     .Include(x => x.Colour)
-                                     .Include(x => x.Size)
-                                     .Where(pv => pv.ProductId == product.Id)
-                                     .ToList();
+        //        var productVariants = db.ProductVariants
+        //                             .Include(x => x.Colour)
+        //                             .Include(x => x.Size)
+        //                             .Where(pv => pv.ProductId == product.Id)
+        //                             .ToList();
 
-                Console.Write("Colours: ");
-                foreach (var color in productVariants)
-                {
-                    Console.Write($"{color.Colour.ColourName} ");
-                }
-                Console.WriteLine("Size: ");
+        //        Console.Write("Colours: ");
+        //        foreach (var color in productVariants)
+        //        {
+        //            Console.Write($"{color.Colour.ColourName} ");
+        //        }
+        //        Console.WriteLine("Size: ");
 
-                foreach (var size in productVariants)
-                {
-                    Console.Write($"{size.Size.SizeName} ");
-                }
-                Console.WriteLine();
+        //        foreach (var size in productVariants)
+        //        {
+        //            Console.Write($"{size.Size.SizeName} ");
+        //        }
+        //        Console.WriteLine();
 
-                Console.WriteLine($"Description: {product.Description}");
-                Console.WriteLine($"Supplier: {product.ProductSupplier}");
-                Console.WriteLine($"Amount left: {productVariants.Quanity.}");
+        //        Console.WriteLine($"Description: {product.Description}");
+        //        Console.WriteLine($"Supplier: {product.ProductSupplier}");
+        //        Console.WriteLine($"Amount left: {productVariants.Quanity.}");
 
-                bool addProduct = InputHelpers.GetYesOrNo("Wanna add to cart?: ");
+        //        bool addProduct = InputHelpers.GetYesOrNo("Wanna add to cart?: ");
 
-                if (addProduct == true)
-                {
-                    var size = InputHelpers.GetInput("Which size?: ").ToUpper();
+        //        if (addProduct == true)
+        //        {
+        //            var size = InputHelpers.GetInput("Which size?: ").ToUpper();
 
-                    var specificSize = productVariants.FirstOrDefault(x => size.Contains(x.Size.SizeName));
+        //            var specificSize = productVariants.FirstOrDefault(x => size.Contains(x.Size.SizeName));
 
-                    if (specificSize != null)
-                    {
-                        string colour = string.Empty;
+        //            if (specificSize != null)
+        //            {
+        //                string colour = string.Empty;
 
-                        if (productVariants.Count >= 2)
-                        {
-                            colour = InputHelpers.GetInput("Which colour?: ");
-                        }
-                        else
-                        {
-                            colour = productVariants.Select(x => x.Colour.ColourName).FirstOrDefault().ToString();
-                        }
-                        var specificColour = productVariants.FirstOrDefault(x => colour.Contains(x.Colour.ColourName));
+        //                if (productVariants.Count >= 2)
+        //                {
+        //                    colour = InputHelpers.GetInput("Which colour?: ");
+        //                }
+        //                else
+        //                {
+        //                    colour = productVariants.Select(x => x.Colour.ColourName).FirstOrDefault().ToString();
+        //                }
+        //                var specificColour = productVariants.FirstOrDefault(x => colour.Contains(x.Colour.ColourName));
 
-                        if (specificColour != null)
-                        {
-                            var quantity = InputHelpers.GetIntegerInput("How many?: ");
+        //                if (specificColour != null)
+        //                {
+        //                    var quantity = InputHelpers.GetIntegerInput("How many?: ");
 
-                            var productOrder = new ProductOrder()
-                            {
-                                ProductVariantId = product.Id,
-                                Quantity = quantity,
-                                Price = (product.Price * quantity).Value,
-                                SizeId = Helpers.GetSizeId(size, product),
-                                ColourId = Helpers.GetColourId(colour, product),
-                            };
-                            db.Add(productOrder);
-                            bool addCart = InputHelpers.GetYesOrNo("Finished?: ");
-                            if (addCart == true)
-                            {
-                                basket.Add(productOrder);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                    var productOrder = new ProductOrder()
+        //                    {
+        //                        ProductVariantId = product.Id,
+        //                        Quantity = quantity,
+        //                        Price = (product.Price * quantity).Value,
+        //                        SizeId = Helpers.GetSizeId(size, product),
+        //                        ColourId = Helpers.GetColourId(colour, product),
+        //                    };
+        //                    db.Add(productOrder);
+        //                    bool addCart = InputHelpers.GetYesOrNo("Finished?: ");
+        //                    if (addCart == true)
+        //                    {
+        //                        basket.Add(productOrder);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         public static void ShowBasket()
         {
@@ -248,7 +248,7 @@ namespace WebShop
             }
         }
 
-        public static void AddMoreQuantity(List<ProductVariant> basket)
+        public static void AddMoreQuantity(List<ProductOrder> basket)
         {
             ShowBasket();
 
@@ -257,18 +257,18 @@ namespace WebShop
                 Console.WriteLine("Enter the name of the product you want to add more of: ");
                 string productName = Console.ReadLine();
 
-                var chosenProduct = basket.FirstOrDefault(p => p.Product.Name == productName);
+                var chosenProduct = basket.FirstOrDefault(p => p.ProductVariant.Product.Name == productName);
 
                 if (chosenProduct != null)
                 {
-                    Console.WriteLine($"Current quantity of {chosenProduct.Product.Name}: {chosenProduct.Quantity}");
+                    Console.WriteLine($"Current quantity of {chosenProduct.ProductVariant.Product.Name}: {chosenProduct.Quantity}");
                     Console.WriteLine("Enter the quantity you want to add:");
 
                     if (int.TryParse(Console.ReadLine(), out int quantityToAdd))
                     {
                         chosenProduct.Quantity += quantityToAdd;
 
-                        Console.WriteLine($"Added {quantityToAdd} more of {chosenProduct.Product.Name} to your basket.");
+                        Console.WriteLine($"Added {quantityToAdd} more of {chosenProduct.ProductVariant.Product.Name} to your basket.");
                     }
                     else
                     {
@@ -284,7 +284,7 @@ namespace WebShop
             }
         }
 
-        public static void RemoveProduct(List<ProductVariant> basket)
+        public static void RemoveProduct(List<ProductOrder> basket)
         {
             ShowBasket();
 
@@ -293,11 +293,11 @@ namespace WebShop
                 Console.WriteLine("Enter the name of the product you want to remove: ");
                 string productName = Console.ReadLine();
 
-                var chosenProduct = basket.FirstOrDefault(p => p.Product.Name == productName);
+                var chosenProduct = basket.FirstOrDefault(p => p.ProductVariant.Product.Name == productName);
                 if (chosenProduct != null)
                 {
                     basket.Remove(chosenProduct);
-                    Console.WriteLine($"{chosenProduct.Product.Name} removed from your basket.");
+                    Console.WriteLine($"{chosenProduct.ProductVariant.Product.Name} removed from your basket.");
                 }
                 else
                 {
