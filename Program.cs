@@ -17,10 +17,11 @@ namespace WebShop
             //AddData.AddFirstCustomers();
             //AddData.AddMultipleProducts(); ------ Måste fixas :) 
 
+            Customer customer = new Customer();
 
             //Customer customer = LoginManager.Login(db);
 
-            TheMenu.ShowMenu();
+            TheMenu.ShowMenu(customer);
 
             //var product = db.Products.FirstOrDefault(x => x.Id == 1);
 

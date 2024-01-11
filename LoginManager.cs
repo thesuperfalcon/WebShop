@@ -14,6 +14,7 @@ namespace WebShop
         {
             var customer = new Customer();
             bool success = false;
+
             while (!success)
             {
                 Console.Write("Enter your email: ");
@@ -21,11 +22,11 @@ namespace WebShop
                 Console.Write("Enter your password: ");
                 string enteredPassword = Console.ReadLine().ToLower();
 
-                if (ValidateLogin(enteredEmail, enteredPassword, out bool isAdmin, out string displayName, out Customer loggedInCustomer))
+                if (ValidateLogin(dbContext, enteredEmail, enteredPassword, out bool isAdmin, out string displayName, out Customer loggedInCustomer))
                 {
                     Console.WriteLine("Login successful!");
 
-                    customer = dbContext.Customers.Where(x => x.Email == enteredEmail && x.Password == enteredPassword).FirstOrDefault();
+                    customer = loggedInCustomer;
 
                     if (isAdmin)
                     {
@@ -34,22 +35,24 @@ namespace WebShop
                     else
                     {
                         Console.WriteLine($"Welcome {displayName}");
-                        //TheMenu.ShowMenu(customer);
+                        TheMenu.ShowMenu(customer);
                     }
+
                     success = true;
                 }
                 else
                 {
                     Console.WriteLine("Invalid email or password. Try again.");
                 }
+
                 Console.ReadLine();
             }
+
             return customer;
         }
 
-        private static bool ValidateLogin(string enteredEmail, string enteredPassword, out bool isAdmin, out string displayName, out Customer loggedInCustomer)
+        private static bool ValidateLogin(MyDbContext dbContext, string enteredEmail, string enteredPassword, out bool isAdmin, out string displayName, out Customer loggedInCustomer)
         {
-            using var dbContext = new MyDbContext();
             isAdmin = false;
             displayName = string.Empty;
             loggedInCustomer = null;
@@ -66,8 +69,8 @@ namespace WebShop
                 loggedInCustomer = customer;
                 return true;
             }
+
             return false;
         }
     }
 }
-

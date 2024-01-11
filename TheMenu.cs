@@ -7,7 +7,7 @@ namespace WebShop
     {
         private static List<ProductOrder> basket = new List<ProductOrder>();
 
-        public static void ShowMenu()
+        public static void ShowMenu(Customer customer)
         {
             bool loop = true;
             while (loop)
@@ -58,7 +58,6 @@ namespace WebShop
                 Console.Clear();
             }
         }
-
 
 
         public static void ShowBasketTest(List<ProductOrder> basket)

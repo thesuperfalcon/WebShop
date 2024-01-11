@@ -35,37 +35,5 @@ namespace WebShop
         {
             return InputHelpers.GetIntegerInput("Id: ");
         }
-        public static string ValidateInput(string input)
-        {
-            while (string.IsNullOrWhiteSpace(input))
-            {
-                Console.WriteLine("Invalid input. Please enter a non-empty value.");
-                input = Console.ReadLine();
-            }
-            return input;
-        }
-
-        public static int ValidateIntInput(string input)
-        {
-            while (!int.TryParse(input, out int result))
-            {
-                Console.WriteLine("Invalid input. Please enter a number.");
-                input = Console.ReadLine();
-            }
-            return int.Parse(input);
-        }
-
-
-        public static bool ValidateBoolInput(string input)
-        {
-            while (!bool.TryParse(input, out bool result))
-            {
-                Console.WriteLine("Invalid input. Please enter 'true' or 'false'.");
-                input = Console.ReadLine();
-            }
-            return bool.Parse(input);
-        }
-
-
     }
 }
