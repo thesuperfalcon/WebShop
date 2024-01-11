@@ -6,7 +6,7 @@ namespace WebShop
 {
     internal class Search
     {
-        public static void SearchFunction()
+        public static ProductOrder SearchFunction()
         {
             using var db = new MyDbContext();
 
@@ -93,13 +93,15 @@ namespace WebShop
                     var showProduct = InputHelpers.GetYesOrNo($"Correct product: {searchedProduct.Name} ");
                     if (showProduct == true)
                     {
-                        ShowProductFromSearch(searchedProduct);
+                        var basket = ShowProductFromSearch(searchedProduct);
+                        return basket;
                         success = true;
                     }
                 }
             }
+            return null;
         }
-        public static void ShowProductFromSearch(Product product)
+        public static ProductOrder ShowProductFromSearch(Product product)
         {
             Console.WriteLine($"Product Name: {product.Name}");
             Console.WriteLine($"Description: {product.Description}");
@@ -123,16 +125,21 @@ namespace WebShop
                     {
                         Console.WriteLine($"- Size: {variant.Size?.SizeName ?? "N/A"}, Color: {variant.Colour?.ColourName ?? "N/A"}, Quantity: {variant.Quantity}");
                     }
+                    var basket = TheMenu.AddProductToBasket(product);
+                    return basket;
                 }
                 else
                 {
                     Console.WriteLine("No variants found for this product.");
+
                 }
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error retrieving product information: {ex.Message}");
             }
+            return null;
         }
         public static void CategorySearch()
         {

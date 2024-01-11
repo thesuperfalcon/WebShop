@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Drawing;
 using WebShop.Models;
 
 namespace WebShop
@@ -9,63 +7,63 @@ namespace WebShop
     {
         static List<ProductOrder> basket = new List<ProductOrder>();
 
-        //public static void ShowMenu(Customer customer)
-        //{
-        //    bool loop = true;
-        //    while (loop)
-        //    {
-        //        using var db = new MyDbContext();
+        public static void ShowMenu()
+        {
+            bool loop = true;
+            while (loop)
+            {
+                using var db = new MyDbContext();
 
-        //        var products = db.Products.Include(x => x.Categories).
-        //            Include(y => y.Colours).
-        //            Where(z => z.FeaturedProduct == true);
+                var products = db.ProductVariants.Include(x => x.Product).
+                    Include(y => y.Colour).
+                    Where(z => z.Product.FeaturedProduct == true);
 
-        //        foreach (var product in products)
-        //        {
-        //            Console.WriteLine(product.Name);
-        //            Console.WriteLine(product.Price);
-        //            foreach (var category in product.Categories)
-        //            {
-        //                Console.Write(category.CategoryName + " ");
-        //            }
-        //            Console.WriteLine();
-        //            foreach (var colour in product.Colours)
-        //            {
-        //                Console.Write(colour.ColourName + " ");
-        //            }
-        //            Console.WriteLine();
-        //        }
+                foreach (var product in products)
+                {
+                    Console.WriteLine(product.Product.Name);
+                    Console.WriteLine(product.Product.Price);
+                    foreach (var category in product.Product.Categories)
+                    {
+                        Console.Write(category.CategoryName + " ");
+                    }
+                    Console.WriteLine();
+                    foreach (var colour in product.Colour.ColourName)
+                    {
+                        Console.Write(colour + " ");
+                    }
+                    Console.WriteLine();
+                }
 
-        //        Console.WriteLine();
+                Console.WriteLine();
 
-        //        foreach (int i in Enum.GetValues(typeof(MyEnums.Menu)))
-        //        {
-        //            Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.Menu), i).Replace('_', ' '));
-        //        }
-        //        int nr;
-        //        if (int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out nr))
-        //        {
-        //            MyEnums.Menu menuSelection = (MyEnums.Menu)nr;
+                foreach (int i in Enum.GetValues(typeof(MyEnums.Menu)))
+                {
+                    Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.Menu), i).Replace('_', ' '));
+                }
+                int nr;
+                if (int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out nr))
+                {
+                    MyEnums.Menu menuSelection = (MyEnums.Menu)nr;
 
-        //            switch (menuSelection)
-        //            {
-        //                case MyEnums.Menu.Search: SearchMenu(); break;
-        //                case MyEnums.Menu.Category: ShowCategories(); break;
-        //                case MyEnums.Menu.Cart: ShowBasket(); break;
-        //                case MyEnums.Menu.CheckOut: CheckOut(); break;
-        //                case MyEnums.Menu.Exit:
-        //                    loop = false;
-        //                    break;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine("Wrong input: ");
-        //        }
-        //        Console.ReadLine();
-        //        Console.Clear();
-        //    }
-        //}
+                    switch (menuSelection)
+                    {
+                        case MyEnums.Menu.Search: basket.Add(Search.SearchFunction()); break;
+                        case MyEnums.Menu.Category: ShowCategories(); break;
+                        case MyEnums.Menu.Cart: ShowBasket(); break;
+                        //case MyEnums.Menu.CheckOut: CheckOut(); break;
+                        case MyEnums.Menu.Exit:
+                            loop = false;
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Wrong input: ");
+                }
+                Console.ReadLine();
+                Console.Clear();
+            }
+        }
         //public static void SearchMenu()
         //{
         //    using (var db = new MyDbContext())
@@ -81,25 +79,25 @@ namespace WebShop
 
         //        if (specificProduct != null)
         //        {
-        //            ShowProduct(specificProduct);
+        //            ShowProduct(specificProduct.Product);
         //        }
         //    }
         //}
-        //public static void ShowCategories()
-        //{
-        //    using (var db = new MyDbContext())
-        //    {
-        //        Console.Clear();
+        public static void ShowCategories()
+        {
+            using (var db = new MyDbContext())
+            {
+                Console.Clear();
 
-        //        var categories = db.Categories.Where(x => x.Products.Count() > 0).ToList();
+                var categories = db.Categories.Where(x => x.Products.Count() > 0).ToList();
 
-        //        foreach (var category in categories)
-        //        {
-        //            Console.WriteLine(category.CategoryName);
-        //        }
-        //        Console.Read();
-        //    }
-        //}
+                foreach (var category in categories)
+                {
+                    Console.WriteLine(category.CategoryName);
+                }
+                Console.Read();
+            }
+        }
         //public static void ShowProduct(Product product)
         //{
         //    using (var db = new MyDbContext())
@@ -127,8 +125,9 @@ namespace WebShop
         //        {
         //            Console.Write($"{color.Colour.ColourName} ");
         //        }
-        //        Console.WriteLine("Size: ");
+        //        Console.WriteLine();
 
+        //        Console.WriteLine("Size: ");
         //        foreach (var size in productVariants)
         //        {
         //            Console.Write($"{size.Size.SizeName} ");
@@ -136,8 +135,8 @@ namespace WebShop
         //        Console.WriteLine();
 
         //        Console.WriteLine($"Description: {product.Description}");
-        //        Console.WriteLine($"Supplier: {product.ProductSupplier}");
-        //        Console.WriteLine($"Amount left: {productVariants.Quanity.}");
+        //        Console.WriteLine($"Supplier: {product.ProductSupplier.SupplierName}");
+        //        Console.WriteLine($"Amount left: {productVariants.Sum(p => p.Quantity)}");
 
         //        bool addProduct = InputHelpers.GetYesOrNo("Wanna add to cart?: ");
 
@@ -161,29 +160,70 @@ namespace WebShop
         //                }
         //                var specificColour = productVariants.FirstOrDefault(x => colour.Contains(x.Colour.ColourName));
 
-        //                if (specificColour != null)
+        //                if (specificSize != null && specificColour != null)
         //                {
         //                    var quantity = InputHelpers.GetIntegerInput("How many?: ");
 
-        //                    var productOrder = new ProductOrder()
-        //                    {
-        //                        ProductVariantId = product.Id,
-        //                        Quantity = quantity,
-        //                        Price = (product.Price * quantity).Value,
-        //                        SizeId = Helpers.GetSizeId(size, product),
-        //                        ColourId = Helpers.GetColourId(colour, product),
-        //                    };
+
+
         //                    db.Add(productOrder);
         //                    bool addCart = InputHelpers.GetYesOrNo("Finished?: ");
         //                    if (addCart == true)
         //                    {
         //                        basket.Add(productOrder);
         //                    }
+
         //                }
         //            }
         //        }
         //    }
         //}
+
+        public static ProductOrder AddProductToBasket(Product product)
+        {
+            using var Db = new MyDbContext();
+            
+            Search.ShowProductFromSearch(product);
+            var addProduct = InputHelpers.GetYesOrNo("Add to cart?");
+            if (addProduct == true)
+            {
+                var colourChoice = Db.ProductVariants.Where(x => x.ProductId == product.Id).Select(x => x.Colour).ToList();
+                foreach (var colour in colourChoice)
+                {
+                    Console.WriteLine(colour.Id + " " + colour.ColourName);
+                }
+                var colourIdInput = InputHelpers.GetIntegerInput("ColourId");
+                var selectedColour = Db.Colours.FirstOrDefault(x => x.Id == colourIdInput);
+                var sizeChoice = Db.ProductVariants.Where(x => x.ColourId == colourIdInput && x.ProductId == product.Id).ToList();
+                foreach (var size in sizeChoice)
+                {
+                    Console.WriteLine(size.Id + " " + size.Size.SizeName);
+                }
+                var sizeIdInput = InputHelpers.GetIntegerInput("SizeId");
+                var selectedSize = Db.Sizes.FirstOrDefault(x => x.Id == sizeIdInput);
+                var quantity = InputHelpers.GetIntegerInput("Amount?");
+
+                Console.WriteLine(product.Name);
+                Console.WriteLine(selectedColour.ColourName);
+                Console.WriteLine(selectedSize.SizeName);
+                Console.WriteLine(quantity);
+
+                var productOrder = Db.ProductVariants.Where(x => x.ColourId == selectedColour.Id && x.ProductId == product.Id && x.SizeId == selectedSize.Id).FirstOrDefault();
+                var addToBasket = InputHelpers.GetYesOrNo("Add to basket?");
+                if (addToBasket == true)
+                {
+                    var selectedProduct = new ProductOrder()
+                    {
+                        ProductVariantId = productOrder.Id,
+                        Quantity = quantity,
+                        TotalPrice = (productOrder.Product.Price * quantity).Value,
+                    };
+                    return selectedProduct;
+                }
+
+            }
+            return null;
+        }
 
         public static void ShowBasket()
         {

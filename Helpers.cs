@@ -11,24 +11,26 @@ namespace WebShop
 {
     internal class Helpers
     {
-        //public static int GetSizeId(string size, Product product)
-        //{
-        //    using var db = new MyDbContext();
+        public static int GetSizeId(string size, Product product)
+        {
+            using var db = new MyDbContext();
 
-        //    var sizeId = product.Sizes.Where(x => size.Contains(x.SizeName))
-        //        .Select(x => x.Id).FirstOrDefault();
+            var sizeId = product.ProductVariants
+                        .Where(x => size == x.Size.SizeName)
+                        .Select(x => x.Size.Id).FirstOrDefault();
 
-        //    return sizeId;
-        //}
-        //public static int GetColourId(string colour, Product product)
-        //{
-        //    using var db = new MyDbContext();
+            return sizeId;
+        }
+        public static int GetColourId(string colour, Product product)
+        {
+            using var db = new MyDbContext();
 
-        //    var colourId = product.Colours.Where(x => colour.Contains(x.ColourName))
-        //        .Select(x => x.Id).FirstOrDefault();
+            var colourId = product.ProductVariants
+                          .Where(x => colour.Contains(x.Colour.ColourName))
+                          .Select(x => x.Id).FirstOrDefault();
 
-        //    return colourId;
-        //}
+            return colourId;
+        }
         public static int GetGeneralId()
         {
             return InputHelpers.GetIntegerInput("Id: ");

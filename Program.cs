@@ -15,16 +15,14 @@ namespace WebShop
             //AddData.AddMultipleProducts();
             //AddData.AddNewCustomerWithInput();
             //AddData.AddFirstCustomers();
+            //AddData.AddMultipleProducts(); ------ Måste fixas :) 
 
             //Customer customer = LoginManager.Login(db);
-<<<<<<< HEAD
-=======
 
->>>>>>> 65d55e73ce4221aad45f953d178cfb68948430aa
-            //TheMenu.ShowMenu(customer);
-            TheMenu.ShowBasket();
+            TheMenu.ShowMenu();
+            //TheMenu.ShowBasket();
 
-            Search.CategorySearch();
+            //Search.CategorySearch();
             //Search.SearchFunction();
         }
     }
