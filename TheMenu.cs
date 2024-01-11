@@ -5,7 +5,7 @@ namespace WebShop
 {
     internal class TheMenu
     {
-        static List<ProductOrder> basket = new List<ProductOrder>();
+        private static List<ProductOrder> basket = new List<ProductOrder>();
 
         public static void ShowMenu()
         {
@@ -14,27 +14,7 @@ namespace WebShop
             {
                 using var db = new MyDbContext();
 
-                var products = db.ProductVariants.Include(x => x.Product).
-                    Include(y => y.Colour).
-                    Where(z => z.Product.FeaturedProduct == true);
-
-                foreach (var product in products)
-                {
-                    Console.WriteLine(product.Product.Name);
-                    Console.WriteLine(product.Product.Price);
-                    foreach (var category in product.Product.Categories)
-                    {
-                        Console.Write(category.CategoryName + " ");
-                    }
-                    Console.WriteLine();
-                    foreach (var colour in product.Colour.ColourName)
-                    {
-                        Console.Write(colour + " ");
-                    }
-                    Console.WriteLine();
-                }
-
-                Console.WriteLine();
+                ShowFeaturedProduct();
 
                 var productBasket = new ProductOrder();
 
@@ -49,10 +29,18 @@ namespace WebShop
 
                     switch (menuSelection)
                     {
-                        case MyEnums.Menu.Search: productBasket = Search.SearchFunction(); break;
-                        case MyEnums.Menu.Category: ShowCategories(); break;
-                        case MyEnums.Menu.Cart: ShowBasket(); break;
-                        //case MyEnums.Menu.CheckOut: CheckOut(); break;
+                        case MyEnums.Menu.Search:
+                            productBasket = Search.SearchFunction();
+                            break;
+                        case MyEnums.Menu.Category:
+                            ShowCategories();
+                            break;
+                        case MyEnums.Menu.Cart:
+                            ShowBasketTest(basket);
+                            break;
+                        case MyEnums.Menu.CheckOut:
+                            CheckOut(basket);
+                            break;
                         case MyEnums.Menu.Exit:
                             loop = false;
                             break;
@@ -64,37 +52,57 @@ namespace WebShop
                     Console.WriteLine("Wrong input: ");
                 }
 
-                foreach (var item in basket)
-                {
-                    var productName = db.ProductOrders.Include(x => x.ProductVariant).Where(x => x.ProductVariantId == item.ProductVariantId).FirstOrDefault();
-                    Console.WriteLine(productName.ProductVariant.Product.Name);
-                    //Console.WriteLine(item.ProductVariant.Colour.ColourName);
-                    //Console.WriteLine(item.ProductVariant.Size.SizeName);
-                    //Console.WriteLine(item.Quantity);
-                }
+                ShowBasketTest(basket);
+
                 Console.ReadLine();
                 Console.Clear();
             }
         }
-        //public static void SearchMenu()
-        //{
-        //    using (var db = new MyDbContext())
-        //    {
-        //        Console.Clear();
 
-        //        var productName = InputHelpers.GetInput("Search: ");
 
-        //        var specificProduct = db.ProductVariants.Include(x => x.Product.Categories)
-        //            .Include(x => x.Colour)
-        //            .Include(x => x.Size)
-        //            .Where(x => productName.Contains(x.Product.Name)).FirstOrDefault();
 
-        //        if (specificProduct != null)
-        //        {
-        //            ShowProduct(specificProduct.Product);
-        //        }
-        //    }
-        //}
+        public static void ShowBasketTest(List<ProductOrder> basket)
+        {
+            using (var db = new MyDbContext())
+            {
+                int number = 1;
+                double totalPrice = 0;
+
+                foreach (var item in basket)
+                {
+                    Console.WriteLine($"{number}.");
+
+                    var productVariant = db.ProductVariants
+                        .Include(x => x.Product)
+                        .Include(x => x.Colour)
+                        .Include(x => x.Size)
+                        .FirstOrDefault(x => x.Id == item.ProductVariantId);
+
+                    if (productVariant != null)
+                    {
+                        Console.WriteLine($"Product: {productVariant.Product.Name}");
+                        Console.WriteLine($"Description: {productVariant.Product.Description}");
+                        Console.WriteLine($"Size: {productVariant.Size?.SizeName ?? "N/A"}");
+                        Console.WriteLine($"Colour: {productVariant.Colour?.ColourName ?? "N/A"}");
+                        Console.WriteLine($"Quantity: {item.Quantity}");
+                        Console.WriteLine($"Price: {productVariant.Product.Price ?? 0.0}:-");
+
+                        totalPrice += item.Quantity * (productVariant.Product.Price ?? 0.0);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Product variant not found.");
+                    }
+
+                    Console.WriteLine();
+                    number++;
+                }
+
+                Console.WriteLine($"Total price: {totalPrice}:-");
+                Console.WriteLine();
+            }
+        }
+
         public static void ShowCategories()
         {
             using (var db = new MyDbContext())
@@ -110,144 +118,84 @@ namespace WebShop
                 Console.Read();
             }
         }
-        //public static void ShowProduct(Product product)
-        //{
-        //    using (var db = new MyDbContext())
-        //    {
-        //        Console.Clear();
-
-        //        Console.WriteLine($"Name: {product.Name}");
-        //        Console.WriteLine($"Price: {product.Price}");
-        //        Console.Write("Categories: ");
-
-        //        foreach (var category in product.Categories)
-        //        {
-        //            Console.Write($"{category.CategoryName} ");
-        //        }
-        //        Console.WriteLine();
-
-        //        var productVariants = db.ProductVariants
-        //                             .Include(x => x.Colour)
-        //                             .Include(x => x.Size)
-        //                             .Where(pv => pv.ProductId == product.Id)
-        //                             .ToList();
-
-        //        Console.Write("Colours: ");
-        //        foreach (var color in productVariants)
-        //        {
-        //            Console.Write($"{color.Colour.ColourName} ");
-        //        }
-        //        Console.WriteLine();
-
-        //        Console.WriteLine("Size: ");
-        //        foreach (var size in productVariants)
-        //        {
-        //            Console.Write($"{size.Size.SizeName} ");
-        //        }
-        //        Console.WriteLine();
-
-        //        Console.WriteLine($"Description: {product.Description}");
-        //        Console.WriteLine($"Supplier: {product.ProductSupplier.SupplierName}");
-        //        Console.WriteLine($"Amount left: {productVariants.Sum(p => p.Quantity)}");
-
-        //        bool addProduct = InputHelpers.GetYesOrNo("Wanna add to cart?: ");
-
-        //        if (addProduct == true)
-        //        {
-        //            var size = InputHelpers.GetInput("Which size?: ").ToUpper();
-
-        //            var specificSize = productVariants.FirstOrDefault(x => size.Contains(x.Size.SizeName));
-
-        //            if (specificSize != null)
-        //            {
-        //                string colour = string.Empty;
-
-        //                if (productVariants.Count >= 2)
-        //                {
-        //                    colour = InputHelpers.GetInput("Which colour?: ");
-        //                }
-        //                else
-        //                {
-        //                    colour = productVariants.Select(x => x.Colour.ColourName).FirstOrDefault().ToString();
-        //                }
-        //                var specificColour = productVariants.FirstOrDefault(x => colour.Contains(x.Colour.ColourName));
-
-        //                if (specificSize != null && specificColour != null)
-        //                {
-        //                    var quantity = InputHelpers.GetIntegerInput("How many?: ");
-
-
-
-        //                    db.Add(productOrder);
-        //                    bool addCart = InputHelpers.GetYesOrNo("Finished?: ");
-        //                    if (addCart == true)
-        //                    {
-        //                        basket.Add(productOrder);
-        //                    }
-
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
 
         public static ProductOrder AddProductToBasket(Product product)
         {
             using var Db = new MyDbContext();
-            
-            var addProduct = InputHelpers.GetYesOrNo("Add to cart?");
-            if (addProduct == true)
+
+            try
             {
-
-                var colourChoice = Db.ProductVariants.Where(x => x.ProductId == product.Id).Select(x => x.Colour).ToList();
-                var colourChoiceEtt = colourChoice.Distinct().ToList();
-
-                foreach (var colour in colourChoiceEtt)
+                var addProduct = InputHelpers.GetYesOrNo("Add to cart?");
+                if (addProduct)
                 {
-                    Console.WriteLine(colour.Id + " " + colour.ColourName);
-                }
-                var colourIdInput = InputHelpers.GetIntegerInput("ColourId");
-                var selectedColour = Db.Colours.FirstOrDefault(x => x.Id == colourIdInput);
+                    var colourChoice = Db.ProductVariants.Where(x => x.ProductId == product.Id).Select(x => x.Colour).ToList();
+                    var colourChoiceEtt = colourChoice.Distinct().ToList();
 
-                var sizeChoice = Db.ProductVariants.Where(x => x.ColourId == selectedColour.Id && x.ProductId == product.Id).Select(x => x.Size).ToList();
-                var sizeChoiceEtt = sizeChoice.Distinct().ToList();
-                foreach (var size in sizeChoiceEtt)
-                {
-                    Console.WriteLine(size.Id + " " + size.SizeName);
-                }
-                var sizeIdInput = InputHelpers.GetIntegerInput("SizeId");
-                var selectedSize = Db.Sizes.FirstOrDefault(x => x.Id == sizeIdInput);
-                var quantity = InputHelpers.GetIntegerInput("Amount?");
-
-                ProductVariant productOrder = Db.ProductVariants.Where(x => x.ColourId == selectedColour.Id && x.ProductId == product.Id && x.SizeId == selectedSize.Id).FirstOrDefault();
-
-                var test = Db.ProductVariants.Where(x => x.Id == productOrder.Id).FirstOrDefault();
-                Console.WriteLine(test.Id);
-                Console.WriteLine(test.ProductId);
-                Console.WriteLine(test.ColourId);
-                Console.WriteLine(test.SizeId);
-                Console.WriteLine(quantity);
-
-                
-                var addToBasket = InputHelpers.GetYesOrNo("Add to basket?");
-                if (addToBasket == true)
-                {
-                    var selectedProduct = new ProductOrder()
+                    foreach (var colour in colourChoiceEtt)
                     {
-                        ProductVariantId = test.Id,
-                        Quantity = quantity,
-                        TotalPrice = 1,
-                    };
-                    return selectedProduct;
-                }
+                        Console.WriteLine(colour.Id + " " + colour.ColourName);
+                    }
 
+                    var colourIdInput = InputHelpers.GetIntegerInput("ColourId");
+                    var selectedColour = Db.Colours.FirstOrDefault(x => x.Id == colourIdInput);
+
+                    var sizeChoice = Db.ProductVariants
+                        .Where(x => x.ColourId == selectedColour.Id && x.ProductId == product.Id)
+                        .Select(x => x.Size)
+                        .ToList();
+
+                    var sizeChoiceEtt = sizeChoice.Distinct().ToList();
+                    foreach (var size in sizeChoiceEtt)
+                    {
+                        Console.WriteLine(size.Id + " " + size.SizeName);
+                    }
+
+                    var sizeIdInput = InputHelpers.GetIntegerInput("SizeId");
+                    var selectedSize = Db.Sizes.FirstOrDefault(x => x.Id == sizeIdInput);
+                    var quantity = InputHelpers.GetIntegerInput("Amount?");
+
+                    ProductVariant productOrder = Db.ProductVariants
+                        .Where(x => x.ColourId == selectedColour.Id && x.ProductId == product.Id && x.SizeId == selectedSize.Id)
+                        .FirstOrDefault();
+
+                    if (productOrder == null)
+                    {
+                        Console.WriteLine("Product variant not found.");
+                        return null;
+                    }
+
+                    var test = Db.ProductVariants.Where(x => x.Id == productOrder.Id).FirstOrDefault();
+                    Console.WriteLine(test.Id);
+                    Console.WriteLine(test.ProductId);
+                    Console.WriteLine(test.ColourId);
+                    Console.WriteLine(test.SizeId);
+                    Console.WriteLine(quantity);
+
+                    var addToBasket = InputHelpers.GetYesOrNo("Add to basket?");
+                    if (addToBasket)
+                    {
+                        var selectedProduct = new ProductOrder()
+                        {
+                            ProductVariantId = test.Id,
+                            Quantity = quantity,
+                            TotalPrice = 1,
+                        };
+                        return selectedProduct;
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+
             return null;
         }
 
-        public static void ShowBasket()
+
+        public static void ShowBasket(List<ProductOrder> basket)
         {
-            var basket = new List<ProductOrder>();
+            //var basket = new List<ProductOrder>();
 
             using (var db = new MyDbContext())
             {
@@ -310,7 +258,7 @@ namespace WebShop
 
         public static void AddMoreQuantity(List<ProductOrder> basket)
         {
-            ShowBasket();
+            ShowBasket(basket);
 
             using (var db = new MyDbContext())
             {
@@ -346,7 +294,7 @@ namespace WebShop
 
         public static void RemoveProduct(List<ProductOrder> basket)
         {
-            ShowBasket();
+            ShowBasket(basket);
 
             using (var db = new MyDbContext())
             {
@@ -367,7 +315,7 @@ namespace WebShop
         }
 
         //---------------------------Frakt-vy och betalnings-vy---------------------------
-        public static void CheckOut()
+        public static void CheckOut(List<ProductOrder> basket)
         {
             using var db = new MyDbContext();
 
@@ -460,7 +408,7 @@ namespace WebShop
 
             //---------------------------Visa sammanfattning---------------------------
             Console.WriteLine("Summary");
-            ShowBasket();
+            ShowBasket(basket);
             Console.WriteLine($"Payment: {selectedPayment.PaymentName}");
             Console.WriteLine($"Payment_Type: {selectedPaymentType.PaymentTypeName}");
             Console.WriteLine($"Delivery: {selectedDelivery.DeliveryName}");
@@ -491,6 +439,50 @@ namespace WebShop
                 basket.Clear();
 
                 Console.WriteLine("Thank you for shopping :)");
+            }
+        }
+        public static void ShowFeaturedProduct()
+        {
+
+            using var db = new MyDbContext();
+
+            var products = db.Products.Where(x => x.FeaturedProduct == true).ToList();
+
+            foreach (var product in products)
+            {
+                Console.WriteLine($"Product Name: {product.Name}");
+                Console.WriteLine($"Description: {product.Description}");
+                Console.WriteLine($"Price: {product.Price}");
+
+                try
+                {
+                    var productVariants = db.ProductVariants
+                        .Where(x => x.ProductId == product.Id)
+                        .Include(x => x.Size)
+                        .Include(x => x.Colour)
+                        .ToList();
+
+                    if (productVariants.Any())
+                    {
+                        Console.WriteLine("Available Variants:");
+
+                        foreach (var variant in productVariants)
+                        {
+                            Console.Write($"Size: {variant.Size.SizeName} - {variant.Colour.ColourName}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No variants found for this product.");
+
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error retrieving product information: {ex.Message}");
+                }
+                Console.WriteLine();
             }
         }
     }
