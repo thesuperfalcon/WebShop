@@ -16,15 +16,14 @@ namespace WebShop
             //AddData.AddNewCustomerWithInput();
             //AddData.AddFirstCustomers();
 
-            //Customer customer = LoginManager.Login(db);
-<<<<<<< HEAD
-=======
+            //var product = db.Products.FirstOrDefault(x => x.Id == 1);
 
->>>>>>> 65d55e73ce4221aad45f953d178cfb68948430aa
+            Admin.AdminMenu();
+            //Admin.AddProductVariants(product);
             //TheMenu.ShowMenu(customer);
-            TheMenu.ShowBasket();
+            //TheMenu.ShowBasket();
 
-            Search.CategorySearch();
+            //Search.CategorySearch();
             //Search.SearchFunction();
         }
     }
