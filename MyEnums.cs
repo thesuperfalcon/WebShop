@@ -16,5 +16,16 @@ namespace WebShop
             CheckOut,
             Exit
         }
+        public enum AdminMenu
+        {
+            AddProduct,
+            RemoveProduct,
+            ChangeProduct,
+            ShowInventoryBalance,
+            OrderHistory,
+            CustomerInformation,
+            ShowStatistic,
+            Exit
+        }
     }
 }

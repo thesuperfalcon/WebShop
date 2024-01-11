@@ -22,7 +22,7 @@ namespace WebShop
             }
             return FormatString(input);
         }
-        private static string FormatString(string input)
+        public static string FormatString(string input)
         {
             return char.ToUpper(input[0]) + input.Substring(1).ToLower();
         }
@@ -49,6 +49,15 @@ namespace WebShop
         {
             int result;
             while (!int.TryParse(GetInput(prompt), out result))
+            {
+                TryAgain();
+            }
+            return result;
+        }
+        public static double GetDoubleInput(string prompt)
+        {
+            double result;
+            while (!double.TryParse(GetInput(prompt), out result))
             {
                 TryAgain();
             }

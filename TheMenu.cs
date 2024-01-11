@@ -346,87 +346,132 @@ namespace WebShop
             }
         }
 
-        //public static void CheckOut()
-        //{
-        //    using var db = new MyDbContext();
+        //---------------------------Frakt-vy och betalnings-vy---------------------------
+        public static void CheckOut()
+        {
+            using var db = new MyDbContext();
 
-        //    var customer = db.Customers.Where(x => x.Id == 1)
-        //        .Select(x => x.Id)
-        //        .FirstOrDefault();
+            var customer = db.Customers.Where(x => x.Id == 1)
+                .Select(x => x.Id)
+                .FirstOrDefault();
 
-        //    var allPaymentTypes = db.PaymentTypes.ToList();
-        //    var allPayments = db.Payments.ToList();
-        //    var allDeliveryTypes = db.DeliveryTypes.ToList();
-        //    var allDeliveries = db.Deliveries.ToList();
+            var allPaymentTypes = db.PaymentTypes.ToList();
+            var allPayments = db.Payments.ToList();
+            var allDeliveryTypes = db.DeliveryTypes.ToList();
+            var allDeliveries = db.Deliveries.ToList();
 
-        //    foreach (var allPaymentType in allPaymentTypes)
-        //    {
-        //        Console.WriteLine(allPaymentType.Id + " " + allPaymentType.PaymentTypeName);
-        //    }
+            //---------------------------Betalnings-vy---------------------------
 
-        //    var inputPaymentType = Helpers.GetGeneralId();
+            Console.WriteLine("Available Payment Types");
 
-        //    var selectedPaymentType = allPaymentTypes.FirstOrDefault(x => x.Id == inputPaymentType);
+            foreach (var allPaymentType in allPaymentTypes)
+            {
+                Console.WriteLine(allPaymentType.Id + " " + allPaymentType.PaymentTypeName);
+            }
 
-        //    foreach (var allPayment in allPayments)
-        //    {
-        //        Console.WriteLine(allPayment.Id + " " + allPayment.PaymentName);
-        //    }
+            Console.Write("Choose Payment Type (enter ID): ");
 
-        //    var inputPayment = Helpers.GetGeneralId();
+            var inputPaymentType = Helpers.GetGeneralId();
 
-        //    var selectedPayment = allPayments.FirstOrDefault(y => y.Id == inputPaymentType);
+            var selectedPaymentType = allPaymentTypes.FirstOrDefault(x => x.Id == inputPaymentType);
 
-        //    foreach (var allDeliveryType in allDeliveryTypes)
-        //    {
-        //        Console.WriteLine(allDeliveryType.Id + " " + allDeliveryType.DeliveryTypeName + " " + allDeliveryType.DeliveryPrice + ":-");
-        //    }
+            Console.WriteLine("Available Payments:");
 
-        //    var inputDeliveryType = Helpers.GetGeneralId();
+            foreach (var allPayment in allPayments)
+            {
+                Console.WriteLine(allPayment.Id + " " + allPayment.PaymentName);
+            }
 
-        //    var selectedDeliveryType = allDeliveryTypes.FirstOrDefault(z => z.Id == inputDeliveryType);
+            Console.Write("Choose Payment (enter ID): ");
 
-        //    foreach (var allDelivery in allDeliveries)
-        //    {
-        //        Console.WriteLine(allDelivery.Id + " " + allDelivery.DeliveryName);
-        //    }
+            var inputPayment = Helpers.GetGeneralId();
 
-        //    var inputDelivery = Helpers.GetGeneralId();
+            var selectedPayment = allPayments.FirstOrDefault(y => y.Id == inputPaymentType);
 
-        //    var selectedDelivery = allDeliveries.FirstOrDefault(c => c.Id == inputDelivery);
+            //-------------------Frakt-vy---------------------------
 
-        //    var totalAmount = 0.0;
+            //Input av kundinforamtion
+            Console.WriteLine("Please enter your information");
+            var firstName = InputHelpers.GetInput("Enter First Name: ");
+            var lastName = InputHelpers.GetInput("Enter Last Name: ");
+            var address = InputHelpers.GetInput("Enter Address: ");
+            var postalCode = InputHelpers.GetIntegerInput("Enter Postal Code: ");
+            var city = InputHelpers.GetInput("Enter City: ");
+            var country = InputHelpers.GetInput("Enter Country: ");
+            var email = InputHelpers.GetInput("Enter email: ");
+            var phoneNumber = InputHelpers.GetInput("Enter Phone Number: ");
 
-        //    totalAmount += selectedDeliveryType.DeliveryPrice;
 
-        //    foreach (var product in basket)
-        //    {
-        //        totalAmount += product.Price;
-        //    }
+            Console.WriteLine("Available Delivery Types:");
+            foreach (var allDeliveryType in allDeliveryTypes)
+            {
+                Console.WriteLine(allDeliveryType.Id + " " + allDeliveryType.DeliveryTypeName + " " + allDeliveryType.DeliveryPrice + ":-");
+            }
 
-        //    Console.WriteLine("Summary");
-        //    ShowBasket();
-        //    Console.WriteLine($"Payment: {selectedPayment.PaymentName}");
-        //    Console.WriteLine($"Payment_Type: {selectedPaymentType.PaymentTypeName}");
-        //    Console.WriteLine($"Delivery: {selectedDelivery.DeliveryName}");
-        //    Console.WriteLine($"Delivery_Type: {selectedDeliveryType.DeliveryTypeName}");
-        //    Console.WriteLine($"Delivery_Cost: {selectedDeliveryType.DeliveryPrice}:-");
-        //    Console.WriteLine($"Total_Cost: {totalAmount}:-");
 
-        //    var finishCheckOut = InputHelpers.GetYesOrNo("Wanna_finish?: ");
-        //    if (finishCheckOut == true)
-        //    {
-        //        var productOrder = new FinalOrder()
-        //        {
-        //            CustomerId = customer,
-        //            PaymentId = selectedPayment.Id,
-        //            DeliveryId = selectedDelivery.Id,
-        //            TotalPrice = totalAmount,
-        //        };
-        //        db.Add(productOrder);
-        //        db.SaveChanges();
-        //        Console.WriteLine("Thank you for shopping :)");
-        //    }
-        //}
+            Console.Write("Choose Delivery Type (enter ID): ");
+
+            var inputDeliveryType = Helpers.GetGeneralId();
+
+            var selectedDeliveryType = allDeliveryTypes.FirstOrDefault(z => z.Id == inputDeliveryType);
+
+            Console.WriteLine("Available Deliveries:");
+
+            foreach (var allDelivery in allDeliveries)
+            {
+                Console.WriteLine(allDelivery.Id + " " + allDelivery.DeliveryName);
+            }
+
+            Console.Write("Choose Delivery (enter ID): ");
+
+            var inputDelivery = Helpers.GetGeneralId();
+
+            var selectedDelivery = allDeliveries.FirstOrDefault(c => c.Id == inputDelivery);
+
+            //Beräkna totalt belopp
+            var totalAmount = 0.0;
+
+            totalAmount += selectedDeliveryType.DeliveryPrice;
+
+            foreach (var product in basket)
+            {
+                totalAmount += product.Price;
+            }
+
+            //---------------------------Visa sammanfattning---------------------------
+            Console.WriteLine("Summary");
+            ShowBasket();
+            Console.WriteLine($"Payment: {selectedPayment.PaymentName}");
+            Console.WriteLine($"Payment_Type: {selectedPaymentType.PaymentTypeName}");
+            Console.WriteLine($"Delivery: {selectedDelivery.DeliveryName}");
+            Console.WriteLine($"Delivery_Type: {selectedDeliveryType.DeliveryTypeName}");
+            Console.WriteLine($"Delivery_Cost: {selectedDeliveryType.DeliveryPrice}:-");
+            Console.WriteLine($"Total_Cost: {totalAmount}:-");
+
+            //Totalpriset inklusive moms (25%)
+            Console.WriteLine($"Total Cost with taxes included: {totalAmount * 0.25}:-");
+
+            //Kunduppgifter
+            var customerInfo = $"Your information: {firstName} {lastName}, {address}, {postalCode}, {city}, {country}, {country}, {phoneNumber}";
+
+            var finishCheckOut = InputHelpers.GetYesOrNo("Wanna_finish?: ");
+            if (finishCheckOut == true)
+            {
+                var productOrder = new FinalOrder()
+                {
+                    CustomerId = customer,
+                    PaymentId = selectedPayment.Id,
+                    DeliveryId = selectedDelivery.Id,
+                    TotalPrice = totalAmount,
+                };
+                db.Add(productOrder);
+                db.SaveChanges();
+
+                //Töm varukorgen efter beställning
+                basket.Clear();
+
+                Console.WriteLine("Thank you for shopping :)");
+            }
+        }
     }
 }
