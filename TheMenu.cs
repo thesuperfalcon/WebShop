@@ -52,7 +52,7 @@ namespace WebShop
                     Console.WriteLine("Wrong input: ");
                 }
 
-                ShowBasketTest(basket);
+                //ShowBasketTest(basket);
 
                 Console.ReadLine();
                 Console.Clear();
@@ -99,6 +99,32 @@ namespace WebShop
 
                 Console.WriteLine($"Total price: {totalPrice}:-");
                 Console.WriteLine();
+                Console.WriteLine("Do you want to add more of a product or remove a product?");
+
+                string answer = Console.ReadLine().ToLower();
+
+                if (answer == "yes")
+                {
+                    Console.WriteLine("1. Add more quantity of a product.");
+                    Console.WriteLine("2. Remove a product from the basket.");
+
+                    int choice;
+                    if (int.TryParse(Console.ReadLine(), out choice))
+                    {
+                        switch (choice)
+                        {
+                            case 1:
+                                AddMoreQuantity(basket);
+                                break;
+                            case 2:
+                                RemoveProduct(basket);
+                                break;
+                            default:
+                                Console.WriteLine("Invalid input");
+                                break;
+                        }
+                    }
+                }
             }
         }
 
@@ -257,12 +283,11 @@ namespace WebShop
 
         public static void AddMoreQuantity(List<ProductOrder> basket)
         {
-            ShowBasket(basket);
+            //ShowBasket(basket);
 
             using (var db = new MyDbContext())
             {
-                Console.WriteLine("Enter the name of the product you want to add more of: ");
-                string productName = Console.ReadLine();
+                var productName = InputHelpers.GetInput("Enter the name of the product you want to add more of: ");
 
                 var chosenProduct = basket.FirstOrDefault(p => p.ProductVariant.Product.Name == productName);
 
@@ -293,14 +318,13 @@ namespace WebShop
 
         public static void RemoveProduct(List<ProductOrder> basket)
         {
-            ShowBasket(basket);
+            //ShowBasket(basket);
 
             using (var db = new MyDbContext())
             {
-                Console.WriteLine("Enter the name of the product you want to remove: ");
-                string productName = Console.ReadLine();
+                var productName = InputHelpers.GetInput("Enter the name of the product you want to remove: ");
 
-                var chosenProduct = basket.FirstOrDefault(p => p.ProductVariant.Product.Name == productName);
+                var chosenProduct = basket.FirstOrDefault(p => p.ProductVariant.Product.Name == productName.ToLower());
                 if (chosenProduct != null)
                 {
                     basket.Remove(chosenProduct);

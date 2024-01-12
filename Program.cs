@@ -9,13 +9,13 @@ namespace WebShop
         {
             using var db = new MyDbContext();
             //AddData.AddCustomerInfo();
-            //AddData.AddProductInfo();
-            //AddData.AddOrderInfo();
+            AddData.AddProductInfo();
+            //ddData.AddOrderInfo();
             //AddData.AddFirstProducts();
             //AddData.AddMultipleProducts();
             //AddData.AddNewCustomerWithInput();
             //AddData.AddFirstCustomers();
-            //AddData.AddMultipleProducts(); ------ Måste fixas :) 
+            AddData.AddMultipleProducts(); 
 
             Customer customer = new Customer();
 

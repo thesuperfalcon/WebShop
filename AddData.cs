@@ -12,7 +12,7 @@ namespace WebShop
             var categories = new[] { "Men", "Women", "Pants", "T-Shirt", "Hoodie" };
             var sizes = new[] { "S", "M", "L", "XL" };
             var suppliers = new[] { "Cocktailorde", "Dressman", "Gucci" };
-            var colours = new[] { "Red", "Blue", "Green", "Black", "Gray" };
+            var colours = new[] { "Red", "Blue", "Green", "Black", "Gray", "Navy", "White", "Brown", "Purple", "Yellow"};
 
             foreach (var categoryName in categories)
             {
@@ -162,6 +162,18 @@ namespace WebShop
                 var product6 = CreateProduct("Men's Jeans", "Comfortable men's jeans", 89.99, false, 3, new[] { "Men", "Jeans" }, db);
                 var product7 = CreateProduct("Men's Jacket", "Warm men's jacket", 129.99, false, 3, new[] { "Men", "Jacket" }, db);
                 var product8 = CreateProduct("Men's Sweater", "Cozy men's sweater", 69.99, false, 3, new[] { "Men", "Sweater" }, db);
+                var product9 = CreateProduct("Striped Pullover", "Classic striped pullover for men", 79.99, false, 3, new[] { "Men", "Sweater" }, db);
+                var product10 = CreateProduct("V-Neck Sweater", "Elegant v-neck sweater for a sophisticated look", 89.99, false, 3, new[] { "Men", "Sweater" }, db);
+                var product11 = CreateProduct("Crew Neck Sweater", "Comfortable crew neck sweater for casual wear", 59.99, false, 3, new[] { "Men", "Sweater" }, db);
+                var product12 = CreateProduct("Waterproof Parka", "Stylish and waterproof parka for men", 149.99, true, 3, new[] { "Men", "Jacket" }, db);
+                var product13 = CreateProduct("Floral Print Tee", "Casual t-shirt with a vibrant floral print", 29.99, false, 3, new[] { "Women", "T-Shirt" }, db);
+                var product14 = CreateProduct("Striped V-Neck Shirt", "Chic v-neck shirt with stylish stripes", 34.99, false, 3, new[] { "Women", "T-Shirt" }, db);
+                var product15 = CreateProduct("Casual Denim Dress", "Relaxed fit denim dress for a laid-back style", 69.99, false, 3, new[] { "Women", "Dress" }, db);
+                var product16 = CreateProduct("Cozy Knit Cardigan", "Warm and comfortable knit cardigan", 54.99, false, 3, new[] { "Women", "Sweater" }, db);
+                var product17 = CreateProduct("Leather Jacket", "Stylish leather jacket for a trendy look", 119.99, false, 3, new[] { "Women", "Jacket" }, db);
+                var product18 = CreateProduct("Slim Fit Men's Jeans", "Modern slim fit jeans for men", 79.99, false, 3, new[] { "Men", "Jeans" }, db);
+                var product19 = CreateProduct("Graphic Print Men's T-Shirt", "Casual men's t-shirt with a cool graphic print", 44.99, false, 3, new[] { "Men", "T-Shirt" }, db);
+                var product20 = CreateProduct("Quilted Bomber Jacket", "Fashionable quilted bomber jacket for men", 89.99, false, 3, new[] { "Men", "Jacket" }, db);
 
                 AddProductVariants(db, product1, ("Red", "S", 12), ("Red", "M", 33), ("Red", "L", 2), ("Red", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
                 AddProductVariants(db, product2, ("Red", "S", 12), ("Red", "M", 33), ("Red", "L", 2), ("Red", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
@@ -171,7 +183,25 @@ namespace WebShop
                 AddProductVariants(db, product6, ("Green", "S", 15), ("Green", "M", 28), ("Green", "L", 3), ("Green", "XL", 8), ("Black", "S", 12), ("Black", "M", 5), ("Black", "L", 10), ("Black", "XL", 2));
                 AddProductVariants(db, product7, ("Gray", "S", 10), ("Gray", "M", 20), ("Gray", "L", 4), ("Gray", "XL", 6), ("Brown", "S", 8), ("Brown", "M", 15), ("Brown", "L", 5), ("Brown", "XL", 3));
                 AddProductVariants(db, product8, ("Navy", "S", 18), ("Navy", "M", 25), ("Navy", "L", 7), ("Navy", "XL", 4), ("White", "S", 20), ("White", "M", 22), ("White", "L", 6), ("White", "XL", 1));
-                db.AddRange(product1, product2, product3, product4, product5, product6, product7, product8);
+                AddProductVariants(db, product9, ("Gray", "S", 10), ("Gray", "M", 20), ("Gray", "L", 4), ("Gray", "XL", 6), ("Brown", "S", 8), ("Brown", "M", 15), ("Brown", "L", 5), ("Brown", "XL", 3));
+                AddProductVariants(db, product10, ("Navy", "S", 18), ("Navy", "M", 25), ("Navy", "L", 7), ("Navy", "XL", 4), ("White", "S", 20), ("White", "M", 22), ("White", "L", 6), ("White", "XL", 1));
+                AddProductVariants(db, product11, ("Red", "S", 12), ("Red", "M", 33), ("Red", "L", 2), ("Red", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
+                AddProductVariants(db, product12, ("Green", "S", 15), ("Green", "M", 28), ("Green", "L", 3), ("Green", "XL", 8), ("Black", "S", 12), ("Black", "M", 5), ("Black", "L", 10), ("Black", "XL", 2));
+                AddProductVariants(db, product13, ("Purple", "S", 12), ("Purple", "M", 10), ("Purple", "L", 8), ("Purple", "XL", 0), ("Black", "S", 2), ("Black", "M", 10), ("Black", "L", 3), ("Black", "XL", 7));
+                AddProductVariants(db, product14, ("Yellow", "S", 12), ("Yellow", "M", 33), ("Yellow", "L", 2), ("Yellow", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
+                AddProductVariants(db, product15, ("Red", "S", 12), ("Red", "M", 33), ("Red", "L", 2), ("Red", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
+                AddProductVariants(db, product16, ("Green", "S", 15), ("Green", "M", 28), ("Green", "L", 3), ("Green", "XL", 8), ("Black", "S", 12), ("Black", "M", 5), ("Black", "L", 10), ("Black", "XL", 2));
+                AddProductVariants(db, product17, ("Gray", "S", 10), ("Gray", "M", 20), ("Gray", "L", 4), ("Gray", "XL", 6), ("Brown", "S", 8), ("Brown", "M", 15), ("Brown", "L", 5), ("Brown", "XL", 3));
+                AddProductVariants(db, product18, ("Navy", "S", 18), ("Navy", "M", 25), ("Navy", "L", 7), ("Navy", "XL", 4), ("White", "S", 20), ("White", "M", 22), ("White", "L", 6), ("White", "XL", 1));
+                AddProductVariants(db, product19, ("Red", "S", 12), ("Red", "M", 33), ("Red", "L", 2), ("Red", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
+                AddProductVariants(db, product20, ("Purple", "S", 12), ("Purple", "M", 10), ("Purple", "L", 8), ("Purple", "XL", 0), ("Black", "S", 2), ("Black", "M", 10), ("Black", "L", 3), ("Black", "XL", 7));
+                AddProductVariants(db, product17, ("Gray", "S", 10), ("Gray", "M", 20), ("Gray", "L", 4), ("Gray", "XL", 6), ("Brown", "S", 8), ("Brown", "M", 15), ("Brown", "L", 5), ("Brown", "XL", 3));
+                AddProductVariants(db, product18, ("Navy", "S", 18), ("Navy", "M", 25), ("Navy", "L", 7), ("Navy", "XL", 4), ("White", "S", 20), ("White", "M", 22), ("White", "L", 6), ("White", "XL", 1));
+                AddProductVariants(db, product19, ("Red", "S", 12), ("Red", "M", 33), ("Red", "L", 2), ("Red", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
+                AddProductVariants(db, product20, ("Purple", "S", 12), ("Purple", "M", 10), ("Purple", "L", 8), ("Purple", "XL", 0), ("Black", "S", 2), ("Black", "M", 10), ("Black", "L", 3), ("Black", "XL", 7));
+                var colours = new[] { "Red", "Blue", "Green", "Black", "Gray", "Navy", "White", "Brown", "Purple"};
+                db.AddRange(product1, product2, product3, product4, product5, product6, product7, product8, product9, product10,
+                    product11, product12, product13, product14, product15, product16, product17, product18, product19, product20);
 
                 db.SaveChanges();
             }
