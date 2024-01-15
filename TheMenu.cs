@@ -33,7 +33,7 @@ namespace WebShop
                             productBasket = Search.SearchFunction();
                             break;
                         case MyEnums.Menu.Category:
-                            ShowCategories();
+                            ShowCategoriesAndProducts();
                             break;
                         case MyEnums.Menu.Cart:
                             ShowBasketTest(basket);
@@ -128,18 +128,56 @@ namespace WebShop
             }
         }
 
-        public static void ShowCategories()
+        public static void ShowCategoriesAndProducts()
         {
             using (var db = new MyDbContext())
             {
                 Console.Clear();
 
-                var categories = db.Categories.Where(x => x.Products.Count() > 0).ToList();
+                var categories = db.Categories
+                    .Include(c => c.Products)
+                    .Where(x => x.Products.Count() > 0)
+                    .ToList();
 
-                foreach (var category in categories)
+                Console.WriteLine("Categories:");
+
+                for (int i = 0; i < categories.Count; i++)
                 {
-                    Console.WriteLine(category.CategoryName);
+                    Console.WriteLine($"{i + 1}. {categories[i].CategoryName}");
                 }
+
+                int selectedCategoryIndex = InputHelpers.GetIntegerInput("Select a category (enter the number): ");
+
+                if (selectedCategoryIndex > 0 && selectedCategoryIndex <= categories.Count)
+                {
+                    var selectedCategory = categories[selectedCategoryIndex - 1];
+
+                    Console.Clear();
+                    Console.WriteLine($"Products in {selectedCategory.CategoryName}:");
+
+                    foreach (var product in selectedCategory.Products)
+                    {
+                        Console.WriteLine($"{product.Id}. {product.Name} - {product.Description} - {product.Price}$");
+                    }
+
+                    int selectedProductId = InputHelpers.GetIntegerInput("Select a product (enter the number): ");
+                    var selectedProduct = selectedCategory.Products.FirstOrDefault(p => p.Id == selectedProductId);
+
+                    if (selectedProduct != null)
+                    {
+                        var basket = Search.ShowProductFromSearch(selectedProduct);
+                        // Handle the product order as needed (e.g., add it to the shopping cart).
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid product selection. Please try again.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid category selection. Please try again.");
+                }
+
                 Console.Read();
             }
         }
