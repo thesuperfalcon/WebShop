@@ -74,11 +74,22 @@ namespace WebShop
                 {
                     Console.WriteLine("Available Variants in stock:");
 
+<<<<<<< HEAD
+                    Console.Write("Size: ");
+                    var sizes = productVariants.Select(variant => variant.Size?.SizeName ?? "N/A").Distinct();
+                    Console.WriteLine(string.Join(", ", sizes));
+
+                    Console.Write("Colour: ");
+                    var colors = productVariants.Select(variant => variant.Colour?.ColourName ?? "N/A").Distinct();
+                    Console.WriteLine(string.Join(", ", colors));
+
+=======
                     foreach (var variant in productVariants)
                     {
                         // Kommenterade bort quantity, ska det vara kvar? känns mer som en admin feature än vad kunderna behöver se när de söker på en produkt? , Quantity: {variant.Quantity}
                         Console.WriteLine($"- Size: {variant.Size?.SizeName ?? "N/A"}, Color: {variant.Colour?.ColourName ?? "N/A"}");
                     }
+>>>>>>> e7a1e9379350653dbae1baf85a9d33cf0588a572
 
                     var basket = TheMenu.AddProductToBasket(product);
                     return basket;
@@ -96,12 +107,14 @@ namespace WebShop
             return null;
         }
 
-        public static void CategorySearch()
+
+        public static ProductOrder CategorySearch()
         {
             using var db = new MyDbContext();
 
             var categories = db.Categories.ToList();
             bool success = false;
+            ProductOrder basket = null;
 
             while (!success)
             {
@@ -117,7 +130,6 @@ namespace WebShop
                 if (selectedCategory != null)
                 {
                     Console.WriteLine($"Selected Category: {selectedCategory.CategoryName}");
-                    Thread.Sleep(100);
 
                     var specificProducts = db.Products
                         .Where(p => p.Categories.Any(c => c.Id == selectedCategory.Id))
@@ -133,14 +145,17 @@ namespace WebShop
 
                         var selectedProduct = InputHelpers.GetIntegerInput("Product_Id: ");
 
-                        var specificProduct = db.Products.FirstOrDefault(x => x.Id == selectedProduct);
+                        var specificProduct = specificProducts.FirstOrDefault(x => x.Id == selectedProduct);
 
                         if (specificProduct != null)
                         {
                             Console.WriteLine($"Selected Product {specificProduct.Id}");
-                            Thread.Sleep(100);
-                            ShowProductFromSearch(specificProduct);
+                            basket = ShowProductFromSearch(specificProduct);
                             success = true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid Product_Id. No product found.");
                         }
                     }
                     else
@@ -153,6 +168,8 @@ namespace WebShop
                     Console.WriteLine("Invalid Category_Id. No category found.");
                 }
             }
+
+            return basket;
         }
     }
 }

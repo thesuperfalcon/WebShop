@@ -10,7 +10,7 @@ namespace WebShop
             using var db = new MyDbContext();
             //AddData.AddProductInfo();
             //AddData.AddMultipleProducts();
-            
+
 
             //AddData.AddCustomerInfo();
 
@@ -19,9 +19,12 @@ namespace WebShop
             //AddData.AddNewCustomerWithInput();
             //AddData.AddFirstCustomers();
 
-            Customer customer = new Customer();
+            //AddData.RunAddDataMethods();
 
-            //Customer customer = LoginManager.Login(db);
+
+            //Customer customer = LoginManager.LoginMenu(db);
+
+            Customer customer = db.Customers.FirstOrDefault(x => x.Id == 1);
 
             TheMenu.ShowMenu(customer);
 

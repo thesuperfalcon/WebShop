@@ -27,5 +27,11 @@ namespace WebShop
             ShowStatistic,
             Exit
         }
+        public enum LoginMenu
+        {
+            Login,
+            CreateAccount,
+            Exit = 9
+        }
     }
 }

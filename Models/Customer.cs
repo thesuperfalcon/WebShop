@@ -52,6 +52,7 @@ namespace WebShop.Models
         public int PostalCode { get; set; }
         public int CityId { get; set; }
         public virtual ICollection<Customer> Customers { get; set; }
+        public virtual ICollection<Delivery> Deliveries { get; set; }
         public virtual City City { get; set; }
     }
     public partial class City

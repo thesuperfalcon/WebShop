@@ -1,47 +1,85 @@
-﻿using System.Text.RegularExpressions;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
 using WebShop.Models;
 
 namespace WebShop
 {
     internal class AddData
     {
-        public static void AddProductInfo()
+        private static string[] Categories = { "Men", "Women", "Pants", "T-Shirt", "Hoodie", "Jeans", "Jacket", "Sweater", "Dress" };
+        private static string[] Sizes = { "S", "M", "L", "XL" };
+        private static string[] Suppliers = { "Cocktailorde", "Dressman", "Gucci" };
+        private static string[] Colours = { "Red", "Blue", "Green", "Black", "Gray", "Navy", "White", "Brown", "Purple", "Yellow" };
+        private static string[] DeliveryCompanies = { "Postnord", "Bing", "Dhl" };
+        private static string[] DeliveryTypes = { "Home-Delivery", "Pick-Up at nearest shop" };
+        private static string[] PaymentCompanies = { "Klarna", "Visa", "Paypal" };
+        private static string[] PaymentTypes = { "30-days", "Direct-Payment" };
+
+
+        public static void RunAddDataMethods()
+        {
+            try
+            {
+                AddCountries();
+                AddProductInfo();
+                AddDeliveryAndPaymentInfo();
+                AddCustomerInfo();
+                AddMultipleProducts();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while running AddData methods: {ex.Message}");
+            }
+        }
+
+        private static void AddProductInfo()
         {
             using var db = new MyDbContext();
 
-            var categories = new[] { "Men", "Women", "Pants", "T-Shirt", "Hoodie" };
-            var sizes = new[] { "S", "M", "L", "XL" };
-            var suppliers = new[] { "Cocktailorde", "Dressman", "Gucci" };
-            var colours = new[] { "Red", "Blue", "Green", "Black", "Gray", "Navy", "White", "Brown", "Purple", "Yellow"};
+            foreach (var categoryName in Categories)
+                db.Categories.Add(new Category { CategoryName = categoryName });
 
-            foreach (var categoryName in categories)
-            {
-                var category = new Category { CategoryName = categoryName };
-                db.Categories.Add(category);
-            }
+            foreach (var sizeName in Sizes)
+                db.Sizes.Add(new Size { SizeName = sizeName });
 
-            foreach (var sizeName in sizes)
-            {
-                var size = new Models.Size { SizeName = sizeName };
-                db.Sizes.Add(size);
-            }
+            foreach (var supplierName in Suppliers)
+                db.ProductSuppliers.Add(new ProductSupplier { SupplierName = supplierName });
 
-            foreach (var supplierName in suppliers)
-            {
-                var supplier = new ProductSupplier { SupplierName = supplierName };
-                db.ProductSuppliers.Add(supplier);
-            }
-
-            foreach (var colourName in colours)
-            {
-                var colour = new Colour { ColourName = colourName };
-                db.Colours.Add(colour);
-            }
+            foreach (var colourName in Colours)
+                db.Colours.Add(new Colour { ColourName = colourName });
 
             db.SaveChanges();
         }
+        private static void AddDeliveryAndPaymentInfo()
+        {
+            Random random = new Random();
 
-        public static void AddCustomerInfo()
+            using var db = new MyDbContext();
+
+            foreach (var companyName in DeliveryCompanies)
+            {
+                db.DeliveryNames.Add(new DeliveryName { Name = companyName });
+            }
+
+            foreach (var deliveryType in DeliveryTypes)
+            {
+                double price = Math.Round(random.Next(100, 180) + random.NextDouble(), 2);
+                db.DeliveryTypes.Add(new DeliveryType { DeliveryName = deliveryType, DeliveryPrice = price });
+            }
+
+            foreach (var companyName in PaymentCompanies)
+            {
+                db.PaymentNames.Add(new PaymentName { Name = companyName });
+            }
+
+            foreach (var paymentType in PaymentTypes)
+            {
+                db.PaymentTypes.Add(new PaymentType { PaymentTypeName = paymentType });
+            }
+
+            db.SaveChanges();
+
+        }
+        private static void AddCustomerInfo()
         {
             using var db = new MyDbContext();
 
@@ -59,98 +97,48 @@ namespace WebShop
                     { "Göteborg", country },
                     { "Uppsala", country },
                     { "Umeå", country },
-                    { "Oslo", db.Countries.First(c => c.CountryName == "Norway") }
+                    { "Oslo", countryName == "Norway" ? country : null }
                 };
 
-                foreach (var (cityName, countryEntity) in cities)
+                foreach (var (cityName, countryEntity) in cities.Where(x => x.Value != null))
                 {
                     var city = new City { CityName = cityName, Country = countryEntity };
                     db.Cities.Add(city);
                 }
             }
 
-            var addresses = new[]
+            var addresses = new Dictionary<string, string>
             {
-                ("Kungsgatan 21", "Stockholm"),
-                ("Storgatan 42", "Göteborg"),
-                ("Bränntorp 1", "Stockholm"),
-                ("Skogsvägen 19", "Oslo"),
-                ("Drottninggatan 89", "Uppsala"),
-                ("Nyköpingsvägen 10", "Nyköping")
+                { "Kungsgatan 21", "Stockholm" },
+                { "Storgatan 42", "Göteborg" },
+                { "Bränntorp 1", "Stockholm" },
+                { "Skogsvägen 19", "Oslo" },
+                { "Drottninggatan 89", "Uppsala" },
+                { "Nyköpingsvägen 10", "Nyköping" }
             };
 
             foreach (var (addressName, cityName) in addresses)
             {
-                var address = new Adress { AdressName = addressName, City = db.Cities.First(c => c.CityName == cityName) };
-                db.Adresses.Add(address);
+                var city = db.Cities.FirstOrDefault(c => c.CityName == cityName);
+                if (city != null)
+                {
+                    var address = new Adress { AdressName = addressName, City = city };
+                    db.Adresses.Add(address);
+                }
             }
 
             var firstNames = new[] { "Jens", "Maria", "Pär", "Johanna", "Kalle" };
             var lastNames = new[] { "Svensson", "Göransson", "Eklund", "Karlsson", "Stridh" };
 
             foreach (var firstName in firstNames)
-            {
-                var nameEntity = new FirstName { Name = firstName };
-                db.FirstName.Add(nameEntity);
-            }
+                db.FirstName.Add(new FirstName { Name = firstName });
 
             foreach (var lastName in lastNames)
-            {
-                var nameEntity = new LastName { Name = lastName };
-                db.LastName.Add(nameEntity);
-            }
+                db.LastName.Add(new LastName { Name = lastName });
 
             db.SaveChanges();
         }
-
-        public static void AddNewCustomerWithInput()
-        {
-            using var db = new MyDbContext();
-
-            string firstName = InputHelpers.GetInput("Enter first name: ");
-
-            string lastName = InputHelpers.GetInput("Enter last name: ");
-
-            string addressName = InputHelpers.GetInput("Enter address name: ");
-
-            int postalCode = InputHelpers.GetIntegerInput("Enter postal code: ");
-
-            string cityName = InputHelpers.GetInput("Enter city name: ");
-
-            Console.Write("Enter country name: ");
-            string countryName = InputHelpers.GetInput("");
-
-            Console.Write("Enter phone number (or press Enter to skip): ");
-            string phoneNumberInput = Console.ReadLine();
-            int? phoneNumber = string.IsNullOrEmpty(phoneNumberInput) ? null : InputHelpers.GetIntegerInput(phoneNumberInput);
-
-            string email = InputHelpers.GetInput("Enter email: ");
-
-            string password = InputHelpers.GetInput("Enter password: ");
-
-            bool isAdmin = InputHelpers.GetYesOrNo("Is admin?");
-
-            var existingCountry = db.Countries.FirstOrDefault(c => c.CountryName == countryName) ?? new Country { CountryName = countryName };
-            var existingCity = db.Cities.FirstOrDefault(ct => ct.CityName == cityName && ct.CountryId == existingCountry.Id) ?? new City { CityName = cityName, CountryId = existingCountry.Id };
-            var existingAddress = db.Adresses.FirstOrDefault(a => a.AdressName == addressName && a.CityId == existingCity.Id) ?? new Adress { AdressName = addressName, CityId = existingCity.Id, PostalCode = postalCode };
-            var existingFirstName = db.FirstName.FirstOrDefault(fn => fn.Name == firstName) ?? new FirstName { Name = firstName };
-            var existingLastName = db.LastName.FirstOrDefault(ln => ln.Name == lastName) ?? new LastName { Name = lastName };
-
-            var newCustomer = new Customer
-            {
-                FirstNameId = existingFirstName.Id,
-                LastNameId = existingLastName.Id,
-                AdressId = existingAddress.Id,
-                PhoneNumber = phoneNumber,
-                Email = email,
-                Password = password,
-                IsAdmin = isAdmin,
-            };
-
-            db.Customers.Add(newCustomer);
-            db.SaveChanges();
-        }
-        public static void AddMultipleProducts()
+        private static void AddMultipleProducts()
         {
             using (var db = new MyDbContext())
             {
@@ -199,7 +187,7 @@ namespace WebShop
                 AddProductVariants(db, product18, ("Navy", "S", 18), ("Navy", "M", 25), ("Navy", "L", 7), ("Navy", "XL", 4), ("White", "S", 20), ("White", "M", 22), ("White", "L", 6), ("White", "XL", 1));
                 AddProductVariants(db, product19, ("Red", "S", 12), ("Red", "M", 33), ("Red", "L", 2), ("Red", "XL", 5), ("Blue", "S", 12), ("Blue", "M", 1), ("Blue", "L", 4), ("Blue", "XL", 0));
                 AddProductVariants(db, product20, ("Purple", "S", 12), ("Purple", "M", 10), ("Purple", "L", 8), ("Purple", "XL", 0), ("Black", "S", 2), ("Black", "M", 10), ("Black", "L", 3), ("Black", "XL", 7));
-                var colours = new[] { "Red", "Blue", "Green", "Black", "Gray", "Navy", "White", "Brown", "Purple"};
+                var colours = new[] { "Red", "Blue", "Green", "Black", "Gray", "Navy", "White", "Brown", "Purple" };
                 db.AddRange(product1, product2, product3, product4, product5, product6, product7, product8, product9, product10,
                     product11, product12, product13, product14, product15, product16, product17, product18, product19, product20);
 
@@ -222,23 +210,25 @@ namespace WebShop
                 .ToList();
         }
 
+        private static void AddCountries()
+        {
+            using var db = new MyDbContext();
+
+            var countryNames = new[] { "USA", "China", "India", "Brazil", "Russia", "Japan", "Germany", "United Kingdom", "France", "Italy", "Canada", "Australia", "South Africa", "Mexico", "Spain" };
+
+            foreach (var countryName in countryNames)
+            {
+                var country = new Country { CountryName = countryName };
+                db.Add(country);
+            }
+            db.SaveChanges();
+        }
+
         private static Product CreateProduct(string name, string description, double price, bool featured, int supplierId, string[] categoryNames, MyDbContext db)
         {
-            var categories = new List<Category>();
-
-            foreach (var categoryName in categoryNames)
-            {
-                var category = db.Categories.FirstOrDefault(c => c.CategoryName == categoryName);
-
-                if (category == null)
-                {
-                    category = new Category { CategoryName = categoryName };
-                    db.Categories.Add(category);
-                    db.SaveChanges();
-                }
-
-                categories.Add(category);
-            }
+            var categories = categoryNames
+                .Select(categoryName => db.Categories.FirstOrDefault(c => c.CategoryName == categoryName) ?? new Category { CategoryName = categoryName })
+                .ToList();
 
             return new Product
             {

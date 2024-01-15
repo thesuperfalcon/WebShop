@@ -19,11 +19,14 @@
         public Delivery()
         {
             FinalOrders = new HashSet<FinalOrder>();
+            Adresses = new HashSet<Adress>();
+
         }
         public int Id { get; set; }
         public int DeliveryNameId { get; set; }
         public int DeliveryTypeId { get; set; }
         public virtual ICollection<FinalOrder> FinalOrders { get; set; }
+        public virtual ICollection<Adress> Adresses { get; set; }
         public virtual DeliveryType DeliveryType { get; set; }
         public virtual DeliveryName DeliveryName { get; set; }
     }
