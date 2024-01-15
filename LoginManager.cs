@@ -123,10 +123,8 @@ namespace WebShop
 
             int? phoneNumber = !string.IsNullOrEmpty(phoneNumberInput) ? InputHelpers.GetIntegerInput(phoneNumberInput) : (int?)null;
 
-            Console.Write("Enter email: ");
-            string email = Console.ReadLine();
-            Console.Write("Enter password: ");
-            string password = Console.ReadLine();
+            string email = InputHelpers.GetInput("Enter email: ");
+            string password = InputHelpers.GetInput("Enter password: ");
             bool isAdmin = InputHelpers.GetYesOrNo("Is admin?");
 
             var existingFirstName = db.FirstName.FirstOrDefault(fn => fn.Name == firstName);

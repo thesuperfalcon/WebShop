@@ -35,6 +35,7 @@ namespace WebShop
         {
             return InputHelpers.GetIntegerInput("Id: ");
         }
+
         public static Country GetCountry(MyDbContext db)
         {
             while (true)
