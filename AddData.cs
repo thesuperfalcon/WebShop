@@ -159,7 +159,7 @@ namespace WebShop
                 var product3 = CreateProduct("Hoodie", "Nice hoodie with a cool hood", 49.99, false, 3, new[] { "Women", "Hoodie" }, db);
                 var product4 = CreateProduct("Dress", "Cozy dress to look stylish", 79.99, false, 3, new[] { "Women", "Dress" }, db);
                 var product5 = CreateProduct("Men's Shirt", "Stylish men's shirt", 59.99, false, 3, new[] { "Men", "Shirt" }, db);
-                var product6 = CreateProduct("Men's Jeans", "Comfortable men's jeans", 89.99, false, 3, new[] { "Men", "Jeans" }, db);
+                var product6 = CreateProduct("Men's Jeans", "Comfortable men's jeans", 89.99, false, 3, new[] { "Men", "Jeans", "Pants" }, db);
                 var product7 = CreateProduct("Men's Jacket", "Warm men's jacket", 129.99, false, 3, new[] { "Men", "Jacket" }, db);
                 var product8 = CreateProduct("Men's Sweater", "Cozy men's sweater", 69.99, false, 3, new[] { "Men", "Sweater" }, db);
                 var product9 = CreateProduct("Striped Pullover", "Classic striped pullover for men", 79.99, false, 3, new[] { "Men", "Sweater" }, db);
@@ -171,7 +171,7 @@ namespace WebShop
                 var product15 = CreateProduct("Casual Denim Dress", "Relaxed fit denim dress for a laid-back style", 69.99, false, 3, new[] { "Women", "Dress" }, db);
                 var product16 = CreateProduct("Cozy Knit Cardigan", "Warm and comfortable knit cardigan", 54.99, false, 3, new[] { "Women", "Sweater" }, db);
                 var product17 = CreateProduct("Leather Jacket", "Stylish leather jacket for a trendy look", 119.99, false, 3, new[] { "Women", "Jacket" }, db);
-                var product18 = CreateProduct("Slim Fit Men's Jeans", "Modern slim fit jeans for men", 79.99, false, 3, new[] { "Men", "Jeans" }, db);
+                var product18 = CreateProduct("Slim Fit Men's Jeans", "Modern slim fit jeans for men", 79.99, false, 3, new[] { "Men", "Jeans","Pants" }, db);
                 var product19 = CreateProduct("Graphic Print Men's T-Shirt", "Casual men's t-shirt with a cool graphic print", 44.99, false, 3, new[] { "Men", "T-Shirt" }, db);
                 var product20 = CreateProduct("Quilted Bomber Jacket", "Fashionable quilted bomber jacket for men", 89.99, false, 3, new[] { "Men", "Jacket" }, db);
 
