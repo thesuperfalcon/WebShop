@@ -8,14 +8,16 @@ namespace WebShop
         static void Main(string[] args)
         {
             using var db = new MyDbContext();
-            //AddData.AddCustomerInfo();
-            AddData.AddProductInfo();
-            //ddData.AddOrderInfo();
-            //AddData.AddFirstProducts();
+            //AddData.AddProductInfo();
             //AddData.AddMultipleProducts();
+            
+
+            //AddData.AddCustomerInfo();
+
+            ////ddData.AddOrderInfo();
+
             //AddData.AddNewCustomerWithInput();
             //AddData.AddFirstCustomers();
-            AddData.AddMultipleProducts(); 
 
             Customer customer = new Customer();
 

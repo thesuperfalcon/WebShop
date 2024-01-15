@@ -11,29 +11,45 @@ namespace WebShop
             using var db = new MyDbContext();
 
             bool success = false;
-
+            List<Product> searchResults;
             while (!success)
             {
                 var userInput = InputHelpers.GetInput("Search: ");
 
-                var searchedProduct = db.Products
+                searchResults = db.Products
                     .Where(x => x.Name.Contains(userInput) || x.Categories.Any(c => c.CategoryName.Contains(userInput)))
-                    .FirstOrDefault();
+                    .ToList();
 
-                if (searchedProduct == null)
+                if (searchResults.Count == 0)
                 {
                     Console.WriteLine("No products found! Try again...");
                 }
                 else
                 {
-                    var showProduct = InputHelpers.GetYesOrNo($"Correct product: {searchedProduct.Name} ");
+                    Console.WriteLine("Search results:");
+
+                    for (int i = 0; i < searchResults.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {searchResults[i].Name}");
+                    }
+
+                    var selectedIndex = InputHelpers.GetIntegerInput("Select the correct product or enter 0 to search again: ");
+
+                    if (selectedIndex == 0)
+                    {
+                        continue; 
+                    }
+
+                    var selectedProduct = searchResults[selectedIndex - 1];
+
+                    var showProduct = InputHelpers.GetYesOrNo($"Correct product: {selectedProduct.Name} ");
                     if (showProduct)
                     {
-                        var basket = ShowProductFromSearch(searchedProduct);
+                        var basket = ShowProductFromSearch(selectedProduct);
                         return basket;
                     }
                 }
-            }
+            } 
 
             return null;
         }

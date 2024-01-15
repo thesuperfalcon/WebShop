@@ -155,9 +155,9 @@ namespace WebShop
             using (var db = new MyDbContext())
             {
                 var product1 = CreateProduct("Unicorn", "Fancy unicorn shirt", 99.99, false, 3, new[] { "Women", "T-Shirt" }, db);
-                var product2 = CreateProduct("tröja", "fin tröja", 199.99, false, 3, new[] { "Women", "T-Shirt" }, db);
-                var product3 = CreateProduct("Hoodie", "fin tröja med luva", 49.99, false, 3, new[] { "Women", "T-Shirt" }, db);
-                var product4 = CreateProduct("klänning", "Mysig klänning att vara fin i", 79.99, false, 3, new[] { "Women", "T-Shirt" }, db);
+                var product2 = CreateProduct("Rainbow T-shirt", "Cute T-shirt with rainbows ", 199.99, false, 3, new[] { "Women", "T-Shirt" }, db);
+                var product3 = CreateProduct("Hoodie", "Nice hoodie with a cool hood", 49.99, false, 3, new[] { "Women", "Hoodie" }, db);
+                var product4 = CreateProduct("Dress", "Cozy dress to look stylish", 79.99, false, 3, new[] { "Women", "Dress" }, db);
                 var product5 = CreateProduct("Men's Shirt", "Stylish men's shirt", 59.99, false, 3, new[] { "Men", "Shirt" }, db);
                 var product6 = CreateProduct("Men's Jeans", "Comfortable men's jeans", 89.99, false, 3, new[] { "Men", "Jeans" }, db);
                 var product7 = CreateProduct("Men's Jacket", "Warm men's jacket", 129.99, false, 3, new[] { "Men", "Jacket" }, db);
