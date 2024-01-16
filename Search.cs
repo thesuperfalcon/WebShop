@@ -17,8 +17,9 @@ namespace WebShop
                 var userInput = InputHelpers.GetInput("Search: ");
 
                 searchResults = db.Products
-                    .Where(x => x.Name.Contains(userInput) || x.Categories.Any(c => c.CategoryName.Contains(userInput)))
+                    .Where(x => x.Name.Contains(userInput) || x.Categories.Any(c => c.CategoryName.Contains(userInput) && (c.CategoryName.StartsWith(userInput))))
                     .ToList();
+
 
                 if (searchResults.Count == 0)
                 {
@@ -88,7 +89,7 @@ namespace WebShop
                         Console.WriteLine($"- Size: {variant.Size?.SizeName ?? "N/A"}, Color: {variant.Colour?.ColourName ?? "N/A"}");
                     }
 
-                    var basket = TheMenu.AddProductToBasket(product);
+                    var basket = BasketHelpers.AddProductToBasket(product);
                     return basket;
                 }
                 else

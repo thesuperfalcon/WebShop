@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 using WebShop.Models;
 
 namespace WebShop
@@ -156,6 +150,108 @@ namespace WebShop
             Console.WriteLine($"Address '{addressName}' with Postal Code {postalCode} in {existingCity.CityName}, {existingCountry.CountryName} created successfully.");
 
             return newAddress;
+        }
+        public static double CalculateBasketValue(List<ProductOrder> basket, MyDbContext db)
+        {
+            double totalBasketPrice = 0.0;
+
+            foreach (var productOrder in basket)
+            {
+                if (productOrder != null)
+                {
+                    var productVariant = db.ProductVariants.Find(productOrder.ProductVariantId);
+
+                    if (productVariant != null)
+                    {
+                        var productPrice = db.ProductVariants
+                            .Include(x => x.Product)
+                            .Where(x => x.Id == productOrder.ProductVariantId)
+                            .Select(x => x.Product.Price)
+                            .FirstOrDefault();
+
+                        if (productPrice != null)
+                        {
+                            double price = (double)productPrice;
+                            double totalPrice = price * productOrder.Quantity;
+
+                            totalBasketPrice += Math.Round(totalPrice, 2);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Warning: ProductVariant not found for ProductOrder with ID {productOrder.Id}");
+                        }
+                    }
+                }
+            }
+
+            return totalBasketPrice;
+        }
+        public static Delivery GetOrCreateDelivery(MyDbContext db, DeliveryName deliveryName, DeliveryType deliveryType, Adress address)
+        {
+            var deliveryNameId = deliveryName.Id;
+            var deliveryTypeId = deliveryType.Id;
+
+            var existingDelivery = db.Deliveries
+                .Where(x => x.DeliveryTypeId == deliveryTypeId && x.DeliveryNameId == deliveryNameId)
+                .FirstOrDefault();
+
+            if (existingDelivery != null)
+            {
+                var existingDeliveryAdress = db.Deliveries.Where(x => x.Equals(existingDelivery) && x.Adresses.Contains(address)).FirstOrDefault();
+                if (existingDeliveryAdress != null)
+                {
+                    return existingDeliveryAdress;
+                }
+                else
+                {
+
+                    existingDelivery.Adresses.Add(address);
+                    db.SaveChanges();
+                    return existingDelivery;
+                }
+            }
+            else
+            {
+                var newDelivery = new Delivery
+                {
+                    DeliveryNameId = deliveryNameId,
+                    DeliveryTypeId = deliveryTypeId,
+                };
+
+                db.Deliveries.Add(newDelivery);
+                db.SaveChanges();
+
+                newDelivery.Adresses.Add(address);
+                db.SaveChanges();
+
+                return newDelivery;
+            }
+        }
+
+        public static Payment GetOrCreatePayment(MyDbContext db, PaymentName paymentName, PaymentType paymentType)
+        {
+            var existingPayment = db.Payments
+                .Include(p => p.PaymentName)
+                .Include(p => p.PaymentType)
+                .FirstOrDefault(p => p.PaymentName == paymentName && p.PaymentType == paymentType);
+
+            if (existingPayment != null)
+            {
+                return existingPayment;
+            }
+            else
+            {
+                var newPayment = new Payment
+                {
+                    PaymentName = paymentName,
+                    PaymentType = paymentType
+                };
+
+                db.Payments.Add(newPayment);
+                db.SaveChanges();
+
+                return newPayment;
+            }
         }
     }
 }
