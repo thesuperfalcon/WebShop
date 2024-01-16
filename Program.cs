@@ -9,21 +9,21 @@ namespace WebShop
         {
             using var db = new MyDbContext();
 
-            try
-            {
-                AddData.RunAddDataMethods();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-            }
+            //try
+            //{
+            //    AddData.RunAddDataMethods();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"An error occurred: {ex.Message}");
+            //}
 
 
             //Customer customer = new Customer();
 
             Customer customer = db.Customers.Where(x => x.Id == 2).SingleOrDefault();
 
-            //customer = LoginManager.LoginMenu(db);
+            customer = LoginManager.LoginMenu(db);
 
             //TheMenu.ShowMenu(customer);
 
