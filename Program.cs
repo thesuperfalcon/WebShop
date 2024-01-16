@@ -9,14 +9,14 @@ namespace WebShop
         {
             using var db = new MyDbContext();
 
-            //try
-            //{
-            //    AddData.RunAddDataMethods();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine($"An error occurred: {ex.Message}");
-            //}
+            try
+            {
+                AddData.RunAddDataMethods();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
 
 
             //Customer customer = new Customer();
@@ -25,7 +25,7 @@ namespace WebShop
 
             //TheMenu.ShowMenu(customer);
 
-            Admin.AdminMenu();
+            //Admin.AdminMenu();
             //Admin.AddProductVariants(product);
             //TheMenu.ShowMenu(customer);
         }
