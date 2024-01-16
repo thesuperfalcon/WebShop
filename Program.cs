@@ -24,9 +24,13 @@ namespace WebShop
 
             //Customer customer = LoginManager.LoginMenu(db);
 
-            Customer customer = db.Customers.FirstOrDefault(x => x.Id == 1);
+            //Customer customer = db.Customers.FirstOrDefault(x => x.Id == 1);
 
-            TheMenu.ShowMenu(customer);
+            //TheMenu.ShowMenu(customer);
+            Admin.AdminMenu();
+            Admin.ChangeProduct();
+            Admin.ManageFeaturedProduct();
+            
 
             //var product = db.Products.FirstOrDefault(x => x.Id == 1);
 

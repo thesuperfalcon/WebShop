@@ -21,6 +21,7 @@ namespace WebShop
             AddProduct,
             RemoveProduct,
             ChangeProduct,
+            ChangeFeatured,
             ShowInventoryBalance,
             OrderHistory,
             CustomerInformation,

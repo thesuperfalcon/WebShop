@@ -74,7 +74,7 @@ namespace WebShop
                 {
                     Console.WriteLine("Available Variants in stock:");
 
-<<<<<<< HEAD
+
                     Console.Write("Size: ");
                     var sizes = productVariants.Select(variant => variant.Size?.SizeName ?? "N/A").Distinct();
                     Console.WriteLine(string.Join(", ", sizes));
@@ -83,13 +83,13 @@ namespace WebShop
                     var colors = productVariants.Select(variant => variant.Colour?.ColourName ?? "N/A").Distinct();
                     Console.WriteLine(string.Join(", ", colors));
 
-=======
+
                     foreach (var variant in productVariants)
                     {
                         // Kommenterade bort quantity, ska det vara kvar? känns mer som en admin feature än vad kunderna behöver se när de söker på en produkt? , Quantity: {variant.Quantity}
                         Console.WriteLine($"- Size: {variant.Size?.SizeName ?? "N/A"}, Color: {variant.Colour?.ColourName ?? "N/A"}");
                     }
->>>>>>> e7a1e9379350653dbae1baf85a9d33cf0588a572
+
 
                     var basket = TheMenu.AddProductToBasket(product);
                     return basket;

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using WebShop.Models;
 
 namespace WebShop
@@ -23,7 +22,8 @@ namespace WebShop
                 {
                     case MyEnums.AdminMenu.AddProduct: AddProduct(); break;
                     case MyEnums.AdminMenu.RemoveProduct: break;
-                    case MyEnums.AdminMenu.ChangeProduct: break;
+                    case MyEnums.AdminMenu.ChangeProduct: ChangeProduct(); break;
+                    case MyEnums.AdminMenu.ChangeFeatured: ManageFeaturedProduct(); break;
                     case MyEnums.AdminMenu.ShowInventoryBalance: break;
                     case MyEnums.AdminMenu.OrderHistory: break;
                     case MyEnums.AdminMenu.CustomerInformation: break;
@@ -181,7 +181,6 @@ namespace WebShop
                 }
             }
 
-
             var sizes = db.Sizes.ToList();
 
             var choosenSizes = new List<Size>();
@@ -254,6 +253,323 @@ namespace WebShop
             }
             else
             {
+            }
+        }
+
+        public static void ChangeProduct()
+        {
+            using var db = new MyDbContext();
+            Console.WriteLine();
+
+            Console.WriteLine("List of existing products: ");
+            var existingProducts = db.Products.Include(p => p.ProductVariants).ToList();
+
+            foreach (var product in existingProducts)
+            {
+                Console.WriteLine($"Id: {product.Id}, Name: {product.Name}, Description: {product.Description}, Price: {product.Price}, SupplierId: {product.ProductSupplierId}, Featured: {product.FeaturedProduct}");
+
+                var distinctColours = product.ProductVariants.Select(pv => db.Colours.FirstOrDefault(c => c.Id == pv.ColourId)?.ColourName).Distinct().Where(c => c != null);
+                var distinctSizes = product.ProductVariants.Select(pv => db.Sizes.FirstOrDefault(s => s.Id == pv.SizeId)?.SizeName).Distinct().Where(s => s != null);
+
+                Console.WriteLine("Colours:");
+                Console.WriteLine(string.Join(", ", distinctColours));
+
+                Console.WriteLine("Sizes:");
+                Console.WriteLine(string.Join(", ", distinctSizes));
+
+                Console.WriteLine();
+            }
+
+            int productId = InputHelpers.GetIntegerInput("Enter the ID of the product you want to change: ");
+            var productToChange = db.Products.FirstOrDefault(p => p.Id == productId);
+
+            if (productToChange != null)
+            {
+                Console.WriteLine("1. Name");
+                Console.WriteLine("2. Description");
+                Console.WriteLine("3. Price");
+                Console.WriteLine("4. Product supplier");
+                Console.WriteLine("5. Featured product");
+                Console.WriteLine("6. Colour");
+                Console.WriteLine("7. Size");
+                Console.WriteLine();
+
+                int chosenOption = InputHelpers.GetIntegerInput("Select what you want to change: ");
+                switch (chosenOption)
+                {
+                    case 1:
+                        productToChange.Name = InputHelpers.GetInput("Enter the new name: ");
+                        break;
+                    case 2:
+                        productToChange.Description = InputHelpers.GetInput("Enter the new description: ");
+                        break;
+
+                    case 3:
+                        productToChange.Price = InputHelpers.GetDoubleInput("Enter the new price: ");
+                        break;
+                    case 4:
+                        productToChange.ProductSupplierId = InputHelpers.GetIntegerInput("Enter the Id of the new supplier: ");
+                        break;
+                    case 5:
+                        productToChange.FeaturedProduct = InputHelpers.GetYesOrNo("Is it a featured product? (Yes/No) ");
+                        break;
+                    case 6:
+                        AddColour(productToChange);
+                        break;
+                        //case 7:
+                        //    ChangeSize(productToChange);
+                        //    break;
+                }
+                db.SaveChanges();
+                Console.WriteLine("Product updated!");
+            }
+            else
+            {
+                Console.WriteLine("Product not found.");
+            }
+
+        }
+
+        public static void AddColour(Product product)
+        {
+            using var db = new MyDbContext();
+            Console.WriteLine();
+
+            Console.WriteLine($"Current colours for {product.Name}: ");
+            var currentColours = product.ProductVariants.Select(pv => db.Colours.FirstOrDefault(c => c.Id == pv.ColourId)?.ColourName).Distinct().Where(c => c != null);
+            Console.WriteLine(string.Join(", ", currentColours));
+
+            Console.WriteLine();
+
+            Console.WriteLine("All available colours: ");
+            var allColours = db.Colours.ToList();
+
+            foreach (var colour in allColours)
+            {
+                Console.WriteLine($"{colour.Id}, {colour.ColourName}.");
+            }
+
+            Console.WriteLine();
+
+            int colourId = InputHelpers.GetIntegerInput("Enter the Id of the colour you want to add: ");
+            var newColour = db.Colours.FirstOrDefault(c => c.Id == colourId);
+
+            if (newColour != null)
+            {
+                foreach (var variant in product.ProductVariants)
+                {
+                    variant.ColourId = newColour.Id;
+                }
+                db.SaveChanges();
+                Console.WriteLine();
+                Console.WriteLine("Colour added!");
+            }
+            else
+            {
+                Console.WriteLine("Colour not found.");
+            }
+        }
+        private static void RemoveColor(Product product)
+        {
+            using var db = new MyDbContext();
+
+            Console.WriteLine("Current colors:");
+            var currentColors = db.Colours.ToList();
+
+            foreach (var color in currentColors)
+            {
+                Console.WriteLine($"{color.Id}, {color.ColourName}.");
+            }
+
+            Console.WriteLine();
+            int colorIdToRemove = InputHelpers.GetIntegerInput("Enter the Id of the color to remove: ");
+            var colorToRemove = db.Colours.FirstOrDefault(c => c.Id == colorIdToRemove);
+
+            if (colorToRemove != null)
+            {
+                foreach (var variant in product.ProductVariants)
+                {
+                    if (variant.ColourId == colorToRemove.Id)
+                    {
+                        variant.ColourId = 0; 
+                    }
+                }
+                db.SaveChanges();
+                Console.WriteLine();
+                Console.WriteLine("Color removed!");
+            }
+            else
+            {
+                Console.WriteLine("Color not found.");
+            }
+        }
+
+        //public static void AddSize(Product product)
+        //{
+        //    using var db = new MyDbContext();
+        //    Console.WriteLine();
+
+        //    Console.WriteLine($"Current sizes for {product.Name}: ");
+        //    var currentSizes = product.ProductVariants.Select(pv => db.Sizes.FirstOrDefault(s => s.Id == pv.SizeId)?.SizeName).Distinct().Where(s => s != null);
+        //    Console.WriteLine(string.Join(", ", currentSizes));
+
+        //    Console.WriteLine();
+
+        //    Console.WriteLine("All available colours: ");
+        //    var allSizes = db.Sizes.ToList();
+
+        //    foreach (var size in allSizes)
+        //    {
+        //        Console.WriteLine($"{size.Id}, {size.SizeName}.");
+        //    }
+
+        //    Console.WriteLine();
+
+        //    int sizeId = InputHelpers.GetIntegerInput("Enter the Id of the colour you want to add: ");
+        //    var newSize = db.Sizes.FirstOrDefault(s => s.Id == sizeId);
+
+        //    if (newSize != null)
+        //    {
+        //        foreach (var variant in product.ProductVariants)
+        //        {
+        //            variant.SizeId = newSize.Id;
+        //        }
+        //        db.SaveChanges();
+        //        Console.WriteLine();
+        //        Console.WriteLine("Size added!");
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Size not found.");
+        //    }
+        //}
+
+        //private static void RemoveSize(Product product)
+        //{
+        //    using var db = new MyDbContext();
+
+        //    Console.WriteLine("Current sizes:");
+        //    var currentSizes = db.Sizes.ToList();
+
+        //    foreach (var size in currentSizes)
+        //    {
+        //        Console.WriteLine($"{size.Id}, {size.SizeName}.");
+        //    }
+
+        //    Console.WriteLine();
+        //    int sizeIdToRemove = InputHelpers.GetIntegerInput("Enter the Id of the size to remove: ");
+        //    var sizeToRemove = db.Sizes.FirstOrDefault(s => s.Id == sizeIdToRemove);
+
+        //    if (sizeToRemove != null)
+        //    {
+        //        foreach (var variant in product.ProductVariants)
+        //        {
+        //            if (variant.SizeId == sizeToRemove.Id)
+        //            {
+        //                variant.SizeId = 0;
+        //            }
+        //        }
+        //        db.SaveChanges();
+        //        Console.WriteLine();
+        //        Console.WriteLine("Size removed!");
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Size not found.");
+        //    }
+        //}
+
+        //public static void ChangeColour(Product product)
+        //{
+        //    using var db = new MyDbContext();
+        //    Console.WriteLine();
+
+        //    Console.WriteLine("Current colours:");
+        //    var currentColour = db.Colours.ToList();
+
+        //    foreach (var colour in currentColour)
+        //    {
+        //        Console.WriteLine($"{colour.Id}, {colour.ColourName}.");
+        //    }
+        //    Console.WriteLine();
+        //    int colourId = InputHelpers.GetIntegerInput("Enter the Id of the colour you want to set: ");
+        //    var selectedColour = db.Colours.FirstOrDefault(c => c.Id == colourId);
+
+        //    if (selectedColour != null)
+        //    {
+        //        foreach (var variant in product.ProductVariants)
+        //        {
+        //            variant.ColourId = selectedColour.Id;
+        //        }
+        //        db.SaveChanges();
+        //        Console.WriteLine();
+        //        Console.WriteLine("Colour updated!");
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Colour not found.");
+        //    }
+        //}
+        //public static void ChangeSize(Product product)
+        //{
+        //    using var db = new MyDbContext();
+        //    Console.WriteLine();
+
+        //    Console.WriteLine("Current sizes:");
+        //    var currentSizes = db.Sizes.ToList();
+        //    foreach (var size in currentSizes)
+        //    {
+        //        Console.WriteLine($"{size.Id}, {size.SizeName}");
+        //    }
+        //    Console.WriteLine();
+        //    int sizeId = InputHelpers.GetIntegerInput("Enter the Id of the size you want to set: ");
+        //    var selectedSizes = db.Sizes.FirstOrDefault(s => s.Id == sizeId);
+
+        //    if (selectedSizes != null)
+        //    {
+        //        foreach (var variant in product.ProductVariants)
+        //        {
+        //            variant.SizeId = selectedSizes.Id;
+        //        }
+        //        Console.WriteLine();
+        //        db.SaveChanges();
+        //        Console.WriteLine("Size updated!");
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Size not found.");
+        //    }
+        //}
+
+        public static void ManageFeaturedProduct()
+        {
+            using var db = new MyDbContext();
+            Console.WriteLine();
+            Console.WriteLine("List of existing products:");
+            var existingProducts = db.Products.ToList();
+
+            foreach (var product in existingProducts)
+            {
+                Console.WriteLine($"{product.Id}, {product.Name} - Featured: {product.FeaturedProduct}");
+            }
+            Console.WriteLine();
+            int productId = InputHelpers.GetIntegerInput("Enter the ID of the product you want to manage: ");
+            var selectedProduct = db.Products.FirstOrDefault(p => p.Id == productId);
+
+            if (selectedProduct != null)
+            {
+                Console.WriteLine($"Current Featured Status for {selectedProduct.Name}: {selectedProduct.FeaturedProduct}");
+
+                bool newFeaturedStatus = InputHelpers.GetYesOrNo("Is it a featured product? (Yes/No) ");
+                Console.WriteLine();
+                selectedProduct.FeaturedProduct = newFeaturedStatus;
+                db.SaveChanges();
+
+                Console.WriteLine("Featured status updated successfully!");
+            }
+            else
+            {
+                Console.WriteLine("Product not found.");
             }
         }
     }
