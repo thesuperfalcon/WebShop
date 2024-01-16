@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using WebShop.Models;
 
 namespace WebShop
@@ -19,15 +20,18 @@ namespace WebShop
         {
             try
             {
+                AddFirstCustomer();
                 AddCountries();
                 AddProductInfo();
                 AddDeliveryAndPaymentInfo();
                 AddCustomerInfo();
                 AddMultipleProducts();
+                
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred while running AddData methods: {ex.Message}");
+                Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
             }
         }
 
@@ -92,8 +96,7 @@ namespace WebShop
 
                 var cities = new Dictionary<string, Country>
                 {
-                    { "Nyköping", country },
-                    { "Stockholm", country },
+                    { "Nyköping", country },                    
                     { "Göteborg", country },
                     { "Uppsala", country },
                     { "Umeå", country },
@@ -109,7 +112,7 @@ namespace WebShop
 
             var addresses = new Dictionary<string, string>
             {
-                { "Kungsgatan 21", "Stockholm" },
+                 
                 { "Storgatan 42", "Göteborg" },
                 { "Bränntorp 1", "Stockholm" },
                 { "Skogsvägen 19", "Oslo" },
@@ -127,8 +130,8 @@ namespace WebShop
                 }
             }
 
-            var firstNames = new[] { "Jens", "Maria", "Pär", "Johanna", "Kalle" };
-            var lastNames = new[] { "Svensson", "Göransson", "Eklund", "Karlsson", "Stridh" };
+            var firstNames = new[] {  "Maria", "Pär", "Johanna", "Kalle" };
+            var lastNames = new[] {  "Göransson", "Eklund", "Karlsson", "Stridh" };
 
             foreach (var firstName in firstNames)
                 db.FirstName.Add(new FirstName { Name = firstName });
@@ -136,6 +139,38 @@ namespace WebShop
             foreach (var lastName in lastNames)
                 db.LastName.Add(new LastName { Name = lastName });
 
+            db.SaveChanges();
+        }
+
+
+        // Kolla på denna 
+
+        private static void AddFirstCustomer()
+        {
+            using var db = new MyDbContext();
+
+            var firstNameJens = db.FirstName.FirstOrDefault(f => f.Name == "Jens") ?? new FirstName { Name = "Jens" };
+            var lastNameSvensson = db.LastName.FirstOrDefault(l => l.Name == "Svensson") ?? new LastName { Name = "Svensson" };            
+            var countryName = "Sweden"; 
+            var country = db.Countries.FirstOrDefault(c => c.CountryName == countryName) ?? new Country { CountryName = countryName };
+
+            var cityName = "Stockholm"; 
+            var city = db.Cities.FirstOrDefault(c => c.CityName == cityName && c.Country == country) ?? new City { CityName = cityName, Country = country };
+            var addressKungsgatan = db.Adresses.FirstOrDefault(a => a.AdressName == "Kungsgatan 21") ?? new Adress { AdressName = "Kungsgatan 21", City = city };
+
+            var firstCustomer = new Customer
+            {
+                FirstName = firstNameJens,
+                LastName = lastNameSvensson,
+                Adress = addressKungsgatan,
+                PhoneNumber = 123456789,
+                Email = "jens.svensson@gmail.com",
+                Password = "123",
+                IsAdmin = false,
+            };
+
+            
+            db.Customers.Add(firstCustomer);
             db.SaveChanges();
         }
         private static void AddMultipleProducts()

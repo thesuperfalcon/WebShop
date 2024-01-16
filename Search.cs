@@ -17,8 +17,9 @@ namespace WebShop
                 var userInput = InputHelpers.GetInput("Search: ");
 
                 searchResults = db.Products
-                    .Where(x => x.Name.Contains(userInput) || x.Categories.Any(c => c.CategoryName.Contains(userInput)))
+                    .Where(x => x.Name.Contains(userInput) || x.Categories.Any(c => c.CategoryName.Contains(userInput) && (c.CategoryName.StartsWith(userInput))))
                     .ToList();
+
 
                 if (searchResults.Count == 0)
                 {
@@ -74,7 +75,10 @@ namespace WebShop
                 {
                     Console.WriteLine("Available Variants in stock:");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3c71aa108145a6ccba78292207b5a9a50ffad42c
                     Console.Write("Size: ");
                     var sizes = productVariants.Select(variant => variant.Size?.SizeName ?? "N/A").Distinct();
                     Console.WriteLine(string.Join(", ", sizes));
@@ -83,15 +87,21 @@ namespace WebShop
                     var colors = productVariants.Select(variant => variant.Colour?.ColourName ?? "N/A").Distinct();
                     Console.WriteLine(string.Join(", ", colors));
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3c71aa108145a6ccba78292207b5a9a50ffad42c
                     foreach (var variant in productVariants)
                     {
-                        // Kommenterade bort quantity, ska det vara kvar? känns mer som en admin feature än vad kunderna behöver se när de söker på en produkt? , Quantity: {variant.Quantity}
+                        //// Kommenterade bort quantity, ska det vara kvar? känns mer som en admin feature än vad kunderna behöver se när de söker på en produkt? , Quantity: {variant.Quantity}
                         Console.WriteLine($"- Size: {variant.Size?.SizeName ?? "N/A"}, Color: {variant.Colour?.ColourName ?? "N/A"}");
                     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3c71aa108145a6ccba78292207b5a9a50ffad42c
 
-                    var basket = TheMenu.AddProductToBasket(product);
+                    var basket = BasketHelpers.AddProductToBasket(product);
                     return basket;
                 }
                 else

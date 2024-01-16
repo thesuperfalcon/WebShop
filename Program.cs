@@ -8,17 +8,24 @@ namespace WebShop
         static void Main(string[] args)
         {
             using var db = new MyDbContext();
-            //AddData.AddProductInfo();
-            //AddData.AddMultipleProducts();
+
+            //try
+            //{
+            //    AddData.RunAddDataMethods();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"An error occurred: {ex.Message}");
+            //}
 
 
-            //AddData.AddCustomerInfo();
+            //Customer customer = new Customer();
 
-            ////ddData.AddOrderInfo();
+            Customer customer = db.Customers.Where(x => x.Id == 2).SingleOrDefault();
 
-            //AddData.AddNewCustomerWithInput();
-            //AddData.AddFirstCustomers();
+            customer = LoginManager.LoginMenu(db);
 
+<<<<<<< HEAD
             //AddData.RunAddDataMethods();
 
 
@@ -33,15 +40,13 @@ namespace WebShop
             
 
             //var product = db.Products.FirstOrDefault(x => x.Id == 1);
+=======
+            //TheMenu.ShowMenu(customer);
+>>>>>>> 3c71aa108145a6ccba78292207b5a9a50ffad42c
 
             //Admin.AdminMenu();
             //Admin.AddProductVariants(product);
             //TheMenu.ShowMenu(customer);
-
-            //TheMenu.ShowBasket();
-
-            //Search.CategorySearch();
-            //Search.SearchFunction();
         }
     }
 }

@@ -13,15 +13,31 @@ namespace WebShop
             while (loop)
             {
                 using var db = new MyDbContext();
+                string customerFullName = $"{customer.FirstName?.Name} {customer.LastName?.Name}";
 
-                ShowFeaturedProduct();
+                var updatedBasket = new List<ProductOrder>();
 
+                foreach (var item in basket)
+                {
+                    if (item != null && item.Quantity > 0)
+                    {
+                        updatedBasket.Add(item);
+                    }
+                }
+                int x = 0;
+
+                basket = updatedBasket;
+
+                Console.WriteLine($"User: {customerFullName}");
+
+                BasketHelpers.ShowFeaturedProduct();
                 var productBasket = new ProductOrder();
 
                 foreach (int i in Enum.GetValues(typeof(MyEnums.Menu)))
                 {
                     Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.Menu), i).Replace('_', ' '));
                 }
+
                 int nr;
                 if (int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out nr))
                 {
@@ -33,15 +49,19 @@ namespace WebShop
                             productBasket = Search.SearchFunction();
                             break;
                         case MyEnums.Menu.Category:
-                            ShowCategoriesAndProducts();
+                            productBasket = Search.CategorySearch();
                             break;
                         case MyEnums.Menu.Cart:
-                            ShowBasketTest(basket);
+                            if (basket != null)
+                            {
+                                BasketHelpers.ShowBasket(basket);
+                            }
                             break;
                         case MyEnums.Menu.CheckOut:
-                            CheckOut(basket);
+                            CheckOut(basket, customer);
                             break;
                         case MyEnums.Menu.Exit:
+                            BasketHelpers.RollbackQuantities(basket, db);
                             loop = false;
                             break;
                     }
@@ -52,364 +72,20 @@ namespace WebShop
                     Console.WriteLine("Wrong input: ");
                 }
 
-                //ShowBasketTest(basket);
-
                 Console.ReadLine();
                 Console.Clear();
             }
         }
 
-
-        public static void ShowBasketTest(List<ProductOrder> basket)
-        {
-            using (var db = new MyDbContext())
-            {
-                int number = 1;
-                double totalPrice = 0;
-
-                foreach (var item in basket)
-                {
-                    Console.WriteLine($"{number}.");
-
-                    var productVariant = db.ProductVariants
-                        .Include(x => x.Product)
-                        .Include(x => x.Colour)
-                        .Include(x => x.Size)
-                        .FirstOrDefault(x => x.Id == item.ProductVariantId);
-
-                    if (productVariant != null)
-                    {
-                        Console.WriteLine($"Product: {productVariant.Product.Name}");
-                        Console.WriteLine($"Description: {productVariant.Product.Description}");
-                        Console.WriteLine($"Size: {productVariant.Size?.SizeName ?? "N/A"}");
-                        Console.WriteLine($"Colour: {productVariant.Colour?.ColourName ?? "N/A"}");
-                        Console.WriteLine($"Quantity: {item.Quantity}");
-                        Console.WriteLine($"Price: {productVariant.Product.Price ?? 0.0}:-");
-
-                        totalPrice += item.Quantity * (productVariant.Product.Price ?? 0.0);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Product variant not found.");
-                    }
-
-                    Console.WriteLine();
-                    number++;
-                }
-
-                Console.WriteLine($"Total price: {totalPrice}:-");
-                Console.WriteLine();
-                Console.WriteLine("Do you want to add more of a product or remove a product?");
-
-                string answer = Console.ReadLine().ToLower();
-
-                if (answer == "yes")
-                {
-                    Console.WriteLine("1. Add more quantity of a product.");
-                    Console.WriteLine("2. Remove a product from the basket.");
-
-                    int choice;
-                    if (int.TryParse(Console.ReadLine(), out choice))
-                    {
-                        switch (choice)
-                        {
-                            case 1:
-                                AddMoreQuantity(basket);
-                                break;
-                            case 2:
-                                RemoveProduct(basket);
-                                break;
-                            default:
-                                Console.WriteLine("Invalid input");
-                                break;
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void ShowCategoriesAndProducts()
-        {
-            using (var db = new MyDbContext())
-            {
-                Console.Clear();
-
-                var categories = db.Categories
-                    .Include(c => c.Products)
-                    .Where(x => x.Products.Count() > 0)
-                    .ToList();
-
-                Console.WriteLine("Categories:");
-
-                for (int i = 0; i < categories.Count; i++)
-                {
-                    Console.WriteLine($"{i + 1}. {categories[i].CategoryName}");
-                }
-
-                int selectedCategoryIndex = InputHelpers.GetIntegerInput("Select a category (enter the number): ");
-
-                if (selectedCategoryIndex > 0 && selectedCategoryIndex <= categories.Count)
-                {
-                    var selectedCategory = categories[selectedCategoryIndex - 1];
-
-                    Console.Clear();
-                    Console.WriteLine($"Products in {selectedCategory.CategoryName}:");
-
-                    foreach (var product in selectedCategory.Products)
-                    {
-                        Console.WriteLine($"{product.Id}. {product.Name} - {product.Description} - {product.Price}$");
-                    }
-
-                    int selectedProductId = InputHelpers.GetIntegerInput("Select a product (enter the number): ");
-                    var selectedProduct = selectedCategory.Products.FirstOrDefault(p => p.Id == selectedProductId);
-
-                    if (selectedProduct != null)
-                    {
-                        var basket = Search.ShowProductFromSearch(selectedProduct);
-                        // Handle the product order as needed (e.g., add it to the shopping cart).
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid product selection. Please try again.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid category selection. Please try again.");
-                }
-
-                Console.Read();
-            }
-        }
-
-        public static ProductOrder AddProductToBasket(Product product)
-        {
-            using var db = new MyDbContext();
-
-            try
-            {
-                var addProduct = InputHelpers.GetYesOrNo("Add to cart?");
-
-                if (addProduct)
-                {
-                    var colourChoice = db.ProductVariants
-                        .Where(x => x.ProductId == product.Id)
-                        .Select(x => x.Colour)
-                        .Distinct()
-                        .ToList();
-
-                    foreach (var colour in colourChoice)
-                    {
-                        Console.WriteLine($"{colour.Id} {colour.ColourName}");
-                    }
-
-                    var colourIdInput = InputHelpers.GetIntegerInput("ColourId");
-                    var selectedColour = db.Colours.FirstOrDefault(x => x.Id == colourIdInput);
-
-                    var sizeChoice = db.ProductVariants
-                        .Where(x => x.ColourId == selectedColour.Id && x.ProductId == product.Id)
-                        .Select(x => x.Size)
-                        .Distinct()
-                        .ToList();
-
-                    foreach (var size in sizeChoice)
-                    {
-                        Console.WriteLine($"{size.Id} {size.SizeName}");
-                    }
-
-                    var sizeIdInput = InputHelpers.GetIntegerInput("SizeId");
-                    var selectedSize = db.Sizes.FirstOrDefault(x => x.Id == sizeIdInput);
-
-                    var productVariant = db.ProductVariants
-                        .Where(x => x.ColourId == selectedColour.Id && x.ProductId == product.Id && x.SizeId == selectedSize.Id)
-                        .FirstOrDefault();
-
-                    if (productVariant == null)
-                    {
-                        Console.WriteLine("Product variant not found.");
-                        return null;
-                    }
-
-                    Console.WriteLine($"Available Quantity: {productVariant.Quantity}");
-
-                    var quantity = InputHelpers.GetIntegerInput("Amount?");
-
-                    if (quantity >= 0 && quantity <= productVariant.Quantity)
-                    {
-                        double? productPrice = db.ProductVariants
-                            .Where(pv => pv.Id == productVariant.Id)
-                            .Select(pv => pv.Product.Price)
-                            .FirstOrDefault();
-
-                        double totalPrice = (productPrice * quantity).Value;
-
-                        var addToBasket = InputHelpers.GetYesOrNo("Add to basket?");
-
-                        if (addToBasket)
-                        {
-                            productVariant.Quantity -= quantity;
-
-                            ProductOrder productOrder = new ProductOrder()
-                            {
-                                ProductVariantId = productVariant.Id,
-                                Quantity = quantity,
-                                TotalPrice = totalPrice,
-                            };
-
-                            db.SaveChanges();
-                            return productOrder;
-                        }
-                    }
-                    else if (quantity < 0)
-                    {
-                        Console.WriteLine("Error: Quantity must be zero or positive.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Error: Selected quantity exceeds available quantity.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-            }
-
-            return null;
-        }
-
-        public static void ShowBasket(List<ProductOrder> basket)
-        {
-            //var basket = new List<ProductOrder>();
-
-            using (var db = new MyDbContext())
-            {
-                int number = 1;
-                double totalPrice = 0;
-                foreach (var item in basket)
-                {
-                    Console.WriteLine(number + ".");
-
-                    var product = db.ProductVariants.Include(x => x.Product)
-                                        .Include(x => x.Colour)
-                                        .Include(x => x.Size)
-                                        .FirstOrDefault(x => x.Id == item.ProductVariantId);
-
-                    var colour = db.Colours.Where(x => x.Id == item.ProductVariant.ColourId)
-                        .Select(x => x.ColourName).FirstOrDefault();
-
-                    var size = db.Sizes.Where(x => x.Id == item.ProductVariant.SizeId)
-                        .Select(x => x.SizeName).FirstOrDefault();
-
-                    Console.WriteLine($"Product: {product.Product.Name}");
-                    Console.WriteLine($"Description: {product.Product.Description}");
-                    Console.WriteLine($"Size: {size}");
-                    Console.WriteLine($"Colour: {colour}");
-                    Console.WriteLine($"Quantity: {item.Quantity}");
-                    Console.WriteLine($"Price: {item.ProductVariant.Product.Price}:-");
-                    totalPrice += item.ProductVariant.Product.Price.Value;
-                    number++;
-                }
-                Console.WriteLine($"Total price: {totalPrice}:-");
-                Console.WriteLine();
-                Console.WriteLine("Do you want to add more of a product or remove a product?");
-
-                string answer = Console.ReadLine().ToLower();
-
-                if (answer == "yes")
-                {
-                    Console.WriteLine("1. Add more quantity of a product.");
-                    Console.WriteLine("2. Remove a product from the basket.");
-
-                    int choice;
-                    if (int.TryParse(Console.ReadLine(), out choice))
-                    {
-                        switch (choice)
-                        {
-                            case 1:
-                                AddMoreQuantity(basket);
-                                break;
-                            case 2:
-                                RemoveProduct(basket);
-                                break;
-                            default:
-                                Console.WriteLine("Invalid input");
-                                break;
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void AddMoreQuantity(List<ProductOrder> basket)
-        {
-            //ShowBasket(basket);
-
-            using (var db = new MyDbContext())
-            {
-                var productName = InputHelpers.GetInput("Enter the name of the product you want to add more of: ");
-
-                var chosenProduct = basket.FirstOrDefault(p => p.ProductVariant.Product.Name == productName);
-
-                if (chosenProduct != null)
-                {
-                    Console.WriteLine($"Current quantity of {chosenProduct.ProductVariant.Product.Name}: {chosenProduct.Quantity}");
-                    Console.WriteLine("Enter the quantity you want to add:");
-
-                    if (int.TryParse(Console.ReadLine(), out int quantityToAdd))
-                    {
-                        chosenProduct.Quantity += quantityToAdd;
-
-                        Console.WriteLine($"Added {quantityToAdd} more of {chosenProduct.ProductVariant.Product.Name} to your basket.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid quantity.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Product not found in your basket.");
-                }
-
-
-            }
-        }
-
-        public static void RemoveProduct(List<ProductOrder> basket)
-        {
-            //ShowBasket(basket);
-
-            using (var db = new MyDbContext())
-            {
-                var productName = InputHelpers.GetInput("Enter the name of the product you want to remove: ");
-
-                var chosenProduct = basket.FirstOrDefault(p => p.ProductVariant.Product.Name == productName.ToLower());
-                if (chosenProduct != null)
-                {
-                    basket.Remove(chosenProduct);
-                    Console.WriteLine($"{chosenProduct.ProductVariant.Product.Name} removed from your basket.");
-                }
-                else
-                {
-                    Console.WriteLine("Product not found in your basket.");
-                }
-            }
-        }
-
         //---------------------------Frakt-vy och betalnings-vy---------------------------
-        public static void CheckOut(List<ProductOrder> basket)
+        private static void CheckOut(List<ProductOrder> basket, Customer customer)
         {
             using var db = new MyDbContext();
-
-            var customer = db.Customers.Where(x => x.Id == 1)
-                .Select(x => x.Id)
-                .FirstOrDefault();
 
             var allPaymentTypes = db.PaymentTypes.ToList();
-            var allPayments = db.Payments.ToList();
+            var allPayments = db.PaymentNames.ToList();
             var allDeliveryTypes = db.DeliveryTypes.ToList();
-            var allDeliveries = db.Deliveries.ToList();
+            var allDeliveries = db.DeliveryNames.ToList();
 
             //---------------------------Betalnings-vy---------------------------
 
@@ -430,35 +106,36 @@ namespace WebShop
 
             foreach (var allPayment in allPayments)
             {
-                Console.WriteLine(allPayment.Id + " " + allPayment.PaymentName);
+                Console.WriteLine(allPayment.Id + " " + allPayment.Name);
             }
 
             Console.Write("Choose Payment (enter ID): ");
 
             var inputPayment = Helpers.GetGeneralId();
 
-            var selectedPayment = allPayments.FirstOrDefault(y => y.Id == inputPaymentType);
+            var selectedPaymentName = allPayments.FirstOrDefault(y => y.Id == inputPayment);
+
+            var selectedPayment = Helpers.GetOrCreatePayment(db, selectedPaymentName, selectedPaymentType);
 
             //-------------------Frakt-vy---------------------------
 
-            //Input av kundinforamtion
-            Console.WriteLine("Please enter your information");
-            var firstName = InputHelpers.GetInput("Enter First Name: ");
-            var lastName = InputHelpers.GetInput("Enter Last Name: ");
-            var address = InputHelpers.GetInput("Enter Address: ");
-            var postalCode = InputHelpers.GetIntegerInput("Enter Postal Code: ");
-            var city = InputHelpers.GetInput("Enter City: ");
-            var country = InputHelpers.GetInput("Enter Country: ");
-            var email = InputHelpers.GetInput("Enter email: ");
-            var phoneNumber = InputHelpers.GetInput("Enter Phone Number: ");
+            var adress = Helpers.ShowAdressInformation(db, customer);
 
+            var adressInfo = InputHelpers.GetYesOrNo($"Delivery to this adress?: ");
+            if (adressInfo == true)
+            {
+
+            }
+            else
+            {
+                adress = Helpers.CreateAddress(db);
+            }
 
             Console.WriteLine("Available Delivery Types:");
             foreach (var allDeliveryType in allDeliveryTypes)
             {
                 Console.WriteLine(allDeliveryType.Id + " " + allDeliveryType.DeliveryName + " " + allDeliveryType.DeliveryPrice + ":-");
             }
-
 
             Console.Write("Choose Delivery Type (enter ID): ");
 
@@ -470,102 +147,71 @@ namespace WebShop
 
             foreach (var allDelivery in allDeliveries)
             {
-                Console.WriteLine(allDelivery.Id + " " + allDelivery.DeliveryName);
+                Console.WriteLine(allDelivery.Id + " " + allDelivery.Name);
             }
 
             Console.Write("Choose Delivery (enter ID): ");
 
             var inputDelivery = Helpers.GetGeneralId();
 
-            var selectedDelivery = allDeliveries.FirstOrDefault(c => c.Id == inputDelivery);
+            var selectedDeliveryName = allDeliveries.FirstOrDefault(c => c.Id == inputDelivery);
 
-            //Beräkna totalt belopp
-            var totalAmount = 0.0;
+            var selectedDelivery = Helpers.GetOrCreateDelivery(db, selectedDeliveryName, selectedDeliveryType, adress);
 
-            totalAmount += selectedDeliveryType.DeliveryPrice;
+            var deliveryPrice = Math.Round(selectedDeliveryType.DeliveryPrice, 2);
 
-            foreach (var product in basket)
-            {
-                totalAmount += product.ProductVariant.Product.Price.Value;
-            }
+            // Calculate the total value of the basket
+            var basketTotalValue = Helpers.CalculateBasketValue(basket, db);
+
+            // Totalpriset inklusive moms (25%)
+
+            var taxes = 1.25;
+
+            double totalPrice = Math.Round((basketTotalValue + deliveryPrice) * taxes, 2);
 
             //---------------------------Visa sammanfattning---------------------------
             Console.WriteLine("Summary");
-            ShowBasket(basket);
-            Console.WriteLine($"Payment: {selectedPayment.PaymentName}");
+            BasketHelpers.DisplayProductDetails(basket, db);
+            Console.WriteLine($"Payment: {selectedPaymentName.Name}");
             Console.WriteLine($"Payment_Type: {selectedPaymentType.PaymentTypeName}");
-            Console.WriteLine($"Delivery: {selectedDelivery.DeliveryName}");
+            Console.WriteLine($"Delivery: {selectedDeliveryName.Name}");
             Console.WriteLine($"Delivery_Type: {selectedDeliveryType.DeliveryName}");
             Console.WriteLine($"Delivery_Cost: {selectedDeliveryType.DeliveryPrice}:-");
-            Console.WriteLine($"Total_Cost: {totalAmount}:-");
+            Console.WriteLine($"Total_Cost including 25 % taxes: {totalPrice}:-");
 
-            //Totalpriset inklusive moms (25%)
-            Console.WriteLine($"Total Cost with taxes included: {totalAmount * 0.25}:-");
+            // Totalpriset inklusive moms (25%)
 
-            //Kunduppgifter
-            var customerInfo = $"Your information: {firstName} {lastName}, {address}, {postalCode}, {city}, {country}, {country}, {phoneNumber}";
+            // Kunduppgifter
+            //var updatedBasket = new List<ProductOrder>();
+            //foreach (var item in basket)
+            //{
+            //    if (item != null && item.Quantity > 0)
+            //    {
+            //        updatedBasket.Add(item);
+            //    }
+            //}
+            //int x = 0;
+
+            //basket = updatedBasket;
 
             var finishCheckOut = InputHelpers.GetYesOrNo("Wanna_finish?: ");
             if (finishCheckOut == true)
             {
                 var productOrder = new FinalOrder()
                 {
-                    CustomerId = customer,
+                    CustomerId = customer.Id,
                     PaymentId = selectedPayment.Id,
                     DeliveryId = selectedDelivery.Id,
-                    TotalPrice = totalAmount,
+                    TotalPrice = totalPrice,
+                    ProductOrders = basket
                 };
                 db.Add(productOrder);
                 db.SaveChanges();
 
-                //Töm varukorgen efter beställning
+                // Töm varukorgen efter beställning
                 basket.Clear();
 
                 Console.WriteLine("Thank you for shopping :)");
-            }
-        }
-        private static void ShowFeaturedProduct()
-        {
-            using var db = new MyDbContext();
-
-            var products = db.Products.Where(x => x.FeaturedProduct == true).ToList();
-
-            foreach (var product in products)
-            {
-                Console.WriteLine($"Product Name: {product.Name}");
-                Console.WriteLine($"Description: {product.Description}");
-                Console.WriteLine($"Price: {product.Price}");
-
-                try
-                {
-                    var productVariants = db.ProductVariants
-                        .Where(x => x.ProductId == product.Id)
-                        .Include(x => x.Size)
-                        .Include(x => x.Colour)
-                        .ToList();
-
-                    if (productVariants.Any())
-                    {
-                        Console.WriteLine("Available Variants:");
-
-                        Console.Write("Size: ");
-                        var sizes = productVariants.Select(variant => variant.Size.SizeName).Distinct();
-                        Console.WriteLine(string.Join(", ", sizes));
-
-                        Console.Write("Colour: ");
-                        var colors = productVariants.Select(variant => variant.Colour.ColourName).Distinct();
-                        Console.WriteLine(string.Join(", ", colors));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No variants found for this product.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error retrieving product information: {ex.Message}");
-                }
-                Console.WriteLine();
             }
         }
     }
