@@ -22,7 +22,7 @@ namespace WebShop
                 switch (menuSelection)
                 {
                     case MyEnums.AdminMenu.AddProduct: AddProduct(); break;
-                    case MyEnums.AdminMenu.RemoveProduct: break;
+                    case MyEnums.AdminMenu.RemoveProduct: RemoveProduct(); break;
                     case MyEnums.AdminMenu.ChangeProduct: break;
                     case MyEnums.AdminMenu.ShowInventoryBalance: break;
                     case MyEnums.AdminMenu.OrderHistory: break;
@@ -254,6 +254,73 @@ namespace WebShop
             }
             else
             {
+            }
+        }
+        public static void RemoveProduct()
+        {
+            using (var db = new MyDbContext())
+            {
+                ShowProductIds(); // Display product IDs before deletion
+
+                bool success = false;
+
+                while (!success)
+                {
+                    Console.Write("Enter the ID of the product you want to delete: ");
+                    int productIdToDelete = InputHelpers.GetIntegerInput("");
+
+                    var productToDelete = db.Products.Find(productIdToDelete);
+
+                    if (productToDelete != null)
+                    {
+                        Console.WriteLine($"Product Name: {productToDelete.Name}");
+                        Console.WriteLine($"Description: {productToDelete.Description}");
+                        Console.WriteLine($"Price: {productToDelete.Price}");
+
+                        var confirmDelete = InputHelpers.GetYesOrNo("Are you sure you want to delete this product?");
+
+                        if (confirmDelete)
+                        {
+                            db.Products.Remove(productToDelete);
+                            db.SaveChanges();
+
+                            Console.WriteLine("Product deleted successfully.");
+                            success = true;
+                        }
+                        else
+                        {
+                            var returnToMenu = InputHelpers.GetYesOrNo("Return to menu?");
+                            if (returnToMenu)
+                            {
+                                success = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Product not found. Please enter a valid product ID.");
+                    }
+                }
+            }
+        }
+        public static void ShowProductIds()
+        {
+            using (var db = new MyDbContext())
+            {
+                var products = db.Products.ToList();
+
+                if (products.Any())
+                {
+                    Console.WriteLine("Available Product IDs:");
+                    foreach (var product in products)
+                    {
+                        Console.WriteLine($"ID: {product.Id} - Product Name: {product.Name}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No products available in the database.");
+                }
             }
         }
     }

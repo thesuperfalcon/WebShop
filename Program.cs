@@ -19,13 +19,13 @@ namespace WebShop
             //}
 
 
-            Customer customer = new Customer();
+            //Customer customer = new Customer();
 
-            customer = LoginManager.LoginMenu(db);
+            //customer = LoginManager.LoginMenu(db);
 
-            TheMenu.ShowMenu(customer);
+            //TheMenu.ShowMenu(customer);
 
-            //Admin.AdminMenu();
+            Admin.AdminMenu();
             //Admin.AddProductVariants(product);
             //TheMenu.ShowMenu(customer);
         }
