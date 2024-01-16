@@ -19,11 +19,9 @@ namespace WebShop
             }
 
 
-<<<<<<< Updated upstream
             //Customer customer = new Customer();
-=======
+
             Customer customer = db.Customers.Where(x => x.Id == 2).SingleOrDefault();
->>>>>>> Stashed changes
 
             //customer = LoginManager.LoginMenu(db);
 

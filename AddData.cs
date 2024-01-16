@@ -19,12 +19,13 @@ namespace WebShop
         {
             try
             {
+                AddFirstCustomer();
                 AddCountries();
                 AddProductInfo();
                 AddDeliveryAndPaymentInfo();
                 AddCustomerInfo();
                 AddMultipleProducts();
-                //AddFirstCustomer();  Kolla på denna
+                AddFirstCustomer();
             }
             catch (Exception ex)
             {
@@ -143,31 +144,34 @@ namespace WebShop
 
         // Kolla på denna 
 
-        //private static void AddFirstCustomer()
-        //{
-        //    using var db = new MyDbContext();
+        private static void AddFirstCustomer()
+        {
+            using var db = new MyDbContext();
 
 
-        //    var firstNameJens = db.FirstName.FirstOrDefault(f => f.Name == "Jens") ?? new FirstName { Name = "Jens" };
-        //    var lastNameSvensson = db.LastName.FirstOrDefault(l => l.Name == "Svensson") ?? new LastName { Name = "Svensson" };
-        //    var addressKungsgatan = db.Adresses.FirstOrDefault(a => a.AdressName == "Kungsgatan 21") ?? new Adress { AdressName = "Kungsgatan 21" };
+            var firstNameJens = db.FirstName.FirstOrDefault(f => f.Name == "Jens") ?? new FirstName { Name = "Jens" };
+            var lastNameSvensson = db.LastName.FirstOrDefault(l => l.Name == "Svensson") ?? new LastName { Name = "Svensson" };
+
+            var adress = db.Adresses.Where(x => x.Id == 1).FirstOrDefault();
+
+            var addressKungsgatan = db.Adresses.FirstOrDefault(a => a.AdressName == "Kungsgatan 21") ?? new Adress { AdressName = "Kungsgatan 21" };
 
 
-        //    var firstCustomer = new Customer
-        //    {
-        //        FirstNameId = firstNameJens.Id,
-        //        LastNameId = lastNameSvensson.Id,
-        //        AdressId = addressKungsgatan.Id,
-        //        PhoneNumber = 123456789,
-        //        Email = "jens.svensson@gmail.com",
-        //        Password = "123",
-        //        IsAdmin = false,
-        //    };
+            var firstCustomer = new Customer
+            {
+                FirstName = firstNameJens,
+                LastName = lastNameSvensson,
+                Adress = addressKungsgatan,
+                PhoneNumber = 123456789,
+                Email = "jens.svensson@gmail.com",
+                Password = "123",
+                IsAdmin = false,
+            };
 
-        //    // Add and save the first customer
-        //    db.Customers.Add(firstCustomer);
-        //    db.SaveChanges();
-        //}
+            // Add and save the first customer
+            db.Customers.Add(firstCustomer);
+            db.SaveChanges();
+        }
         private static void AddMultipleProducts()
         {
             using (var db = new MyDbContext())
