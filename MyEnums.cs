@@ -25,6 +25,7 @@ namespace WebShop
             ShowInventoryBalance,
             OrderHistory,
             CustomerInformation,
+            AddCustomer,
             ShowStatistic,
             Exit
         }

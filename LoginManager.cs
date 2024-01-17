@@ -104,7 +104,7 @@ namespace WebShop
             return false;
         }
 
-        private static Customer CreateCustomer()
+        public static Customer CreateCustomer()
         {
             using var db = new MyDbContext();
 
