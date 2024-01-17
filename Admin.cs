@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using WebShop.Models;
 
 namespace WebShop
@@ -21,14 +22,9 @@ namespace WebShop
                 switch (menuSelection)
                 {
                     case MyEnums.AdminMenu.AddProduct: AddProduct(); break;
-<<<<<<< HEAD
-                    case MyEnums.AdminMenu.RemoveProduct: break;
+                    case MyEnums.AdminMenu.RemoveProduct: RemoveProduct(); break;
                     case MyEnums.AdminMenu.ChangeProduct: ChangeProduct(); break;
                     case MyEnums.AdminMenu.ChangeFeatured: ManageFeaturedProduct(); break;
-=======
-                    case MyEnums.AdminMenu.RemoveProduct: RemoveProduct(); break;
-                    case MyEnums.AdminMenu.ChangeProduct: break;
->>>>>>> 3c71aa108145a6ccba78292207b5a9a50ffad42c
                     case MyEnums.AdminMenu.ShowInventoryBalance: break;
                     case MyEnums.AdminMenu.OrderHistory: break;
                     case MyEnums.AdminMenu.CustomerInformation: break;
@@ -260,8 +256,6 @@ namespace WebShop
             {
             }
         }
-<<<<<<< HEAD
-
         public static void ChangeProduct()
         {
             using var db = new MyDbContext();
@@ -288,6 +282,7 @@ namespace WebShop
 
             int productId = InputHelpers.GetIntegerInput("Enter the ID of the product you want to change: ");
             var productToChange = db.Products.FirstOrDefault(p => p.Id == productId);
+            var productVariants = db.ProductVariants.Where(db => db.Id == productId).ToList();
 
             if (productToChange != null)
             {
@@ -298,7 +293,7 @@ namespace WebShop
                 Console.WriteLine("5. Featured product");
                 Console.WriteLine("6. Colour");
                 Console.WriteLine("7. Size");
-                Console.WriteLine();
+                Console.WriteLine("8. Quantity");
 
                 int chosenOption = InputHelpers.GetIntegerInput("Select what you want to change: ");
                 switch (chosenOption)
@@ -322,9 +317,12 @@ namespace WebShop
                     case 6:
                         AddColour(productToChange);
                         break;
-                        //case 7:
-                        //    ChangeSize(productToChange);
-                        //    break;
+                    case 7:
+                        ChangeSize(productToChange);
+                        break;
+                    case 8:
+                        ChangeQuantity(productToChange);
+                        break;
                 }
                 db.SaveChanges();
                 Console.WriteLine("Product updated!");
@@ -333,7 +331,55 @@ namespace WebShop
             {
                 Console.WriteLine("Product not found.");
             }
+        }
+        public static int ChangeQuantity(Product product)
+        {
+            using var db = new MyDbContext();
 
+            var productVariants = db.ProductVariants.Where(x => x.ProductId == product.Id).ToList();
+
+            foreach (var productVariant in productVariants)
+            {
+                var variantInforamtion = BasketHelpers.GetProductVariant(db, productVariant.Id);
+                Console.WriteLine($"{variantInforamtion.Id} {variantInforamtion.Colour.ColourName} {variantInforamtion.Size.SizeName} {variantInforamtion.Quantity}");
+            }
+
+            var userInput = InputHelpers.GetIntegerInput("Enter the Id of the product variant: ");
+            var specificProductVariant = db.ProductVariants.FirstOrDefault(x => x.Id == userInput);
+
+            if (specificProductVariant == null)
+            {
+                Console.WriteLine("Invalid Id. No matching product variant found.");
+                return 0; 
+            }
+
+            Console.WriteLine($"Selected Product Variant: {specificProductVariant.Size.SizeName} {specificProductVariant.Colour.ColourName} {specificProductVariant.Quantity}");
+
+            var changeQuantity = InputHelpers.GetIntegerInput("Enter the quantity to add (positive) or remove (negative): ");
+
+            if (changeQuantity != 0)
+            {
+                int newQuantity = specificProductVariant.Quantity + changeQuantity;
+
+                if (newQuantity < 0)
+                {
+                    Console.WriteLine("Error: Quantity cannot be negative.");
+                    return 0;
+                }
+
+                specificProductVariant.Quantity = newQuantity;
+
+                db.SaveChanges();
+
+                Console.WriteLine($"Quantity updated to: {specificProductVariant.Quantity}");
+
+                return specificProductVariant.Quantity;
+            }
+            else
+            {
+                Console.WriteLine("Error: Quantity change cannot be zero.");
+                return 0;
+            }
         }
 
         public static void AddColour(Product product)
@@ -397,7 +443,7 @@ namespace WebShop
                 {
                     if (variant.ColourId == colorToRemove.Id)
                     {
-                        variant.ColourId = 0; 
+                        variant.ColourId = 0;
                     }
                 }
                 db.SaveChanges();
@@ -516,36 +562,36 @@ namespace WebShop
         //        Console.WriteLine("Colour not found.");
         //    }
         //}
-        //public static void ChangeSize(Product product)
-        //{
-        //    using var db = new MyDbContext();
-        //    Console.WriteLine();
+        public static void ChangeSize(Product product)
+        {
+            using var db = new MyDbContext();
+            Console.WriteLine();
 
-        //    Console.WriteLine("Current sizes:");
-        //    var currentSizes = db.Sizes.ToList();
-        //    foreach (var size in currentSizes)
-        //    {
-        //        Console.WriteLine($"{size.Id}, {size.SizeName}");
-        //    }
-        //    Console.WriteLine();
-        //    int sizeId = InputHelpers.GetIntegerInput("Enter the Id of the size you want to set: ");
-        //    var selectedSizes = db.Sizes.FirstOrDefault(s => s.Id == sizeId);
+            Console.WriteLine("Current sizes:");
+            var currentSizes = db.Sizes.ToList();
+            foreach (var size in currentSizes)
+            {
+                Console.WriteLine($"{size.Id}, {size.SizeName}");
+            }
+            Console.WriteLine();
+            int sizeId = InputHelpers.GetIntegerInput("Enter the Id of the size you want to set: ");
+            var selectedSizes = db.Sizes.FirstOrDefault(s => s.Id == sizeId);
 
-        //    if (selectedSizes != null)
-        //    {
-        //        foreach (var variant in product.ProductVariants)
-        //        {
-        //            variant.SizeId = selectedSizes.Id;
-        //        }
-        //        Console.WriteLine();
-        //        db.SaveChanges();
-        //        Console.WriteLine("Size updated!");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Size not found.");
-        //    }
-        //}
+            if (selectedSizes != null)
+            {
+                foreach (var variant in product.ProductVariants)
+                {
+                    variant.SizeId = selectedSizes.Id;
+                }
+                Console.WriteLine();
+                db.SaveChanges();
+                Console.WriteLine("Size updated!");
+            }
+            else
+            {
+                Console.WriteLine("Size not found.");
+            }
+        }
 
         public static void ManageFeaturedProduct()
         {
@@ -576,7 +622,8 @@ namespace WebShop
             else
             {
                 Console.WriteLine("Product not found.");
-=======
+            }
+        }
         public static void RemoveProduct()
         {
             using (var db = new MyDbContext())
@@ -642,9 +689,7 @@ namespace WebShop
                 {
                     Console.WriteLine("No products available in the database.");
                 }
->>>>>>> 3c71aa108145a6ccba78292207b5a9a50ffad42c
             }
         }
     }
 }
-
