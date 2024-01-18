@@ -55,11 +55,11 @@ namespace WebShop
                  * Product Category/Categories
                  */
 
-                var productName = InputHelpers.GetInput("Product_Name: ");
+                var productName = InputHelpers.GetInput("Product name: ");
 
-                var productDescription = InputHelpers.GetInput("Product_Description: ");
+                var productDescription = InputHelpers.GetInput("Product description: ");
 
-                var productPrice = InputHelpers.GetDoubleInput("Product_Price: ");
+                var productPrice = InputHelpers.GetDoubleInput("Product price: ");
 
                 var suppliers = db.ProductSuppliers.ToList();
 
@@ -68,7 +68,7 @@ namespace WebShop
                     Console.WriteLine(supplier.Id + ": " + supplier.SupplierName);
                 }
 
-                var inputSupplierId = InputHelpers.GetIntegerInput("Supplier_Id: ");
+                var inputSupplierId = InputHelpers.GetIntegerInput("Supplier Id: ");
 
                 var productSupplier = db.ProductSuppliers.Where(x => x.Id == inputSupplierId).FirstOrDefault();
 
@@ -104,7 +104,7 @@ namespace WebShop
                     }
                 }
 
-                var featuredProduct = InputHelpers.GetYesOrNo("Featured_Product?: ");
+                var featuredProduct = InputHelpers.GetYesOrNo("Featured product?: ");
 
                 Console.WriteLine(productName);
                 Console.WriteLine(productDescription);
@@ -115,7 +115,7 @@ namespace WebShop
                     Console.WriteLine(category.CategoryName);
                 }
 
-                var addProduct = InputHelpers.GetYesOrNo("Add_Product?: ");
+                var addProduct = InputHelpers.GetYesOrNo("Add product?: ");
 
                 if (addProduct == true)
                 {
@@ -136,7 +136,7 @@ namespace WebShop
                 }
                 else
                 {
-                    var returnToMenu = InputHelpers.GetYesOrNo("Return_to_menu?: ");
+                    var returnToMenu = InputHelpers.GetYesOrNo("Return to menu?: ");
                     if (returnToMenu == true)
                     {
                         success = true;
@@ -651,7 +651,7 @@ namespace WebShop
                 ShowProductIds();
 
                 Console.Write("Enter the ID of the product you want to modify: ");
-                
+
                 int productIdToUpdate = InputHelpers.GetIntegerInput("");
 
                 var productToUpdate = db.Products.Include(p => p.ProductVariants).ThenInclude(v => v.Colour).Include(p => p.ProductVariants).ThenInclude(v => v.Size).FirstOrDefault(p => p.Id == productIdToUpdate);
@@ -676,7 +676,8 @@ namespace WebShop
                         case 2:
                             DeleteProductVariant(db, productToUpdate);
                             break;
-                        case 0: AdminMenu();
+                        case 0:
+                            AdminMenu();
                             break;
 
                         default:
@@ -684,11 +685,11 @@ namespace WebShop
                             break;
                     }
                 }
-                
+
                 else
                 {
                     Console.WriteLine("Product not found. Please enter a valid product ID.");
-                    
+
                 }
             }
         }
@@ -764,7 +765,7 @@ namespace WebShop
                 {
                     productToUpdate.ProductVariants.Remove(variantToDelete);
                     db.SaveChanges();
-                    
+
                     Console.WriteLine("Variant deleted successfully.");
                     Thread.Sleep(1500);
                     Console.Clear();
@@ -847,21 +848,29 @@ namespace WebShop
         {
             using (var db = new MyDbContext())
             {
-                Console.Clear(); 
-                ShowAllCustomers();
+                int customerIdToUpdate = -1; 
 
-                Console.Write("Enter the ID of the customer you want to update (or enter 0 to exit): ");
-                int customerIdToUpdate = InputHelpers.GetIntegerInput("");
-
-                if (customerIdToUpdate == 0)
+                while (true)
                 {
-                    Console.WriteLine("Exiting customer update and returning to admin menu.");
-                    Thread.Sleep(2000);
                     Console.Clear();
-                    AdminMenu();
-                }
-                else
-                {
+
+                    if (customerIdToUpdate == -1)
+                    {
+                        
+                        ShowAllCustomers();
+                        Console.Write("Enter the ID of the customer you want to update (or enter 0 to exit): ");
+                        customerIdToUpdate = InputHelpers.GetIntegerInput("");
+
+                        if (customerIdToUpdate == 0)
+                        {
+                            Console.WriteLine("Exiting customer update and returning to admin menu.");
+                            Thread.Sleep(2000);
+                            Console.Clear();
+                            AdminMenu();
+                            break;
+                        }
+                    }
+
                     var customerToUpdate = db.Customers
                         .Include(c => c.FirstName)
                         .Include(c => c.LastName)
@@ -871,146 +880,160 @@ namespace WebShop
                         .FirstOrDefault(c => c.Id == customerIdToUpdate);
 
                     if (customerToUpdate != null)
-                    {
-                        Console.Clear(); 
-                        Console.WriteLine($"Current Information for Customer ID {customerToUpdate.Id}:");
-                        Console.WriteLine($"1. Firstname: {customerToUpdate.FirstName?.Name}");
-                        Console.WriteLine($"2. Lastname: {customerToUpdate.LastName?.Name}");
-                        Console.WriteLine($"3. Phonenumber: {customerToUpdate.PhoneNumber}");
-                        Console.WriteLine($"4. Email: {customerToUpdate.Email}");
-                        Console.WriteLine($"5. Password: {customerToUpdate.Password}");
-                        Console.WriteLine($"6. Address: {customerToUpdate.Adress?.AdressName}");
-                        Console.WriteLine($"7. City: {customerToUpdate.Adress?.City?.CityName}");
-                        Console.WriteLine($"8. Country: {customerToUpdate.Adress?.City?.Country?.CountryName}");
-                        Console.WriteLine("\nEnter the number corresponding to the information you want to update (or enter 0 to exit):");
-
-                        int option = InputHelpers.GetIntegerInput("");
-
-                        if (option == 0)
                         {
-                            Console.WriteLine("Exiting customer update and returning to admin menu");
-                            Thread.Sleep(1000);
                             Console.Clear();
-                            AdminMenu();
-                        }
-                        else
-                        {
-                          
-                               switch (option)
+                            Console.WriteLine($"Current Information for Customer ID {customerToUpdate.Id}:");
+                            Console.WriteLine($"1. Firstname: {customerToUpdate.FirstName?.Name}");
+                            Console.WriteLine($"2. Lastname: {customerToUpdate.LastName?.Name}");
+                            Console.WriteLine($"3. Phonenumber: {customerToUpdate.PhoneNumber}");
+                            Console.WriteLine($"4. Email: {customerToUpdate.Email}");
+                            Console.WriteLine($"5. Password: {customerToUpdate.Password}");
+                            Console.WriteLine($"6. Address: {customerToUpdate.Adress?.AdressName}");
+                            Console.WriteLine($"7. City: {customerToUpdate.Adress?.City?.CityName}");
+                            Console.WriteLine($"8. Country: {customerToUpdate.Adress?.City?.Country?.CountryName}");
+                            Console.WriteLine("\nEnter the number corresponding to the information you want to update (or enter 0 to exit):");
+
+                            int option = InputHelpers.GetIntegerInput("");
+
+                            if (option == 0)
                             {
-                                case 0:
-                                    Console.WriteLine("Exiting customer update and returning to admin menu");
-                                    Console.Clear();
-                                    AdminMenu();
-                                    break;
-
-                                case 1:
-                                    Console.Write("Enter new First Name: ");
-                                    string newFirstName = Console.ReadLine();
-
-                                    
-                                    var existingFirstName = db.FirstName.FirstOrDefault(f => f.Name == newFirstName);
-
-                                    if (existingFirstName != null)
-                                    {
-                                        
-                                        customerToUpdate.FirstName = existingFirstName;
-                                    }
-                                    else
-                                    {
-                                      
-                                        customerToUpdate.FirstName = new FirstName { Name = newFirstName };
-                                        db.FirstName.Add(customerToUpdate.FirstName);
-                                    }
-
-                                    break;
-
-                                case 2:
-                                    Console.Write("Enter new Last Name: ");
-                                    string newLastName = Console.ReadLine();
-
-                                  
-                                    var existingLastName = db.LastName.FirstOrDefault(l => l.Name == newLastName);
-
-                                    if (existingLastName != null)
-                                    {
-                                    
-                                        customerToUpdate.LastName = existingLastName;
-                                    }
-                                    else
-                                    {
-                                      
-                                        customerToUpdate.LastName = new LastName { Name = newLastName };
-                                        db.LastName.Add(customerToUpdate.LastName);
-                                    }
-
-                                    break;
-                                case 3:
-                                    Console.Write("Enter new phonenumber: ");
-                                    string newPhoneNumber = Console.ReadLine();
-                                    customerToUpdate.Email = newPhoneNumber;
-                                    break;
-
-                                case 4:
-                                    Console.Write("Enter new Email: ");
-                                    string newEmail = Console.ReadLine();
-                                    customerToUpdate.Email = newEmail;
-                                    break;
-
-                                case 5:
-                                    Console.Write("Enter new Password: ");
-                                    string newPassword = Console.ReadLine();
-                                    customerToUpdate.Password = newPassword;
-                                    break;
-
-                                case 6:
-                                    Console.Write("Enter new Address: ");
-                                    string newAddress = Console.ReadLine();
-                                    customerToUpdate.Adress.AdressName = newAddress;
-                                    break;
-                                case 7:
-                                    Console.Write("Enter new City: ");
-                                    string newCity = Console.ReadLine();
-                                    customerToUpdate.Adress.City.CityName = newCity;
-                                    break;
-                                case 8:
-                                    Console.Write("Enter new Country: ");
-                                    string newCountry = Console.ReadLine();
-                                    customerToUpdate.Adress.City.Country.CountryName = newCountry;
-                                    break;
-
-
-
-                                default:
-                                    Console.WriteLine("Invalid option. Please enter a valid number.");
-                                    break;
-                            }
-                        }
-
-                            db.SaveChanges();
-                            Console.WriteLine("Customer information updated successfully.");
-
-                            Console.Write("Do you want to update more data? (yes/no): ");
-                            if (Console.ReadLine()?.Trim().ToLower() != "yes")
-                            {
-                                Console.WriteLine("Exiting customer update and returning to admin menu.");
+                                Console.WriteLine("Exiting customer update and returning to admin menu");
                                 Thread.Sleep(1000);
                                 Console.Clear();
                                 AdminMenu();
                             }
-                        else
+                            else
+                            {
+
+                                switch (option)
+                                {
+                                    case 0:
+                                        Console.WriteLine("Exiting customer update and returning to admin menu");
+                                        Console.Clear();
+                                        AdminMenu();
+                                        break;
+
+                                    case 1:
+                                        Console.Write("Enter new First Name: ");
+                                        string newFirstName = Console.ReadLine();
+
+
+                                        var existingFirstName = db.FirstName.FirstOrDefault(f => f.Name == newFirstName);
+
+                                        if (existingFirstName != null)
+                                        {
+
+                                            customerToUpdate.FirstName = existingFirstName;
+                                        }
+                                        else
+                                        {
+
+                                            customerToUpdate.FirstName = new FirstName { Name = newFirstName };
+                                            db.FirstName.Add(customerToUpdate.FirstName);
+                                        }
+
+                                        break;
+
+                                    case 2:
+                                        Console.Write("Enter new Last Name: ");
+                                        string newLastName = Console.ReadLine();
+
+
+                                        var existingLastName = db.LastName.FirstOrDefault(l => l.Name == newLastName);
+
+                                        if (existingLastName != null)
+                                        {
+
+                                            customerToUpdate.LastName = existingLastName;
+                                        }
+                                        else
+                                        {
+
+                                            customerToUpdate.LastName = new LastName { Name = newLastName };
+                                            db.LastName.Add(customerToUpdate.LastName);
+                                        }
+
+                                        break;
+                                    case 3:
+                                    bool validPhoneNumber = false;
+
+                                    do
+                                    {
+                                        Console.Write("Enter new phonenumber: ");
+                                        string newPhoneNumberInput = Console.ReadLine();
+
+                                        if (int.TryParse(newPhoneNumberInput, out int parsedPhoneNumber))
+                                        {
+                                            customerToUpdate.PhoneNumber = parsedPhoneNumber;
+                                            validPhoneNumber = true;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Invalid input. Please enter a valid integer for the phone number.");
+                                        }
+
+                                    } while (!validPhoneNumber);
+                                    break;
+
+                                case 4:
+                                        Console.Write("Enter new Email: ");
+                                        string newEmail = Console.ReadLine();
+                                        customerToUpdate.Email = newEmail;
+                                        break;
+
+                                    case 5:
+                                        Console.Write("Enter new Password: ");
+                                        string newPassword = Console.ReadLine();
+                                        customerToUpdate.Password = newPassword;
+                                        break;
+
+                                    case 6:
+                                        Console.Write("Enter new Address: ");
+                                        string newAddress = Console.ReadLine();
+                                        customerToUpdate.Adress.AdressName = newAddress;
+                                        break;
+                                    case 7:
+                                        Console.Write("Enter new City: ");
+                                        string newCity = Console.ReadLine();
+                                        customerToUpdate.Adress.City.CityName = newCity;
+                                        break;
+                                    case 8:
+                                        Console.Write("Enter new Country: ");
+                                        string newCountry = Console.ReadLine();
+                                        customerToUpdate.Adress.City.Country.CountryName = newCountry;
+                                        break;
+
+
+
+                                    default:
+                                        Console.WriteLine("Invalid option. Please enter a valid number.");
+                                        break;
+                                }
+                            }
+
+                            db.SaveChanges();
+                            Console.WriteLine("Customer information updated successfully.");
+
+                        Console.Write("Do you want to update more data? (yes/no): ");
+                        if (Console.ReadLine()?.Trim().ToLower() != "yes")
                         {
-                            UpdateCustomerInfo();
+                            Console.WriteLine("Exiting customer update and returning to admin menu.");
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                            AdminMenu();
+                            break;
                         }
-                        }                    
+                    }
                     else
                     {
-                        Console.WriteLine("Customer not found. Please enter a valid customer ID.");
+                        Console.WriteLine("Invalid customer ID. Please enter a valid customer ID.");
+                        customerIdToUpdate = -1; 
                     }
                 }
             }
         }
     }
-}
+    }
+
 
 
