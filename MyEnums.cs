@@ -18,21 +18,21 @@ namespace WebShop
         }
         public enum AdminMenu
         {
-            AddProduct,
-            RemoveProduct,
-            ChangeProduct,
-            ChangeFeatured,
-            ShowInventoryBalance,
-            OrderHistory,
-            CustomerInformation,
-            AddCustomer,
-            ShowStatistic,
+            Add_new_product,
+            Remove_product,
+            Change_product,
+            Change_featured_product,
+            Show_inventory_balance,
+            Order_history,
+            Customer_information,
+            Add_new_customer,
+            Show_statistic,
             Exit
         }
         public enum LoginMenu
         {
             Login,
-            CreateAccount,
+            Create_new_account,
             Exit = 9
         }
     }
