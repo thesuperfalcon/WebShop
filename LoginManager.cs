@@ -25,7 +25,7 @@ namespace WebShop
                         case MyEnums.LoginMenu.Login:
                             customer = Login(dbContext, out success);
                             break;
-                        case MyEnums.LoginMenu.Create_new_account:
+                        case MyEnums.LoginMenu.CreateAccount:
                             customer = CreateCustomer();
                             success = true;
                             break;

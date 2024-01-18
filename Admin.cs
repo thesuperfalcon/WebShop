@@ -855,7 +855,7 @@ namespace WebShop
 
                 if (customerIdToUpdate == 0)
                 {
-                    Console.WriteLine("Exiting customer update and returning to admin menu");
+                    Console.WriteLine("Exiting customer update and returning to admin menu.");
                     Thread.Sleep(2000);
                     Console.Clear();
                     AdminMenu();
