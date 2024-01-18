@@ -847,7 +847,7 @@ namespace WebShop
         {
             using (var db = new MyDbContext())
             {
-                Console.Clear(); // Clear the console screen
+                Console.Clear(); 
                 ShowAllCustomers();
 
                 Console.Write("Enter the ID of the customer you want to update (or enter 0 to exit): ");
@@ -872,7 +872,7 @@ namespace WebShop
 
                     if (customerToUpdate != null)
                     {
-                        Console.Clear(); // Clear the console screen before updating
+                        Console.Clear(); 
                         Console.WriteLine($"Current Information for Customer ID {customerToUpdate.Id}:");
                         Console.WriteLine($"1. Firstname: {customerToUpdate.FirstName?.Name}");
                         Console.WriteLine($"2. Lastname: {customerToUpdate.LastName?.Name}");
@@ -908,17 +908,17 @@ namespace WebShop
                                     Console.Write("Enter new First Name: ");
                                     string newFirstName = Console.ReadLine();
 
-                                    // Check if the new name already exists
+                                    
                                     var existingFirstName = db.FirstName.FirstOrDefault(f => f.Name == newFirstName);
 
                                     if (existingFirstName != null)
                                     {
-                                        // Use the existing FirstName if it already exists
+                                        
                                         customerToUpdate.FirstName = existingFirstName;
                                     }
                                     else
                                     {
-                                        // Create a new FirstName if it doesn't exist
+                                      
                                         customerToUpdate.FirstName = new FirstName { Name = newFirstName };
                                         db.FirstName.Add(customerToUpdate.FirstName);
                                     }
@@ -929,17 +929,17 @@ namespace WebShop
                                     Console.Write("Enter new Last Name: ");
                                     string newLastName = Console.ReadLine();
 
-                                    // Check if the new name already exists
+                                  
                                     var existingLastName = db.LastName.FirstOrDefault(l => l.Name == newLastName);
 
                                     if (existingLastName != null)
                                     {
-                                        // Use the existing LastName if it already exists
+                                    
                                         customerToUpdate.LastName = existingLastName;
                                     }
                                     else
                                     {
-                                        // Create a new LastName if it doesn't exist
+                                      
                                         customerToUpdate.LastName = new LastName { Name = newLastName };
                                         db.LastName.Add(customerToUpdate.LastName);
                                     }
