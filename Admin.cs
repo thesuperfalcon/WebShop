@@ -295,7 +295,7 @@ namespace WebShop
                 Console.WriteLine("4. Product supplier");
                 Console.WriteLine("5. Featured product");
                 Console.WriteLine("6. Colour");
-                Console.WriteLine("7. Size");
+                Console.WriteLine("7. Add-Variant");
                 Console.WriteLine();
 
                 int chosenOption = InputHelpers.GetIntegerInput("Select what you want to change: ");
@@ -320,9 +320,9 @@ namespace WebShop
                     case 6:
                         AddColour(productToChange);
                         break;
-                        //case 7:
-                        //    ChangeSize(productToChange);
-                        //    break;
+                    case 7:
+                        AddVariant(productToChange);
+                        break;
                 }
                 db.SaveChanges();
                 Console.WriteLine("Product updated!");
@@ -333,7 +333,74 @@ namespace WebShop
             }
 
         }
+        private static void AddVariant(Product product)
+        {
+            using var db = new MyDbContext();
 
+            var productColors = db.ProductVariants
+                .Where(pv => pv.ProductId == product.Id)
+                .Select(pv => pv.Colour)
+                .ToList();
+
+            var colorsWithoutProductVariants = db.Colours
+                .Where(c => !productColors.Contains(c))
+                .ToList();
+
+            if (colorsWithoutProductVariants.Count > 0)
+            {
+
+                foreach (var color in colorsWithoutProductVariants)
+                {
+                    Console.WriteLine(color.Id + " " + color.ColourName);
+                }
+                var input = InputHelpers.GetIntegerInput("Id: ");
+
+                var specificColour = db.Colours.FirstOrDefault(x => x.Id == input);
+
+                var sizes = db.Sizes.ToList();
+
+                foreach (var size in sizes)
+                {
+                    Console.Write(size.SizeName + " ");
+                }
+                Console.WriteLine("Choose sizes (type comma between sizes)");
+                var sizeChoices = Console.ReadLine().Split(',');
+
+                var sizeChoiceList = new List<Size>();
+
+                foreach (var choice in sizeChoices)
+                {
+                    var matchingSizes = db.Sizes
+                                           .Where(x => x.SizeName.ToLower() == choice.Trim().ToLower())
+                                           .FirstOrDefault();
+
+                    if (matchingSizes != null)
+                    {
+                        sizeChoiceList.Add(matchingSizes);
+                    }
+                }
+
+
+                foreach (var size in sizeChoiceList)
+                {
+                    Console.WriteLine($"Colour: {specificColour.ColourName} Size: {size.SizeName}");
+                    var quantity = InputHelpers.GetIntegerInput("Quantity: ");
+                    var variant = new ProductVariant()
+                    {
+                        ProductId = product.Id,
+                        ColourId = specificColour.Id,
+                        SizeId = size.Id,
+                        Quantity = quantity
+                    };
+                    db.Add(variant);
+                }
+                db.SaveChanges();
+            }
+            else
+            {
+
+            }
+        }
         public static void AddColour(Product product)
         {
             using var db = new MyDbContext();
