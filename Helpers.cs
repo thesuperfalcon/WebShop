@@ -5,6 +5,19 @@ namespace WebShop
 {
     internal class Helpers
     {
+        public static List<Colour> GetColours(Product product, MyDbContext db)
+        {
+            var productColors = db.ProductVariants
+                .Where(pv => pv.ProductId == product.Id)
+                .Select(pv => pv.Colour)
+                .ToList();
+
+            var colorsWithoutProductVariants = db.Colours
+                .Where(c => !productColors.Contains(c))
+                .ToList();
+
+            return colorsWithoutProductVariants;
+        }
         public static int GetSizeId(string size, Product product)
         {
             using var db = new MyDbContext();
