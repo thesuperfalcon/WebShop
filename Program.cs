@@ -19,11 +19,11 @@ namespace WebShop
             //}
 
 
-            Customer customer = new Customer();
+            //Customer customer = new Customer();
 
-            //Customer customer = db.Customers.Where(x => x.Id == 2).SingleOrDefault();
+            ////Customer customer = db.Customers.Where(x => x.Id == 2).SingleOrDefault();
 
-            customer = LoginManager.LoginMenu(db);
+            //customer = LoginManager.LoginMenu(db);
 
             //AddData.RunAddDataMethods();
 
@@ -33,7 +33,7 @@ namespace WebShop
             //Customer customer = db.Customers.FirstOrDefault(x => x.Id == 1);
 
             //TheMenu.ShowMenu(customer);
-            //Admin.AdminMenu();
+            Admin.AdminMenu();
             //Admin.ChangeProduct();
             //Admin.ManageFeaturedProduct();
 
@@ -41,8 +41,8 @@ namespace WebShop
             //var product = db.Products.FirstOrDefault(x => x.Id == 1);
             //TheMenu.ShowMenu(customer);
 
-            ////Admin.AdminMenu();
-            ////Admin.AddProductVariants(product);
+            //Admin.AddProductVariant
+            ////Admin.AdminMenu();s(product);
             //TheMenu.ShowMenu(customer);
         }
     }
