@@ -105,17 +105,21 @@ namespace WebShop
                 }
 
                 var featuredProduct = InputHelpers.GetYesOrNo("Featured product?: ");
-
-                Console.WriteLine(productName);
-                Console.WriteLine(productDescription);
-                Console.WriteLine(productSupplier.SupplierName);
-                Console.WriteLine(productPrice + ":-");
+                Console.Clear();
+                Console.WriteLine("Summary:");
+                Console.WriteLine();
+                Console.WriteLine("Product name: " + productName);
+                Console.WriteLine("Product desciption: " +productDescription);
+                Console.WriteLine("Product supplier: " + productSupplier.SupplierName);
+                Console.WriteLine("Price: " + productPrice + "$");
+                Console.Write("Categories: ");
                 foreach (var category in choosenCategories)
                 {
-                    Console.WriteLine(category.CategoryName);
+                    Console.Write(category.CategoryName + " ");
                 }
+                Console.WriteLine();
 
-                var addProduct = InputHelpers.GetYesOrNo("Add product?: ");
+                var addProduct = InputHelpers.GetYesOrNo("Add new product? ");
 
                 if (addProduct == true)
                 {
@@ -219,7 +223,7 @@ namespace WebShop
                 foreach (var colourVaraint in choosenColours)
                 {
                     Console.WriteLine(sizeVariant.SizeName + " - " + colourVaraint.ColourName);
-                    var amount = InputHelpers.GetIntegerInput("Quantity: ");
+                    var amount = InputHelpers.GetIntegerInput("Quantity to add: ");
 
                     var productVariant = new ProductVariant()
                     {
@@ -242,20 +246,28 @@ namespace WebShop
 
                 var variantSize = db.Sizes.FirstOrDefault(c => c.Id == variant.SizeId);
                 var variantColour = db.Colours.FirstOrDefault(c => c.Id == variant.ColourId);
-                Console.WriteLine(variantSize.SizeName);
-                Console.WriteLine(variantColour.ColourName);
-                Console.WriteLine(variant.Quantity);
+                Console.WriteLine("Size: " +variantSize.SizeName + ", Color: " + variantColour.ColourName + ", Quantity: " + variant.Quantity);
+                //Console.WriteLine(variantColour.ColourName);
+                //Console.WriteLine(variant.Quantity);
 
                 db.Add(variant);
 
             }
-            var addVaraints = InputHelpers.GetYesOrNo("Add_Variants?: ");
+            var addVaraints = InputHelpers.GetYesOrNo("Add variants to the new product? ");
             if (addVaraints == true)
             {
                 db.SaveChanges();
+                Console.WriteLine("Product added, returning to menu.");
+                Thread.Sleep(1500);
+                Console.Clear();
+                AdminMenu();
             }
             else
             {
+                Console.WriteLine("Product not added, returning to menu.");
+                Thread.Sleep(1500);
+                Console.Clear();
+                AdminMenu();
             }
         }
 
@@ -685,7 +697,6 @@ namespace WebShop
                             break;
                     }
                 }
-
                 else
                 {
                     Console.WriteLine("Product not found. Please enter a valid product ID.");
@@ -704,9 +715,11 @@ namespace WebShop
             if (product.ProductVariants.Any())
             {
                 Console.WriteLine("Available Product Variants:");
+                Console.WriteLine("");
                 foreach (var variant in product.ProductVariants)
                 {
                     Console.WriteLine($"   Variant ID: {variant.Id} - Color: {variant.Colour.ColourName} - Size: {variant.Size.SizeName}");
+                    Console.WriteLine("");
                 }
             }
             else
@@ -726,7 +739,6 @@ namespace WebShop
                 Thread.Sleep(2000);
                 Console.Clear();
                 AdminMenu();
-
             }
             else
             {
@@ -771,8 +783,8 @@ namespace WebShop
                     Console.Clear();
                     AdminMenu();
                 }
-
             }
+
             else
             {
                 Console.WriteLine("Variant not found. Please enter a valid variant ID.");
@@ -839,7 +851,6 @@ namespace WebShop
                         }
                     }
 
-
                 }
             }
 
@@ -898,7 +909,7 @@ namespace WebShop
                             if (option == 0)
                             {
                                 Console.WriteLine("Exiting customer update and returning to admin menu");
-                                Thread.Sleep(1000);
+                                Thread.Sleep(1500);
                                 Console.Clear();
                                 AdminMenu();
                             }
@@ -927,7 +938,6 @@ namespace WebShop
                                         }
                                         else
                                         {
-
                                             customerToUpdate.FirstName = new FirstName { Name = newFirstName };
                                             db.FirstName.Add(customerToUpdate.FirstName);
                                         }

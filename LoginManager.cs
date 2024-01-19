@@ -107,6 +107,7 @@ namespace WebShop
         public static Customer CreateCustomer()
         {
             using var db = new MyDbContext();
+            Console.Clear();
 
             string firstName = InputHelpers.GetInput("Enter first name: ");
             string lastName = InputHelpers.GetInput("Enter last name: ");
@@ -118,11 +119,8 @@ namespace WebShop
                 return null;
             }
 
-            Console.Write("Enter phone number (or press Enter to skip): ");
-            string phoneNumberInput = Console.ReadLine();
-
-            int? phoneNumber = !string.IsNullOrEmpty(phoneNumberInput) ? InputHelpers.GetIntegerInput(phoneNumberInput) : (int?)null;
-
+            
+            int PhoneNumber = InputHelpers.GetIntegerInput("Enter phone number");
             string email = InputHelpers.GetInput("Enter email: ");
             string password = InputHelpers.GetInput("Enter password: ");
             bool isAdmin = InputHelpers.GetYesOrNo("Is admin?");
@@ -175,16 +173,32 @@ namespace WebShop
                 FirstNameId = existingFirstName.Id,
                 LastNameId = existingLastName.Id,
                 AdressId = addressInfo.Id,
-                PhoneNumber = phoneNumber,
+                PhoneNumber = PhoneNumber,
                 Email = email,
                 Password = password,
                 IsAdmin = isAdmin,
             };
-
+            
             db.Customers.Add(newCustomer);
             db.SaveChanges();
 
+            if (isAdmin == true)
+            {
+                Console.WriteLine("Customer added, returning to admin menu.");
+                Thread.Sleep(1500);
+                Console.Clear();
+                Admin.AdminMenu();
+            }
+            else
+            {
+                Console.WriteLine("Customer added, returning to login screen.");
+                Thread.Sleep(1500);
+                Console.Clear();
+                LoginMenu(db);
+            }
+
             return newCustomer;
+
         }
     }
 }
