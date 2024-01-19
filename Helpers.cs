@@ -131,7 +131,6 @@ namespace WebShop
         {
             Console.WriteLine("Creating a new address:");
 
-
             var existingCountry = Helpers.GetCountry(dbContext);
 
             string cityName = InputHelpers.GetInput("Enter city name: ");
@@ -141,13 +140,19 @@ namespace WebShop
 
             string addressName = InputHelpers.GetInput("Enter address name: ");
 
-
             var existingAddress = dbContext.Adresses.FirstOrDefault(a => a.AdressName == addressName && a.CityId == existingCity.Id);
 
             if (existingAddress != null)
             {
-                Console.WriteLine("Address with the same name and city already exists. Returning to the menu.");
-                return null;
+                //Console.WriteLine("Address with the same name and city already exists. Updating the existing address.");
+
+                // Perform update logic here
+                existingAddress.PostalCode = postalCode;
+
+                dbContext.SaveChanges();
+
+                Console.WriteLine($"Address '{addressName}' in {existingCity.CityName}, {existingCountry.CountryName} updated successfully.");
+                return existingAddress; // Return the updated address
             }
 
             var newAddress = new Adress
@@ -164,6 +169,43 @@ namespace WebShop
 
             return newAddress;
         }
+        //public static Adress CreateAddress(MyDbContext dbContext)
+        //{
+        //    Console.WriteLine("Creating a new address:");
+
+
+        //    var existingCountry = Helpers.GetCountry(dbContext);
+
+        //    string cityName = InputHelpers.GetInput("Enter city name: ");
+        //    var existingCity = Helpers.GetOrCreateCity(dbContext, cityName, existingCountry);
+
+        //    int postalCode = InputHelpers.GetIntegerInput("Enter postal code: ");
+
+        //    string addressName = InputHelpers.GetInput("Enter address name: ");
+
+
+        //    var existingAddress = dbContext.Adresses.FirstOrDefault(a => a.AdressName == addressName && a.CityId == existingCity.Id);
+
+        //    if (existingAddress != null)
+        //    {
+        //        Console.WriteLine("Address with the same name and city already exists. Returning to the menu.");
+        //        return null;
+        //    }
+
+        //    var newAddress = new Adress
+        //    {
+        //        AdressName = addressName,
+        //        CityId = existingCity.Id,
+        //        PostalCode = postalCode
+        //    };
+
+        //    dbContext.Adresses.Add(newAddress);
+        //    dbContext.SaveChanges();
+
+        //    Console.WriteLine($"Address '{addressName}' with Postal Code {postalCode} in {existingCity.CityName}, {existingCountry.CountryName} created successfully.");
+
+        //    return newAddress;
+        //}
         public static double CalculateBasketValue(List<ProductOrder> basket, MyDbContext db)
         {
             double totalBasketPrice = 0.0;
