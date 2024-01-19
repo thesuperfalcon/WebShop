@@ -355,6 +355,7 @@ namespace WebShop
             }
         }
 
+        //produkt-namn syns inte 
         private static void AddQuantity(ProductOrder chosenProduct)
         {
             using var db = new MyDbContext();
@@ -372,6 +373,7 @@ namespace WebShop
                 Console.WriteLine("Invalid quantity.");
             }
         }
+        //produkt-namn syns inte 
 
         private static void RemoveQuantity(ProductOrder chosenProduct)
         {
@@ -383,8 +385,9 @@ namespace WebShop
                 if (quantityToRemove <= chosenProduct.Quantity)
                 {
                     chosenProduct.Quantity -= quantityToRemove;
-                    Console.WriteLine($"Removed {quantityToRemove} from {chosenProduct.ProductVariant.Product.Name} in your basket.");
-                    UpdateProductVariantQuantity(chosenProduct.ProductVariantId, -quantityToRemove, db);
+                    var chosenProductName = chosenProduct.ProductVariant?.Product?.Name;
+                    Console.WriteLine($"Removed {quantityToRemove} from {chosenProductName} in your basket.");
+                    UpdateProductVariantQuantity(chosenProduct.ProductVariantId, quantityToRemove, db);
                 }
                 else
                 {

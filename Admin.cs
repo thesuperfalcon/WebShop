@@ -24,7 +24,6 @@ namespace WebShop
                     case MyEnums.AdminMenu.Remove_product: RemoveProductOrVariant(); break;
                     case MyEnums.AdminMenu.Change_product: ChangeProduct(); break;
                     case MyEnums.AdminMenu.Change_featured_product: ManageFeaturedProduct(); break;
-                    //case MyEnums.AdminMenu.ChangeProduct: break;
                     case MyEnums.AdminMenu.Show_inventory_balance: break;
                     case MyEnums.AdminMenu.Order_history: break;
                     case MyEnums.AdminMenu.Customer_information: UpdateCustomerInfo(); break;
