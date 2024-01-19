@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using WebShop.Models;
+using Dapper;
 
 namespace WebShop
 {
@@ -46,6 +47,7 @@ namespace WebShop
         public static void ShowInventoryBalance()
         {
             Console.WriteLine("---------------Inventory Balance---------------");
+
 
             using (var connection = new SqlConnection(/*"Anslutningssträng;"))*/))
             {
