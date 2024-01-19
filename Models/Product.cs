@@ -9,8 +9,8 @@ namespace WebShop.Models
 {
     public partial class ProductVariant
     {
-        public ProductVariant() 
-        { 
+        public ProductVariant()
+        {
             ProductOrders = new HashSet<ProductOrder>();
         }
         public int Id { get; set; }
@@ -33,6 +33,7 @@ namespace WebShop.Models
         public string? Name { get; set; }
         public string? Description { get; set; }
         public double? Price { get; set; }
+        public int UnitsInStock { get; set; }
         public int? ProductSupplierId { get; set; }
         public bool FeaturedProduct { get; set; }
         public virtual ProductSupplier? ProductSupplier { get; set; }

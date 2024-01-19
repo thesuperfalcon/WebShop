@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using WebShop.Models;
 
 namespace WebShop
@@ -24,12 +25,12 @@ namespace WebShop
                     case MyEnums.AdminMenu.Remove_product: RemoveProductOrVariant(); break;
                     case MyEnums.AdminMenu.Change_product: ChangeProduct(); break;
                     case MyEnums.AdminMenu.Change_featured_product: ManageFeaturedProduct(); break;
-                    case MyEnums.AdminMenu.Show_inventory_balance: break;
-                    case MyEnums.AdminMenu.Order_history: break;
+                    case MyEnums.AdminMenu.Show_inventory_balance: ShowInventoryBalance(); break;
+                    case MyEnums.AdminMenu.Order_history: OrderHistory(); break;
                     case MyEnums.AdminMenu.Customer_information: UpdateCustomerInfo(); break;
                     case MyEnums.AdminMenu.Add_new_customer: LoginManager.CreateCustomer(); break;
 
-                    case MyEnums.AdminMenu.Show_statistic: break;
+                    case MyEnums.AdminMenu.Show_statistic: ShowStatistic(); break;
                     case MyEnums.AdminMenu.Exit: break;
                 }
             }
@@ -40,6 +41,282 @@ namespace WebShop
             Console.ReadLine();
             Console.Clear();
         }
+        //Lagersaldo:Dapper
+
+        public static void ShowInventoryBalance()
+        {
+            Console.WriteLine("---------------Inventory Balance---------------");
+
+            using (var connection = new SqlConnection(/*"Anslutningssträng;"))*/))
+            {
+                connection.Open();
+
+                ShowStockCategory("Products with less than 1 in stock", "SELECT Name, UnitsInStock FROM Products WHERE UnitsInStock < 1 ORDER BY UnitsInStock DESC", connection);
+                ShowStockCategory("Products with between 1 and 10 in stock", "SELECT Name, UnitsInStock FROM Products WHERE UnitsInStock BETWEEN 1 AND 10 ORDER BY UnitsInStock DESC", connection);
+                ShowStockCategory("Products with more than 10 in stock", "SELECT Name, UnitsInStock FROM Products WHERE UnitsInStock > 10 ORDER BY UnitsInStock DESC", connection);
+
+                Console.WriteLine("-------------------------------------------");
+                Console.Write("Press any key to return to the menu...");
+                Console.ReadKey(true);
+                AdminMenu();
+            }
+        }
+
+        private static void ShowStockCategory(string categoryTitle, string sqlQuery, SqlConnection connection)
+        {
+            Console.WriteLine($"\n\n{categoryTitle}");
+            Console.WriteLine("-------------------------------------------");
+
+            var stockProducts = connection.Query<Product>(sqlQuery);
+
+            if (stockProducts.Any())
+            {
+                foreach (var p in stockProducts)
+                {
+                    Console.WriteLine($"{p.Name}, Units left: {p.UnitsInStock}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No products found.");
+            }
+        }
+
+        //Order history: Dapper
+        public static void OrderHistory()
+        {
+            Console.WriteLine("\n---------------Order history---------------");
+
+            //Ändra till verklig connection
+            using (var connection = new SqlConnection(/*"Anslutningssträng;"))*/))
+            {
+                connection.Open();
+
+                //Dapper för att hämta all data från FinalOrders tabellen i databasen
+                var allOrders = connection.Query<FinalOrder>("SELECT * FROM FinalOrders");
+
+                foreach (var finalOrders in allOrders)
+                {
+                    Console.WriteLine($"\nOrderID: {finalOrders.Id}, Customer: {finalOrders.CustomerId}, Payment: {finalOrders.PaymentId}, Delivery: {finalOrders.DeliveryId}, Total Price: {finalOrders.TotalPrice} ");
+                }
+                Console.WriteLine("\n--------------------------------------------");
+
+                Console.Write("Press any key to return to the menu...\n");
+
+                Console.ReadKey(true);
+
+                AdminMenu();
+            }
+        }
+
+        //Statestikmeny
+        public static void ShowStatistic()
+        {
+            bool showMenu = true;
+
+            while (showMenu)
+            {
+
+                Console.Clear();
+                Console.WriteLine("-----Statstics Menu-----");
+                Console.WriteLine("1. Best Selling Products");
+                Console.WriteLine("2. Sales based on parcel services");
+                Console.WriteLine("3. Sales based on payment method");
+                Console.WriteLine("4. Most popular color");
+                Console.WriteLine("5. Most popular sizes");
+                Console.WriteLine("6. Return");
+                Console.WriteLine("---------------------------------");
+                int statisticChoice = InputHelpers.GetIntegerInput("Choose an option: ");
+
+                switch (statisticChoice)
+                {
+                    case 1:
+                        BestSelling();
+                        break;
+
+                    case 2:
+                        PopularParcels();
+                        break;
+
+                    case 3:
+                        PopularPayment();
+                        break;
+
+                    case 4:
+                        TopColors();
+                        break;
+
+                    case 5:
+                        TopSizes();
+                        break;
+
+                    case 6:
+                        AdminMenu(); //Gå tillbaka
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid option. Please try again.");
+                        break;
+                }
+            }
+        }
+
+        //Populäraste produkterna: LINQ
+        public static void BestSelling()
+        {
+            Console.WriteLine("\n---------------Our best selling products---------------");
+            using (var dbContext = new MyDbContext())
+            {
+                var topSoldProducts = dbContext.ProductOrders
+                    .Join(dbContext.ProductVariants, po => po.ProductVariantId, pv => pv.Id, (po, pv) => new { po, pv })
+                    .Join(dbContext.Products, x => x.pv.ProductId, p => p.Id, (x, p) => new { x.po, p })
+                    .GroupBy(x => x.p.Name)
+                    .Select(g => new
+                    {
+                        ProductName = g.Key,
+                        TotalSold = g.Sum(x => x.po.Quantity)
+                    })
+                    .OrderByDescending(x => x.TotalSold)
+                    .Take(5)
+                    .ToList();
+
+                foreach (var product in topSoldProducts)
+                {
+                    Console.WriteLine($"\n{product.ProductName}, Total Sold: {product.TotalSold}");
+                }
+                Console.WriteLine("\n--------------------------------------------");
+
+                Console.Write("Press any key to return to the menu...\n");
+
+                Console.ReadKey(true);
+
+                AdminMenu();
+            }
+        }
+
+        //Parcel services: Dapper
+        public static void PopularParcels()
+        {
+            Console.WriteLine("\n---------------Our most popular parcel service---------------");
+            using (var connection = new SqlConnection(/*"Anslutningssträng;"))*/))
+            {
+                connection.Open();
+
+                var popularParcels = connection.Query<string>(
+                    $"SELECT TOP (1) DN.Name as DeliveryName, COUNT(*) as Count " +
+                     "FROM FinalOrders FO " +
+                     "JOIN Deliveries D ON FO.DeliveryId = D.Id " +
+                     "JOIN DeliveryNames DN ON D.DeliveryNameId = DN.Id " +
+                     "GROUP BY DN.Name " +
+                     "ORDER BY Count DESC");
+
+                foreach (var parcelName in popularParcels)
+                {
+                    Console.WriteLine($"\n{parcelName}");
+                }
+                Console.WriteLine("\n--------------------------------------------");
+
+                Console.Write("Press any key to return to the menu...\n");
+
+                Console.ReadKey(true);
+
+                AdminMenu();
+            }
+        }
+
+
+        //Betalningsmetod: LINQ
+        public static void PopularPayment()
+        {
+            Console.WriteLine("\n---------------Our most popular payment method---------------");
+            using (var dbContext = new MyDbContext())
+            {
+                var paymentStatistics = dbContext.PaymentTypes
+                .Join(dbContext.FinalOrders, paymentType => paymentType.Id, finalOrder => finalOrder.PaymentId, (paymentType, finalOrder) => new { PaymentType = paymentType, FinalOrder = finalOrder })
+                .GroupBy(joinResult => joinResult.PaymentType.PaymentTypeName)
+                .Select(group => new
+                {
+                    PaymentTypeName = group.Key,
+                    OrderCount = group.Count()
+                })
+                 .OrderByDescending(result => result.OrderCount)
+                 .ToList();
+
+                foreach (var result in paymentStatistics)
+                {
+                    Console.WriteLine($"\nPaymentType: {result.PaymentTypeName}, OrderCount: {result.OrderCount}");
+                }
+                Console.WriteLine("\n--------------------------------------------");
+
+                Console.Write("Press any key to return to the menu...\n");
+
+                Console.ReadKey(true);
+
+                AdminMenu();
+            }
+        }
+
+
+        //Färg: LINQ
+        public static void TopColors()
+        {
+            Console.WriteLine("\n---------------Our most popular colors---------------");
+            using (var dbContext = new MyDbContext())
+            {
+                var mostPopularColours = dbContext.ProductOrders
+               .Join(dbContext.ProductVariants, po => po.ProductVariantId, pv => pv.Id, (po, pv) => new { po, pv })
+               .Join(dbContext.Colours, x => x.pv.ColourId, c => c.Id, (x, c) => new { x.po, c })
+               .GroupBy(x => x.c.ColourName)
+               .OrderByDescending(g => g.Count())
+               .Select(g => g.Key)
+               .Take(3)
+               .ToList();
+
+                foreach (var colour in mostPopularColours)
+                {
+                    Console.WriteLine(colour);
+                }
+            }
+            Console.WriteLine("\n--------------------------------------------");
+
+            Console.Write("Press any key to return to the menu...\n");
+
+            Console.ReadKey(true);
+
+            AdminMenu();
+        }
+
+
+        //Storlekar: Dapper
+        public static void TopSizes()
+        {
+            Console.WriteLine("\n---------------Our top sizes---------------");
+            using (var connection = new SqlConnection(/*"Anslutningssträng;"))*/))
+            {
+                connection.Open();
+
+                var popularSizes = connection.Query<string>(
+                    $"SELECT TOP (3) S.SizeName, COUNT(*) as Count " +
+                     "FROM ProductOrders PO " +
+                     "JOIN ProductVariants PV ON PO.ProductVariantId = PV.Id " +
+                     "JOIN Sizes S ON PV.SizeId = S.Id " +
+                     "GROUP BY S.SizeName " +
+                     "ORDER BY Count DESC");
+
+                foreach (var sizeName in popularSizes)
+                {
+                    Console.WriteLine($"\nSize: {sizeName}");
+                }
+                Console.WriteLine("\n--------------------------------------------");
+
+                Console.Write("Press any key to return to the menu...\n");
+
+                Console.ReadKey(true);
+
+                AdminMenu();
+            }
+        }
+
         public static void AddProduct()
         {
             bool success = false;
@@ -783,7 +1060,7 @@ namespace WebShop
                         Console.WriteLine("Invalid customer ID. Please enter a valid customer ID.");
                         Console.ReadKey();
                         customerIdToUpdate = -1;
-                       
+
                     }
 
                     if (customerToUpdate != null)
@@ -943,7 +1220,7 @@ namespace WebShop
                             }
 
 
-                          
+
                         }
                     }
                 }
