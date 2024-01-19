@@ -209,7 +209,7 @@ namespace WebShop
             {
                 Console.WriteLine($"Product Name: {product.Name}");
                 Console.WriteLine($"Description: {product.Description}");
-                Console.WriteLine($"Price: {product.Price}");
+                Console.WriteLine($"Price: {product.Price}$");
 
                 try
                 {

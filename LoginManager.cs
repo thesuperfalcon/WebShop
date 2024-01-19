@@ -44,6 +44,7 @@ namespace WebShop
 
         private static Customer Login(MyDbContext dbContext, out bool success)
         {
+
             var customer = new Customer();
             success = false;
 
@@ -60,11 +61,15 @@ namespace WebShop
 
                 if (isAdmin)
                 {
+                    Console.Clear();
                     Console.WriteLine($"Welcome to the admin page {displayName}");
+                    
+                    Admin.AdminMenu();
                 }
                 else
                 {
-                    Console.WriteLine($"Welcome {displayName}");
+                    Console.Clear();                   
+                    TheMenu.ShowMenu(loggedInCustomer);
                 }
 
                 success = true;
