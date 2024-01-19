@@ -306,8 +306,8 @@ namespace WebShop
                 Console.WriteLine("3. Price");
                 Console.WriteLine("4. Product supplier");
                 Console.WriteLine("5. Featured product");
-                Console.WriteLine("6. Colour");
-                Console.WriteLine("7. Add-Variant");
+                Console.WriteLine("6. Change variant-colour");
+                Console.WriteLine("7. Add variant");
                 Console.WriteLine();
 
                 int chosenOption = InputHelpers.GetIntegerInput("Select what you want to change: ");
@@ -330,7 +330,7 @@ namespace WebShop
                         productToChange.FeaturedProduct = InputHelpers.GetYesOrNo("Is it a featured product? (Yes/No) ");
                         break;
                     case 6:
-                        AddColour(productToChange);
+                        ChangeVariant(productToChange);
                         break;
                     case 7:
                         AddVariant(productToChange);
@@ -345,6 +345,105 @@ namespace WebShop
             }
 
         }
+        private static void ChangeVariant(Product product)
+        {
+            using var db = new MyDbContext();
+
+            var productVariants = db.ProductVariants
+                                    .Where(x => x.ProductId == product.Id)
+                                    .Include(x => x.Size)
+                                    .Include(x => x.Colour)
+                                    .ToList();
+
+            Console.WriteLine($"Product {product.Id}: {product.Name}");
+
+            if (productVariants.Any())
+            {
+                var distinctColors = productVariants.Select(variant => variant.Colour).Distinct();
+
+                foreach (var distinctColour in distinctColors)
+                {
+                    Console.WriteLine($"Distinct Colour {distinctColour.Id}: {distinctColour.ColourName}");
+
+                    Console.Write("Sizes: ");
+                    var sizesForDistinctColour = productVariants
+                        .Where(v => v.ColourId == distinctColour.Id)
+                        .Select(v => v.Size.SizeName)
+                        .Distinct();
+
+                    Console.WriteLine(string.Join(", ", sizesForDistinctColour));
+                }
+
+                var userInput = InputHelpers.GetIntegerInput("Enter the ID of the color to change its variant: ");
+
+                var specificVariant = productVariants.FirstOrDefault(x => x.ColourId == userInput);
+               
+
+                if (specificVariant != null)
+                {
+                    var colorsWithoutProductVariants = Helpers.GetColours(product, db);
+                    foreach (var color in colorsWithoutProductVariants)
+                    {
+                        Console.WriteLine(color.Id + " " + color.ColourName);
+                    }
+                    var newColourId = InputHelpers.GetIntegerInput("Enter the ID of the new color: ");
+                    var newColour = db.Colours.FirstOrDefault(c => c.Id == newColourId);
+
+                    if (newColour != null)
+                    {
+                        specificVariant.ColourId = newColour.Id;
+
+                        Console.WriteLine("Variant color changed successfully!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid new color ID. Please select a valid color.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid color ID. Please select a valid color.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No variants found for the product.");
+            }
+
+
+            var coloursWithoutVariants = Helpers.GetColours(product, db);
+
+            if (coloursWithoutVariants.Count > 0)
+            {
+                Console.WriteLine("Colours without variants:");
+                foreach (var color in coloursWithoutVariants)
+                {
+                    Console.WriteLine($"{color.Id} {color.ColourName}");
+                }
+
+                var input = InputHelpers.GetIntegerInput("Enter the ID of the color to add a variant: ");
+
+                var specificColour = db.Colours.FirstOrDefault(x => x.Id == input);
+
+                if (specificColour != null)
+                {
+                    var specificVariant = new ProductVariant();
+                    Console.WriteLine($"Variant added successfully! Details:");
+                    Console.WriteLine($"Colour: {specificColour.ColourName}");
+                    Console.WriteLine($"Size: {specificVariant.Size?.SizeName}");
+
+                }
+                else
+                {
+                    Console.WriteLine("Invalid color ID. Please select a valid color to add a variant.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No colours without variants found for the product.");
+            }
+        }
+
         private static void AddVariant(Product product)
         {
             using var db = new MyDbContext();
@@ -413,216 +512,6 @@ namespace WebShop
 
             }
         }
-        public static void AddColour(Product product)
-        {
-            using var db = new MyDbContext();
-            Console.WriteLine();
-
-            Console.WriteLine($"Current colours for {product.Name}: ");
-            var currentColours = product.ProductVariants.Select(pv => db.Colours.FirstOrDefault(c => c.Id == pv.ColourId)?.ColourName).Distinct().Where(c => c != null);
-            Console.WriteLine(string.Join(", ", currentColours));
-
-            Console.WriteLine();
-
-            Console.WriteLine("All available colours: ");
-            var allColours = db.Colours.ToList();
-
-            foreach (var colour in allColours)
-            {
-                Console.WriteLine($"{colour.Id}, {colour.ColourName}.");
-            }
-
-            Console.WriteLine();
-
-            int colourId = InputHelpers.GetIntegerInput("Enter the Id of the colour you want to add: ");
-            var newColour = db.Colours.FirstOrDefault(c => c.Id == colourId);
-
-            if (newColour != null)
-            {
-                foreach (var variant in product.ProductVariants)
-                {
-                    variant.ColourId = newColour.Id;
-                }
-                db.SaveChanges();
-                Console.WriteLine();
-                Console.WriteLine("Colour added!");
-            }
-            else
-            {
-                Console.WriteLine("Colour not found.");
-            }
-        }
-        private static void RemoveColor(Product product)
-        {
-            using var db = new MyDbContext();
-
-            Console.WriteLine("Current colors:");
-            var currentColors = db.Colours.ToList();
-
-            foreach (var color in currentColors)
-            {
-                Console.WriteLine($"{color.Id}, {color.ColourName}.");
-            }
-
-            Console.WriteLine();
-            int colorIdToRemove = InputHelpers.GetIntegerInput("Enter the Id of the color to remove: ");
-            var colorToRemove = db.Colours.FirstOrDefault(c => c.Id == colorIdToRemove);
-
-            if (colorToRemove != null)
-            {
-                foreach (var variant in product.ProductVariants)
-                {
-                    if (variant.ColourId == colorToRemove.Id)
-                    {
-                        variant.ColourId = 0;
-                    }
-                }
-                db.SaveChanges();
-                Console.WriteLine();
-                Console.WriteLine("Color removed!");
-            }
-            else
-            {
-                Console.WriteLine("Color not found.");
-            }
-        }
-
-        //public static void AddSize(Product product)
-        //{
-        //    using var db = new MyDbContext();
-        //    Console.WriteLine();
-
-        //    Console.WriteLine($"Current sizes for {product.Name}: ");
-        //    var currentSizes = product.ProductVariants.Select(pv => db.Sizes.FirstOrDefault(s => s.Id == pv.SizeId)?.SizeName).Distinct().Where(s => s != null);
-        //    Console.WriteLine(string.Join(", ", currentSizes));
-
-        //    Console.WriteLine();
-
-        //    Console.WriteLine("All available colours: ");
-        //    var allSizes = db.Sizes.ToList();
-
-        //    foreach (var size in allSizes)
-        //    {
-        //        Console.WriteLine($"{size.Id}, {size.SizeName}.");
-        //    }
-
-        //    Console.WriteLine();
-
-        //    int sizeId = InputHelpers.GetIntegerInput("Enter the Id of the colour you want to add: ");
-        //    var newSize = db.Sizes.FirstOrDefault(s => s.Id == sizeId);
-
-        //    if (newSize != null)
-        //    {
-        //        foreach (var variant in product.ProductVariants)
-        //        {
-        //            variant.SizeId = newSize.Id;
-        //        }
-        //        db.SaveChanges();
-        //        Console.WriteLine();
-        //        Console.WriteLine("Size added!");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Size not found.");
-        //    }
-        //}
-
-        //private static void RemoveSize(Product product)
-        //{
-        //    using var db = new MyDbContext();
-
-        //    Console.WriteLine("Current sizes:");
-        //    var currentSizes = db.Sizes.ToList();
-
-        //    foreach (var size in currentSizes)
-        //    {
-        //        Console.WriteLine($"{size.Id}, {size.SizeName}.");
-        //    }
-
-        //    Console.WriteLine();
-        //    int sizeIdToRemove = InputHelpers.GetIntegerInput("Enter the Id of the size to remove: ");
-        //    var sizeToRemove = db.Sizes.FirstOrDefault(s => s.Id == sizeIdToRemove);
-
-        //    if (sizeToRemove != null)
-        //    {
-        //        foreach (var variant in product.ProductVariants)
-        //        {
-        //            if (variant.SizeId == sizeToRemove.Id)
-        //            {
-        //                variant.SizeId = 0;
-        //            }
-        //        }
-        //        db.SaveChanges();
-        //        Console.WriteLine();
-        //        Console.WriteLine("Size removed!");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Size not found.");
-        //    }
-        //}
-
-        //public static void ChangeColour(Product product)
-        //{
-        //    using var db = new MyDbContext();
-        //    Console.WriteLine();
-
-        //    Console.WriteLine("Current colours:");
-        //    var currentColour = db.Colours.ToList();
-
-        //    foreach (var colour in currentColour)
-        //    {
-        //        Console.WriteLine($"{colour.Id}, {colour.ColourName}.");
-        //    }
-        //    Console.WriteLine();
-        //    int colourId = InputHelpers.GetIntegerInput("Enter the Id of the colour you want to set: ");
-        //    var selectedColour = db.Colours.FirstOrDefault(c => c.Id == colourId);
-
-        //    if (selectedColour != null)
-        //    {
-        //        foreach (var variant in product.ProductVariants)
-        //        {
-        //            variant.ColourId = selectedColour.Id;
-        //        }
-        //        db.SaveChanges();
-        //        Console.WriteLine();
-        //        Console.WriteLine("Colour updated!");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Colour not found.");
-        //    }
-        //}
-        //public static void ChangeSize(Product product)
-        //{
-        //    using var db = new MyDbContext();
-        //    Console.WriteLine();
-
-        //    Console.WriteLine("Current sizes:");
-        //    var currentSizes = db.Sizes.ToList();
-        //    foreach (var size in currentSizes)
-        //    {
-        //        Console.WriteLine($"{size.Id}, {size.SizeName}");
-        //    }
-        //    Console.WriteLine();
-        //    int sizeId = InputHelpers.GetIntegerInput("Enter the Id of the size you want to set: ");
-        //    var selectedSizes = db.Sizes.FirstOrDefault(s => s.Id == sizeId);
-
-        //    if (selectedSizes != null)
-        //    {
-        //        foreach (var variant in product.ProductVariants)
-        //        {
-        //            variant.SizeId = selectedSizes.Id;
-        //        }
-        //        Console.WriteLine();
-        //        db.SaveChanges();
-        //        Console.WriteLine("Size updated!");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Size not found.");
-        //    }
-        //}
 
         public static void ManageFeaturedProduct()
         {
@@ -859,7 +748,7 @@ namespace WebShop
         {
             using (var db = new MyDbContext())
             {
-                int customerIdToUpdate = -1; 
+                int customerIdToUpdate = -1;
 
                 while (true)
                 {
@@ -867,7 +756,7 @@ namespace WebShop
 
                     if (customerIdToUpdate == -1)
                     {
-                        
+
                         ShowAllCustomers();
                         Console.Write("Enter the ID of the customer you want to update (or enter 0 to exit): ");
                         customerIdToUpdate = InputHelpers.GetIntegerInput("");
@@ -891,18 +780,30 @@ namespace WebShop
                         .FirstOrDefault(c => c.Id == customerIdToUpdate);
 
                     if (customerToUpdate != null)
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"Current Information for Customer ID {customerToUpdate.Id}:");
+                        Console.WriteLine($"1. Firstname: {customerToUpdate.FirstName?.Name}");
+                        Console.WriteLine($"2. Lastname: {customerToUpdate.LastName?.Name}");
+                        Console.WriteLine($"3. Phonenumber: {customerToUpdate.PhoneNumber}");
+                        Console.WriteLine($"4. Email: {customerToUpdate.Email}");
+                        Console.WriteLine($"5. Password: {customerToUpdate.Password}");
+                        Console.WriteLine($"6. Address: {customerToUpdate.Adress?.AdressName}");
+                        Console.WriteLine($"7. City: {customerToUpdate.Adress?.City?.CityName}");
+                        Console.WriteLine($"8. Country: {customerToUpdate.Adress?.City?.Country?.CountryName}");
+                        Console.WriteLine("\nEnter the number corresponding to the information you want to update (or enter 0 to exit):");
+
+                        int option = InputHelpers.GetIntegerInput("");
+
+                        if (option == 0)
                         {
+                            Console.WriteLine("Exiting customer update and returning to admin menu");
+                            Thread.Sleep(1000);
                             Console.Clear();
-                            Console.WriteLine($"Current Information for Customer ID {customerToUpdate.Id}:");
-                            Console.WriteLine($"1. Firstname: {customerToUpdate.FirstName?.Name}");
-                            Console.WriteLine($"2. Lastname: {customerToUpdate.LastName?.Name}");
-                            Console.WriteLine($"3. Phonenumber: {customerToUpdate.PhoneNumber}");
-                            Console.WriteLine($"4. Email: {customerToUpdate.Email}");
-                            Console.WriteLine($"5. Password: {customerToUpdate.Password}");
-                            Console.WriteLine($"6. Address: {customerToUpdate.Adress?.AdressName}");
-                            Console.WriteLine($"7. City: {customerToUpdate.Adress?.City?.CityName}");
-                            Console.WriteLine($"8. Country: {customerToUpdate.Adress?.City?.Country?.CountryName}");
-                            Console.WriteLine("\nEnter the number corresponding to the information you want to update (or enter 0 to exit):");
+                            AdminMenu();
+                        }
+                        else
+                        {
 
                             int option = InputHelpers.GetIntegerInput("");
 
@@ -915,25 +816,30 @@ namespace WebShop
                             }
                             else
                             {
+                                case 0:
+                                    Console.WriteLine("Exiting customer update and returning to admin menu");
+                                    Console.Clear();
+                                    AdminMenu();
+                                    break;
 
-                                switch (option)
-                                {
-                                    case 0:
-                                        Console.WriteLine("Exiting customer update and returning to admin menu");
-                                        Console.Clear();
-                                        AdminMenu();
-                                        break;
-
-                                    case 1:
-                                        Console.Write("Enter new First Name: ");
-                                        string newFirstName = Console.ReadLine();
+                                case 1:
+                                    Console.Write("Enter new First Name: ");
+                                    string newFirstName = Console.ReadLine();
 
 
-                                        var existingFirstName = db.FirstName.FirstOrDefault(f => f.Name == newFirstName);
+                                    var existingFirstName = db.FirstName.FirstOrDefault(f => f.Name == newFirstName);
 
-                                        if (existingFirstName != null)
-                                        {
+                                    if (existingFirstName != null)
+                                    {
 
+                                        customerToUpdate.FirstName = existingFirstName;
+                                    }
+                                    else
+                                    {
+
+                                        customerToUpdate.FirstName = new FirstName { Name = newFirstName };
+                                        db.FirstName.Add(customerToUpdate.FirstName);
+                                    }
                                             customerToUpdate.FirstName = existingFirstName;
                                         }
                                         else
@@ -942,29 +848,29 @@ namespace WebShop
                                             db.FirstName.Add(customerToUpdate.FirstName);
                                         }
 
-                                        break;
+                                    break;
 
-                                    case 2:
-                                        Console.Write("Enter new Last Name: ");
-                                        string newLastName = Console.ReadLine();
+                                case 2:
+                                    Console.Write("Enter new Last Name: ");
+                                    string newLastName = Console.ReadLine();
 
 
-                                        var existingLastName = db.LastName.FirstOrDefault(l => l.Name == newLastName);
+                                    var existingLastName = db.LastName.FirstOrDefault(l => l.Name == newLastName);
 
-                                        if (existingLastName != null)
-                                        {
+                                    if (existingLastName != null)
+                                    {
 
-                                            customerToUpdate.LastName = existingLastName;
-                                        }
-                                        else
-                                        {
+                                        customerToUpdate.LastName = existingLastName;
+                                    }
+                                    else
+                                    {
 
-                                            customerToUpdate.LastName = new LastName { Name = newLastName };
-                                            db.LastName.Add(customerToUpdate.LastName);
-                                        }
+                                        customerToUpdate.LastName = new LastName { Name = newLastName };
+                                        db.LastName.Add(customerToUpdate.LastName);
+                                    }
 
-                                        break;
-                                    case 3:
+                                    break;
+                                case 3:
                                     bool validPhoneNumber = false;
 
                                     do
@@ -986,43 +892,43 @@ namespace WebShop
                                     break;
 
                                 case 4:
-                                        Console.Write("Enter new Email: ");
-                                        string newEmail = Console.ReadLine();
-                                        customerToUpdate.Email = newEmail;
-                                        break;
+                                    Console.Write("Enter new Email: ");
+                                    string newEmail = Console.ReadLine();
+                                    customerToUpdate.Email = newEmail;
+                                    break;
 
-                                    case 5:
-                                        Console.Write("Enter new Password: ");
-                                        string newPassword = Console.ReadLine();
-                                        customerToUpdate.Password = newPassword;
-                                        break;
+                                case 5:
+                                    Console.Write("Enter new Password: ");
+                                    string newPassword = Console.ReadLine();
+                                    customerToUpdate.Password = newPassword;
+                                    break;
 
-                                    case 6:
-                                        Console.Write("Enter new Address: ");
-                                        string newAddress = Console.ReadLine();
-                                        customerToUpdate.Adress.AdressName = newAddress;
-                                        break;
-                                    case 7:
-                                        Console.Write("Enter new City: ");
-                                        string newCity = Console.ReadLine();
-                                        customerToUpdate.Adress.City.CityName = newCity;
-                                        break;
-                                    case 8:
-                                        Console.Write("Enter new Country: ");
-                                        string newCountry = Console.ReadLine();
-                                        customerToUpdate.Adress.City.Country.CountryName = newCountry;
-                                        break;
+                                case 6:
+                                    Console.Write("Enter new Address: ");
+                                    string newAddress = Console.ReadLine();
+                                    customerToUpdate.Adress.AdressName = newAddress;
+                                    break;
+                                case 7:
+                                    Console.Write("Enter new City: ");
+                                    string newCity = Console.ReadLine();
+                                    customerToUpdate.Adress.City.CityName = newCity;
+                                    break;
+                                case 8:
+                                    Console.Write("Enter new Country: ");
+                                    string newCountry = Console.ReadLine();
+                                    customerToUpdate.Adress.City.Country.CountryName = newCountry;
+                                    break;
 
 
 
-                                    default:
-                                        Console.WriteLine("Invalid option. Please enter a valid number.");
-                                        break;
-                                }
+                                default:
+                                    Console.WriteLine("Invalid option. Please enter a valid number.");
+                                    break;
                             }
+                        }
 
-                            db.SaveChanges();
-                            Console.WriteLine("Customer information updated successfully.");
+                        db.SaveChanges();
+                        Console.WriteLine("Customer information updated successfully.");
 
                         Console.Write("Do you want to update more data? (yes/no): ");
                         if (Console.ReadLine()?.Trim().ToLower() != "yes")
@@ -1037,13 +943,13 @@ namespace WebShop
                     else
                     {
                         Console.WriteLine("Invalid customer ID. Please enter a valid customer ID.");
-                        customerIdToUpdate = -1; 
+                        customerIdToUpdate = -1;
                     }
                 }
             }
         }
     }
-    }
+}
 
 
 
