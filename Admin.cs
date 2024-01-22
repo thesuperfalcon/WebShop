@@ -48,14 +48,14 @@ namespace WebShop
         {
             Console.WriteLine("---------------Inventory Balance---------------");
 
+            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
 
-            using (var connection = new SqlConnection(/*"Anslutningssträng;"))*/))
+            using (var connection = new SqlConnection(connString))
             {
                 connection.Open();
-
-                ShowStockCategory("Products with less than 1 in stock", "SELECT Name, UnitsInStock FROM Products WHERE UnitsInStock < 1 ORDER BY UnitsInStock DESC", connection);
-                ShowStockCategory("Products with between 1 and 10 in stock", "SELECT Name, UnitsInStock FROM Products WHERE UnitsInStock BETWEEN 1 AND 10 ORDER BY UnitsInStock DESC", connection);
-                ShowStockCategory("Products with more than 10 in stock", "SELECT Name, UnitsInStock FROM Products WHERE UnitsInStock > 10 ORDER BY UnitsInStock DESC", connection);
+                ShowStockCategory("Products with less than 1 in stock", "SELECT Name, Quantity FROM Products WHERE Quantity < 1 ORDER BY Quantity DESC", connection);
+                ShowStockCategory("Products with between 1 and 10 in stock", "SELECT Name, Quantity FROM Products WHERE Quantity BETWEEN 1 AND 10 ORDER BY Quantity DESC", connection);
+                ShowStockCategory("Products with more than 10 in stock", "SELECT Name, Quantity FROM Products WHERE Quantity > 10 ORDER BY Quantity DESC", connection);
 
                 Console.WriteLine("-------------------------------------------");
                 Console.Write("Press any key to return to the menu...");
@@ -89,27 +89,29 @@ namespace WebShop
         {
             Console.WriteLine("\n---------------Order history---------------");
 
-            //Ändra till verklig connection
-            using (var connection = new SqlConnection(/*"Anslutningssträng;"))*/))
+            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
+
+
+            using (var connection = new SqlConnection(connString))
             {
                 connection.Open();
 
-                //Dapper för att hämta all data från FinalOrders tabellen i databasen
-                var allOrders = connection.Query<FinalOrder>("SELECT * FROM FinalOrders");
+                    var allOrders = connection.Query<FinalOrder>("SELECT * FROM FinalOrders");
 
                 foreach (var finalOrders in allOrders)
                 {
                     Console.WriteLine($"\nOrderID: {finalOrders.Id}, Customer: {finalOrders.CustomerId}, Payment: {finalOrders.PaymentId}, Delivery: {finalOrders.DeliveryId}, Total Price: {finalOrders.TotalPrice} ");
                 }
+
                 Console.WriteLine("\n--------------------------------------------");
 
                 Console.Write("Press any key to return to the menu...\n");
-
                 Console.ReadKey(true);
 
                 AdminMenu();
             }
         }
+
 
         //Statestikmeny
         public static void ShowStatistic()
