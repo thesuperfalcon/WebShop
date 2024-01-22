@@ -58,9 +58,9 @@ namespace WebShop
                         case MyEnums.AdminMenu.Order_history: OrderHistory(); break;
                         case MyEnums.AdminMenu.Customer_information: UpdateCustomerInfo(); break;
                         case MyEnums.AdminMenu.Add_new_customer: LoginManager.CreateCustomer(customer); break;
-
                         case MyEnums.AdminMenu.Show_statistic: ShowStatistic(); break;
-                        case MyEnums.AdminMenu.Exit: success = true;  break;
+                        case MyEnums.AdminMenu.Log_Out: success = true; break;
+                        case MyEnums.AdminMenu.Exit: Environment.Exit(0); break;
                     }
                 }
                 else
@@ -120,7 +120,7 @@ namespace WebShop
                 foreach (var p in stockProducts)
                 {
                     i++;
-                    Console.WriteLine($"{i} {p.Name}, Units left: {p.Quantity} ");
+                    Console.WriteLine($"{i} {p.Name}, Units left: {p.TotalQuantity} ");
                 }
             }
             else

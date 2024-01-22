@@ -44,9 +44,8 @@ namespace WebShop
 
 =======
 
-                Customer customer = LoginManager.LoginMenu(db);
 
-                //Customer customer = db.Customers.FirstOrDefault(x => x.Id == 4);
+                Customer customer = customer = LoginManager.LoginMenu(db);
 
 
                 //TheMenu.ShowMenu(customer);
@@ -71,6 +70,7 @@ namespace WebShop
                 {
                     TheMenu.ShowMenu(customer);
                 }
+
                 //Admin.AdminMenu();
 >>>>>>> 0b6fb78d74b66f532fec211252d99eb35ed8f06d
                 //Admin.ChangeProduct();

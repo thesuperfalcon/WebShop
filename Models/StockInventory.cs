@@ -9,6 +9,6 @@ namespace WebShop.Models
     internal class StockInventory
     {
         public string Name { get; set; }
-        public int Quantity { get; set; }
+        public int TotalQuantity { get; set; }
     }
 }
