@@ -1,5 +1,6 @@
 ﻿using Microsoft.Identity.Client;
 using WebShop.Models;
+using static WebShop.WindowUI;
 
 namespace WebShop
 {
@@ -19,7 +20,7 @@ namespace WebShop
             //}
 
 
-            //Customer customer = new Customer();
+            Customer customer = new Customer();
 
             //Customer customer = db.Customers.Where(x => x.Id == 2).SingleOrDefault();
 
@@ -33,17 +34,18 @@ namespace WebShop
             //Customer customer = db.Customers.FirstOrDefault(x => x.Id == 1);
 
             //TheMenu.ShowMenu(customer);
-            Admin.AdminMenu();
-            Admin.ChangeProduct();
-            Admin.ManageFeaturedProduct();
-
+            //Admin.AdminMenu();
+            //Admin.ChangeProduct();
+            //Admin.ManageFeaturedProduct();
 
             //var product = db.Products.FirstOrDefault(x => x.Id == 1);
-            //TheMenu.ShowMenu(customer);
 
             //Admin.AdminMenu();
             //Admin.AddProductVariants(product);
-            //TheMenu.ShowMenu(customer);
+
+            TheMenu.ShowMenu(customer);
+
+
         }
     }
 }

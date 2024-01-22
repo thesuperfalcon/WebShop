@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Drawing;
 using WebShop.Models;
+using static WebShop.WindowUI;
 
 namespace WebShop
 {
@@ -12,9 +13,12 @@ namespace WebShop
 
             bool success = false;
             List<Product> searchResults;
+
             while (!success)
             {
+                Console.SetCursorPosition(0, 27);
                 var userInput = InputHelpers.GetInput("Search: ");
+
 
                 searchResults = db.Products
                     .Where(x => x.Name.Contains(userInput) || x.Categories.Any(c => c.CategoryName.Contains(userInput) && (c.CategoryName.StartsWith(userInput))))
@@ -23,16 +27,20 @@ namespace WebShop
 
                 if (searchResults.Count == 0)
                 {
+
                     Console.WriteLine("No products found! Try again...");
                 }
                 else
                 {
+
                     Console.WriteLine("Search results:");
 
                     for (int i = 0; i < searchResults.Count; i++)
                     {
+
                         Console.WriteLine($"{i + 1}. {searchResults[i].Name}");
                     }
+
 
                     var selectedIndex = InputHelpers.GetIntegerInput("Select the correct product or enter 0 to search again: ");
 
@@ -116,6 +124,8 @@ namespace WebShop
             var categories = db.Categories.ToList();
             bool success = false;
             ProductOrder basket = null;
+
+            Console.SetCursorPosition(0, 27);
 
             while (!success)
             {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebShop.Models;
+using static WebShop.WindowUI;
 
 namespace WebShop
 {
@@ -122,6 +123,7 @@ namespace WebShop
         {
             using (var db = new MyDbContext())
             {
+                Console.SetCursorPosition(0, 27);
                 int number = 1;
                 double totalPrice = 0;
 
@@ -205,11 +207,18 @@ namespace WebShop
 
             var products = db.Products.Where(x => x.FeaturedProduct == true).ToList();
 
+            var featuredProductsWindow = new Window("Extra amazing clothes!", 0, 4, new List<string>());
+
             foreach (var product in products)
             {
-                Console.WriteLine($"Product Name: {product.Name}");
-                Console.WriteLine($"Description: {product.Description}");
-                Console.WriteLine($"Price: {product.Price}");
+                //Console.WriteLine($"Product Name: {product.Name}");
+                //Console.WriteLine($"Description: {product.Description}");
+                //Console.WriteLine($"Price: {product.Price}");
+
+                featuredProductsWindow.TextRows.Add($"  ~ {product.Name} ~");
+                featuredProductsWindow.TextRows.Add($"{product.Description}");
+                featuredProductsWindow.TextRows.Add($"Price: {product.Price}:-");
+
 
                 try
                 {
@@ -221,27 +230,49 @@ namespace WebShop
 
                     if (productVariants.Any())
                     {
-                        Console.WriteLine("Available Variants:");
-
-                        Console.Write("Size: ");
-                        var sizes = productVariants.Select(variant => variant.Size.SizeName).Distinct();
-                        Console.WriteLine(string.Join(", ", sizes));
-
-                        Console.Write("Colour: ");
-                        var colors = productVariants.Select(variant => variant.Colour.ColourName).Distinct();
-                        Console.WriteLine(string.Join(", ", colors));
+                        featuredProductsWindow.TextRows.Add("Available Variants:");
+                        featuredProductsWindow.TextRows.Add($"Size: {string.Join(", ", productVariants.Select(variant => variant.Size.SizeName).Distinct())}");
+                        featuredProductsWindow.TextRows.Add($"Colour: {string.Join(", ", productVariants.Select(variant => variant.Colour.ColourName).Distinct())}");
                     }
                     else
                     {
-                        Console.WriteLine("No variants found for this product.");
+                        featuredProductsWindow.TextRows.Add("No variants found for this product.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error retrieving product information: {ex.Message}");
+                    featuredProductsWindow.TextRows.Add($"Error retrieving product information: {ex.Message}");
                 }
-                Console.WriteLine();
+
+                featuredProductsWindow.TextRows.Add("");  
             }
+
+            featuredProductsWindow.Draw();
+
+            //----- Gammal kod utan windowUI
+            //    if (productVariants.Any())
+            //    {
+            //        Console.WriteLine("Available Variants:");
+
+            //        Console.Write("Size: ");
+            //        var sizes = productVariants.Select(variant => variant.Size.SizeName).Distinct();
+            //        Console.WriteLine(string.Join(", ", sizes));
+
+            //        Console.Write("Colour: ");
+            //        var colors = productVariants.Select(variant => variant.Colour.ColourName).Distinct();
+            //        Console.WriteLine(string.Join(", ", colors));
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("No variants found for this product.");
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"Error retrieving product information: {ex.Message}");
+            //}
+            //Console.WriteLine();
+        
         }
 
         public static void UpdateQuantity(List<ProductOrder> basket)

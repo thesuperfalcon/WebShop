@@ -1,14 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection.PortableExecutable;
 using WebShop.Models;
+using static WebShop.WindowUI;
 
 namespace WebShop
 {
     internal class TheMenu
     {
         private static List<ProductOrder> basket = new List<ProductOrder>();
+        //private static WindowUI.Window featuredProductsWindow;
 
         public static void ShowMenu(Customer customer)
         {
+            //featuredProductsWindow = new WindowUI.Window("Extra amazing clothes!", 20, 4, new List<string>());
+
+            var welcomeWindow = new Window("", 0, 0, new List<string>());
+            Console.ForegroundColor = ConsoleColor.Green;
+            welcomeWindow.DrawMessage("Welcome to Tace!");
+            Console.ResetColor();
+
             bool loop = true;
             while (loop)
             {
@@ -28,15 +38,19 @@ namespace WebShop
 
                 basket = updatedBasket;
 
-                Console.WriteLine($"User: {customerFullName}");
+                var messageWindow = new Window("", 20, 0, new List<string>());
+                messageWindow.DrawMessage($"User: Test Test {customerFullName}");
+
+                var menuOptions = Enum.GetValues(typeof(MyEnums.Menu))
+                       .Cast<MyEnums.Menu>()
+                       .Select(menu => Enum.GetName(typeof(MyEnums.Menu), menu).Replace('_', ' '))
+                       .ToList();
+
+                var windowMenu = new Window("Menu", 41, -3, menuOptions);
+                windowMenu.DrawMenu(menuOptions);
 
                 BasketHelpers.ShowFeaturedProduct();
                 var productBasket = new ProductOrder();
-
-                foreach (int i in Enum.GetValues(typeof(MyEnums.Menu)))
-                {
-                    Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.Menu), i).Replace('_', ' '));
-                }
 
                 int nr;
                 if (int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out nr))

@@ -6,7 +6,7 @@ namespace WebShop
 {
     internal class AddData
     {
-        private static string[] Categories = { "Men", "Women", "Pants", "T-Shirt", "Hoodie", "Jeans", "Jacket", "Sweater", "Dress" };
+        public static string[] Categories = { "Men", "Women", "Pants", "T-Shirt", "Hoodie", "Jeans", "Jacket", "Sweater", "Dress" };
         private static string[] Sizes = { "S", "M", "L", "XL" };
         private static string[] Suppliers = { "Cocktailorde", "Dressman", "Gucci" };
         private static string[] Colours = { "Red", "Blue", "Green", "Black", "Gray", "Navy", "White", "Brown", "Purple", "Yellow" };
