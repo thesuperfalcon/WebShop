@@ -211,10 +211,25 @@ namespace WebShop
 
             foreach (var product in products)
             {
+<<<<<<< HEAD
+=======
+                //Console.WriteLine($"Product Name: {product.Name}");
+                //Console.WriteLine($"Description: {product.Description}");
+                //Console.WriteLine($"Price: {product.Price}");
+
+>>>>>>> 0b6fb78d74b66f532fec211252d99eb35ed8f06d
                 featuredProductsWindow.TextRows.Add($"  ~ {product.Name} ~");
                 featuredProductsWindow.TextRows.Add($"{product.Description}");
                 featuredProductsWindow.TextRows.Add($"Price: {product.Price}:-");
 
+<<<<<<< HEAD
+=======
+
+                Console.WriteLine($"Product Name: {product.Name}");
+                Console.WriteLine($"Description: {product.Description}");
+                Console.WriteLine($"Price: {product.Price}$");
+
+>>>>>>> 0b6fb78d74b66f532fec211252d99eb35ed8f06d
                 try
                 {
                     var productVariants = db.ProductVariants

@@ -26,7 +26,7 @@ namespace WebShop
                             customer = Login(dbContext, out success);
                             break;
                         case MyEnums.LoginMenu.Create_new_account:
-                            customer = CreateCustomer();
+                            customer = CreateCustomer(customer);
                             success = true;
                             break;
                         case MyEnums.LoginMenu.Exit:
@@ -64,7 +64,7 @@ namespace WebShop
                     Console.Clear();
                     Console.WriteLine($"Welcome to the admin page {displayName}");
                     
-                    Admin.AdminMenu();
+                    //Admin.AdminMenu();
                 }
                 else
                 {
@@ -109,7 +109,7 @@ namespace WebShop
             return false;
         }
 
-        public static Customer CreateCustomer()
+        public static Customer CreateCustomer(Customer customer)
         {
             using var db = new MyDbContext();
             Console.Clear();
@@ -124,11 +124,34 @@ namespace WebShop
                 return null;
             }
 
-            
+            var adminAccessPassword = "abc123";
+
             int PhoneNumber = InputHelpers.GetIntegerInput("Enter phone number");
             string email = InputHelpers.GetInput("Enter email: ");
             string password = InputHelpers.GetInput("Enter password: ");
             bool isAdmin = InputHelpers.GetYesOrNo("Is admin?");
+            if(customer.IsAdmin == false)
+            {
+                if (isAdmin)
+                {
+                    Console.Write("Type password for admin-access: ");
+                    var userInput = Console.ReadLine();
+                    if (adminAccessPassword == userInput)
+                    {
+                        Console.WriteLine("Password valid! Admin-role added.");
+                        isAdmin = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Password invalid! Admin-role denide.");
+                        isAdmin = false;
+                    }
+                }
+            }
+            else
+            {
+
+            }
 
             var existingFirstName = db.FirstName.FirstOrDefault(fn => fn.Name == firstName);
 
@@ -192,7 +215,7 @@ namespace WebShop
                 Console.WriteLine("Customer added, returning to admin menu.");
                 Thread.Sleep(1500);
                 Console.Clear();
-                Admin.AdminMenu();
+                //Admin.AdminMenu();
             }
             else
             {
