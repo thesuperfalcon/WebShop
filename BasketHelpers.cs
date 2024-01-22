@@ -211,6 +211,7 @@ namespace WebShop
 
             foreach (var product in products)
             {
+<<<<<<< HEAD
                 //Console.WriteLine($"Product Name: {product.Name}");
                 //Console.WriteLine($"Description: {product.Description}");
                 //Console.WriteLine($"Price: {product.Price}");
@@ -219,6 +220,11 @@ namespace WebShop
                 featuredProductsWindow.TextRows.Add($"{product.Description}");
                 featuredProductsWindow.TextRows.Add($"Price: {product.Price}:-");
 
+=======
+                Console.WriteLine($"Product Name: {product.Name}");
+                Console.WriteLine($"Description: {product.Description}");
+                Console.WriteLine($"Price: {product.Price}$");
+>>>>>>> c85c68c4c47a8d7448c838053c21ec79ef71d2ad
 
                 try
                 {
@@ -386,6 +392,7 @@ namespace WebShop
             }
         }
 
+        //produkt-namn syns inte 
         private static void AddQuantity(ProductOrder chosenProduct)
         {
             using var db = new MyDbContext();
@@ -403,6 +410,7 @@ namespace WebShop
                 Console.WriteLine("Invalid quantity.");
             }
         }
+        //produkt-namn syns inte 
 
         private static void RemoveQuantity(ProductOrder chosenProduct)
         {
@@ -414,8 +422,9 @@ namespace WebShop
                 if (quantityToRemove <= chosenProduct.Quantity)
                 {
                     chosenProduct.Quantity -= quantityToRemove;
-                    Console.WriteLine($"Removed {quantityToRemove} from {chosenProduct.ProductVariant.Product.Name} in your basket.");
-                    UpdateProductVariantQuantity(chosenProduct.ProductVariantId, -quantityToRemove, db);
+                    var chosenProductName = chosenProduct.ProductVariant?.Product?.Name;
+                    Console.WriteLine($"Removed {quantityToRemove} from {chosenProductName} in your basket.");
+                    UpdateProductVariantQuantity(chosenProduct.ProductVariantId, quantityToRemove, db);
                 }
                 else
                 {

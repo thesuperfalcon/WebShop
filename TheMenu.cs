@@ -195,19 +195,6 @@ namespace WebShop
 
             // Totalpriset inklusive moms (25%)
 
-            // Kunduppgifter
-            //var updatedBasket = new List<ProductOrder>();
-            //foreach (var item in basket)
-            //{
-            //    if (item != null && item.Quantity > 0)
-            //    {
-            //        updatedBasket.Add(item);
-            //    }
-            //}
-            //int x = 0;
-
-            //basket = updatedBasket;
-
             var finishCheckOut = InputHelpers.GetYesOrNo("Wanna_finish?: ");
             if (finishCheckOut == true)
             {
