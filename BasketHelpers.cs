@@ -211,7 +211,6 @@ namespace WebShop
 
             foreach (var product in products)
             {
-<<<<<<< HEAD
                 //Console.WriteLine($"Product Name: {product.Name}");
                 //Console.WriteLine($"Description: {product.Description}");
                 //Console.WriteLine($"Price: {product.Price}");
@@ -220,11 +219,10 @@ namespace WebShop
                 featuredProductsWindow.TextRows.Add($"{product.Description}");
                 featuredProductsWindow.TextRows.Add($"Price: {product.Price}:-");
 
-=======
+
                 Console.WriteLine($"Product Name: {product.Name}");
                 Console.WriteLine($"Description: {product.Description}");
                 Console.WriteLine($"Price: {product.Price}$");
->>>>>>> c85c68c4c47a8d7448c838053c21ec79ef71d2ad
 
                 try
                 {

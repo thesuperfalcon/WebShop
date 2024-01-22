@@ -8,40 +8,44 @@ namespace WebShop
 {
     internal class Admin
     {
-        public static void AdminMenu()
+        public static void AdminMenu(Customer customer)
         {
-            Console.WriteLine();
-
-            foreach (int i in Enum.GetValues(typeof(MyEnums.AdminMenu)))
+            bool success = false;
+            while (!success)
             {
-                Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.AdminMenu), i).Replace('_', ' '));
-            }
-            int nr;
-            if (int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out nr))
-            {
-                MyEnums.AdminMenu menuSelection = (MyEnums.AdminMenu)nr;
+                Console.WriteLine();
 
-                switch (menuSelection)
+                foreach (int i in Enum.GetValues(typeof(MyEnums.AdminMenu)))
                 {
-                    case MyEnums.AdminMenu.Add_new_product: AddProduct(); break;
-                    case MyEnums.AdminMenu.Remove_product: RemoveProductOrVariant(); break;
-                    case MyEnums.AdminMenu.Change_product: ChangeProduct(); break;
-                    case MyEnums.AdminMenu.Change_featured_product: ManageFeaturedProduct(); break;
-                    case MyEnums.AdminMenu.Show_inventory_balance: ShowInventoryBalance(); break;
-                    case MyEnums.AdminMenu.Order_history: OrderHistory(); break;
-                    case MyEnums.AdminMenu.Customer_information: UpdateCustomerInfo(); break;
-                    case MyEnums.AdminMenu.Add_new_customer: LoginManager.CreateCustomer(); break;
-
-                    case MyEnums.AdminMenu.Show_statistic: ShowStatistic(); break;
-                    case MyEnums.AdminMenu.Exit: break;
+                    Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.AdminMenu), i).Replace('_', ' '));
                 }
+                int nr;
+                if (int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out nr))
+                {
+                    MyEnums.AdminMenu menuSelection = (MyEnums.AdminMenu)nr;
+
+                    switch (menuSelection)
+                    {
+                        case MyEnums.AdminMenu.Add_new_product: AddProduct(); break;
+                        case MyEnums.AdminMenu.Remove_product: RemoveProductOrVariant(); break;
+                        case MyEnums.AdminMenu.Change_product: ChangeProduct(); break;
+                        case MyEnums.AdminMenu.Change_featured_product: ManageFeaturedProduct(); break;
+                        case MyEnums.AdminMenu.Show_inventory_balance: ShowInventoryBalance(); break;
+                        case MyEnums.AdminMenu.Order_history: OrderHistory(); break;
+                        case MyEnums.AdminMenu.Customer_information: UpdateCustomerInfo(); break;
+                        case MyEnums.AdminMenu.Add_new_customer: LoginManager.CreateCustomer(customer); break;
+
+                        case MyEnums.AdminMenu.Show_statistic: ShowStatistic(); break;
+                        case MyEnums.AdminMenu.Exit: success = true;  break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Wrong input: ");
+                }
+                Console.ReadLine();
+                Console.Clear();
             }
-            else
-            {
-                Console.WriteLine("Wrong input: ");
-            }
-            Console.ReadLine();
-            Console.Clear();
         }
         //Lagersaldo:Dapper
 
@@ -61,7 +65,8 @@ namespace WebShop
                 Console.WriteLine("-------------------------------------------");
                 Console.Write("Press any key to return to the menu...");
                 Console.ReadKey(true);
-                AdminMenu();
+                return;
+                //AdminMenu(C);
             }
         }
 
@@ -113,7 +118,8 @@ namespace WebShop
                 Console.Write("Press any key to return to the menu...\n");
                 Console.ReadKey(true);
 
-                AdminMenu();
+                //AdminMenu();
+                return;
             }
         }
 
@@ -160,7 +166,8 @@ namespace WebShop
                         break;
 
                     case 6:
-                        AdminMenu(); //Gå tillbaka
+                        return;
+                       /* AdminMenu()*/; //Gå tillbaka
                         break;
 
                     default:
@@ -199,7 +206,8 @@ namespace WebShop
 
                 Console.ReadKey(true);
 
-                AdminMenu();
+                return;
+                //AdminMenu();
             }
         }
 
@@ -232,7 +240,8 @@ namespace WebShop
 
                 Console.ReadKey(true);
 
-                AdminMenu();
+                return;
+                //AdminMenu();
             }
         }
 
@@ -264,7 +273,8 @@ namespace WebShop
 
                 Console.ReadKey(true);
 
-                AdminMenu();
+                return;
+                //AdminMenu();
             }
         }
 
@@ -295,7 +305,8 @@ namespace WebShop
 
             Console.ReadKey(true);
 
-            AdminMenu();
+            return;
+            //AdminMenu();
         }
 
 
@@ -330,7 +341,8 @@ namespace WebShop
 
                 Console.ReadKey(true);
 
-                AdminMenu();
+                return;
+                //AdminMenu();
             }
         }
 
@@ -553,17 +565,20 @@ namespace WebShop
                 Console.WriteLine("Product added, returning to menu.");
                 Thread.Sleep(1500);
                 Console.Clear();
-                AdminMenu();
+                return;
+
+                //AdminMenu();
             }
             else
             {
                 Console.WriteLine("Product not added, returning to menu.");
                 Thread.Sleep(1500);
                 Console.Clear();
-                AdminMenu();
+                return;
+
+                //AdminMenu();
             }
         }
-
 
         public static void ChangeProduct()
         {
@@ -871,7 +886,8 @@ namespace WebShop
                             DeleteProductVariant(db, productToUpdate);
                             break;
                         case 0:
-                            AdminMenu();
+                            return;
+                            //AdminMenu();
                             break;
 
                         default:
@@ -920,7 +936,8 @@ namespace WebShop
                 Console.WriteLine("Product deleted successfully.");
                 Thread.Sleep(2000);
                 Console.Clear();
-                AdminMenu();
+                return;
+                //AdminMenu();
             }
             else
             {
@@ -928,7 +945,8 @@ namespace WebShop
                 if (returnToMenu)
                 {
                     Console.WriteLine("Operation canceled. Returning to menu.");
-                    AdminMenu();
+                    return;
+                    //AdminMenu();
 
                 }
             }
@@ -963,7 +981,8 @@ namespace WebShop
                     Console.WriteLine("Variant deleted successfully.");
                     Thread.Sleep(1500);
                     Console.Clear();
-                    AdminMenu();
+                    return;
+                    //AdminMenu();
                 }
             }
 
@@ -1059,7 +1078,8 @@ namespace WebShop
                             Console.WriteLine("Exiting customer update and returning to admin menu.");
                             Thread.Sleep(2000);
                             Console.Clear();
-                            AdminMenu();
+                            return;
+                            //AdminMenu();
                             break;
                         }
                     }
@@ -1092,6 +1112,7 @@ namespace WebShop
                         Console.WriteLine($"6. Address: {customerToUpdate.Adress?.AdressName}");
                         Console.WriteLine($"7. City: {customerToUpdate.Adress?.City?.CityName}");
                         Console.WriteLine($"8. Country: {customerToUpdate.Adress?.City?.Country?.CountryName}");
+                        Console.WriteLine($"9. Role: {(customerToUpdate.IsAdmin == true ? "Admin" : "Customer")}");
                         Console.WriteLine("\nEnter the number corresponding to the information you want to update (or enter 0 to exit):");
 
                         int option = InputHelpers.GetIntegerInput("");
@@ -1101,7 +1122,8 @@ namespace WebShop
                             Console.WriteLine("Exiting customer update and returning to admin menu");
                             Thread.Sleep(1000);
                             Console.Clear();
-                            AdminMenu();
+                            return;
+                            //AdminMenu();
                         }
                         else
                         {
@@ -1113,7 +1135,8 @@ namespace WebShop
                                 Console.WriteLine("Exiting customer update and returning to admin menu");
                                 Thread.Sleep(1500);
                                 Console.Clear();
-                                AdminMenu();
+                                return;
+                                //AdminMenu();
                             }
                             else
                             {
@@ -1122,7 +1145,8 @@ namespace WebShop
                                     case 0:
                                         Console.WriteLine("Exiting customer update and returning to admin menu");
                                         Console.Clear();
-                                        AdminMenu();
+                                        return;
+                                        //AdminMenu();
                                         break;
 
                                     case 1:
@@ -1214,7 +1238,17 @@ namespace WebShop
                                         string newCountry = Console.ReadLine();
                                         customerToUpdate.Adress.City.Country.CountryName = newCountry;
                                         break;
-
+                                    case 9:
+                                        var roleChange = InputHelpers.GetYesOrNo("Admin(Yes/No): ");
+                                        if(roleChange == true)
+                                        {
+                                            customerToUpdate.IsAdmin = true;
+                                        }
+                                        else
+                                        {
+                                            customerToUpdate.IsAdmin = false;
+                                        }
+                                        break;
 
 
                                     default:
@@ -1232,12 +1266,10 @@ namespace WebShop
                                 Console.WriteLine("Exiting customer update and returning to admin menu.");
                                 Thread.Sleep(1000);
                                 Console.Clear();
-                                AdminMenu();
+                                return;
+                                //AdminMenu();
                                 break;
                             }
-
-
-
                         }
                     }
                 }
