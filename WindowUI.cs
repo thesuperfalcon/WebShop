@@ -68,22 +68,53 @@ namespace WebShop
 
                 Console.SetCursorPosition(0, Lowest.LowestPosition);
             }
-            public void DrawMenu(List<string> menuOptions)
+
+
+            public static void DrawWindow(string header, int left, int top, List<string> content)
             {
-                int menuWidth = menuOptions.Max(option => option.Length) + 4;
+                int width = content.OrderByDescending(s => s.Length).FirstOrDefault().Length;
 
-                Console.SetCursorPosition(Left, Top + TextRows.Count + 2);
-                Console.Write('┌' + new String('─', menuWidth + 1) + '┐');
-
-                for (int j = 0; j < menuOptions.Count; j++)
+                // Kolla om Header är längre än det längsta ordet i listan
+                if (width < header.Length + 4)
                 {
-                    Console.SetCursorPosition(Left, Top + TextRows.Count + j + 3);
-                    Console.WriteLine('│' + " " + j + ". " + menuOptions[j] + new String(' ', menuWidth - menuOptions[j].Length + -3) + '│');
+                    width = header.Length + 4;
+                };
+
+                // Rita Header
+                Console.SetCursorPosition(left, top);
+                if (header != "")
+                {
+                    Console.Write('┌' + " ");
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.Write(header);
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write(" " + new String('─', width - 1) + '┐');
+                }
+                else
+                {
+                    Console.Write('┌' + new String('─', width + 2) + '┐');
                 }
 
-                Console.SetCursorPosition(Left, Top + TextRows.Count + menuOptions.Count + 3);
-                Console.Write('└' + new String('─', menuWidth +1) + '┘');
+                // Rita raderna i sträng-Listan
+                for (int j = 0; j < content.Count; j++)
+                {
+                    Console.SetCursorPosition(left, top + j + 1);
+                    Console.WriteLine('│' + " " + j + ". " + content[j] + new String(' ', width - content[j].Length + 1) + '│');
+                }
+
+                // Rita undre delen av fönstret
+                Console.SetCursorPosition(left, top + content.Count + 1);
+                Console.Write('└' + new String('─', width + 5) + '┘');
+
+                // Kolla vilket som är den nedersta positionen, i alla fönster, som ritats ut
+                if (Lowest.LowestPosition < top + content.Count + 2)
+                {
+                    Lowest.LowestPosition = top + content.Count + 2;
+                }
+
+                Console.SetCursorPosition(0, Lowest.LowestPosition);
             }
+
 
             public void DrawMessage(string message)
             {

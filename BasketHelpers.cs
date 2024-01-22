@@ -211,20 +211,9 @@ namespace WebShop
 
             foreach (var product in products)
             {
-<<<<<<< HEAD
-                //Console.WriteLine($"Product Name: {product.Name}");
-                //Console.WriteLine($"Description: {product.Description}");
-                //Console.WriteLine($"Price: {product.Price}");
-
                 featuredProductsWindow.TextRows.Add($"  ~ {product.Name} ~");
                 featuredProductsWindow.TextRows.Add($"{product.Description}");
                 featuredProductsWindow.TextRows.Add($"Price: {product.Price}:-");
-
-=======
-                Console.WriteLine($"Product Name: {product.Name}");
-                Console.WriteLine($"Description: {product.Description}");
-                Console.WriteLine($"Price: {product.Price}$");
->>>>>>> c85c68c4c47a8d7448c838053c21ec79ef71d2ad
 
                 try
                 {
@@ -255,29 +244,7 @@ namespace WebShop
 
             featuredProductsWindow.Draw();
 
-            //----- Gammal kod utan windowUI
-            //    if (productVariants.Any())
-            //    {
-            //        Console.WriteLine("Available Variants:");
 
-            //        Console.Write("Size: ");
-            //        var sizes = productVariants.Select(variant => variant.Size.SizeName).Distinct();
-            //        Console.WriteLine(string.Join(", ", sizes));
-
-            //        Console.Write("Colour: ");
-            //        var colors = productVariants.Select(variant => variant.Colour.ColourName).Distinct();
-            //        Console.WriteLine(string.Join(", ", colors));
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine("No variants found for this product.");
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine($"Error retrieving product information: {ex.Message}");
-            //}
-            //Console.WriteLine();
         
         }
 

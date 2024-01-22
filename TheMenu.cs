@@ -8,12 +8,8 @@ namespace WebShop
     internal class TheMenu
     {
         private static List<ProductOrder> basket = new List<ProductOrder>();
-        //private static WindowUI.Window featuredProductsWindow;
-
         public static void ShowMenu(Customer customer)
         {
-            //featuredProductsWindow = new WindowUI.Window("Extra amazing clothes!", 20, 4, new List<string>());
-
             var welcomeWindow = new Window("", 0, 0, new List<string>());
             Console.ForegroundColor = ConsoleColor.Green;
             welcomeWindow.DrawMessage("Welcome to Tace!");
@@ -46,8 +42,8 @@ namespace WebShop
                        .Select(menu => Enum.GetName(typeof(MyEnums.Menu), menu).Replace('_', ' '))
                        .ToList();
 
-                var windowMenu = new Window("Menu", 41, -3, menuOptions);
-                windowMenu.DrawMenu(menuOptions);
+                var windowMenu = new Window("Menu", 41, 4, menuOptions);
+                WindowUI.Window.DrawWindow("Menu", 41, 4, menuOptions);
 
                 BasketHelpers.ShowFeaturedProduct();
                 var productBasket = new ProductOrder();
@@ -77,6 +73,7 @@ namespace WebShop
                         case MyEnums.Menu.Exit:
                             BasketHelpers.RollbackQuantities(basket, db);
                             loop = false;
+                            Environment.Exit(0);
                             break;
                     }
                     basket.Add(productBasket);

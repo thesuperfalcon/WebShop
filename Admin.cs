@@ -8,8 +8,13 @@ namespace WebShop
 {
     internal class Admin
     {
-        public static void AdminMenu()
+        public static void AdminMenu(Customer customer)
         {
+            
+            bool success = false;
+
+            while (!success)
+            { 
             Console.WriteLine();
 
             foreach (int i in Enum.GetValues(typeof(MyEnums.AdminMenu)))
@@ -26,22 +31,23 @@ namespace WebShop
                     case MyEnums.AdminMenu.Add_new_product: AddProduct(); break;
                     case MyEnums.AdminMenu.Remove_product: RemoveProductOrVariant(); break;
                     case MyEnums.AdminMenu.Change_product: ChangeProduct(); break;
-                    case MyEnums.AdminMenu.Change_featured_product: ManageFeaturedProduct(); break;
                     case MyEnums.AdminMenu.Show_inventory_balance: ShowInventoryBalance(); break;
                     case MyEnums.AdminMenu.Order_history: OrderHistory(); break;
                     case MyEnums.AdminMenu.Customer_information: UpdateCustomerInfo(); break;
                     case MyEnums.AdminMenu.Add_new_customer: LoginManager.CreateCustomer(); break;
-
                     case MyEnums.AdminMenu.Show_statistic: ShowStatistic(); break;
-                    case MyEnums.AdminMenu.Exit: break;
+                    case MyEnums.AdminMenu.Log_Out: success = true; break;
+                    case MyEnums.AdminMenu.Exit: Environment.Exit(0); break;
                 }
             }
             else
             {
                 Console.WriteLine("Wrong input: ");
             }
-            Console.ReadLine();
+                Console.ReadLine();
             Console.Clear();
+            }
+
         }
         //Lagersaldo:Dapper
 
@@ -575,7 +581,9 @@ namespace WebShop
 
             foreach (var product in existingProducts)
             {
-                Console.WriteLine($"Id: {product.Id}, Name: {product.Name}, Description: {product.Description}, Price: {product.Price}$, SupplierId: {product.ProductSupplierId}, Featured: {product.FeaturedProduct}");
+                var productSupplier = db.ProductSuppliers.FirstOrDefault(ps => ps.Id == product.ProductSupplierId);
+
+                Console.WriteLine($"Id: {product.Id}, Name: {product.Name}, Description: {product.Description}, Price: {product.Price}$, SupplierId: {product.ProductSupplierId}, Supplier name: {productSupplier.SupplierName}, Featured: {product.FeaturedProduct}");
 
                 var distinctColours = product.ProductVariants.Select(pv => db.Colours.FirstOrDefault(c => c.Id == pv.ColourId)?.ColourName).Distinct().Where(c => c != null);
                 var distinctSizes = product.ProductVariants.Select(pv => db.Sizes.FirstOrDefault(s => s.Id == pv.SizeId)?.SizeName).Distinct().Where(s => s != null);
@@ -617,6 +625,13 @@ namespace WebShop
                         productToChange.Price = InputHelpers.GetDoubleInput("Enter the new price: ");
                         break;
                     case 4:
+                        Console.WriteLine("List of suppliers: ");
+                        var suppliers = db.ProductSuppliers.ToList();
+                        foreach (var supplier in suppliers)
+                        {
+                            Console.WriteLine($"{supplier.Id}, {supplier.SupplierName}");
+                        }
+                        Console.WriteLine();
                         productToChange.ProductSupplierId = InputHelpers.GetIntegerInput("Enter the Id of the new supplier: ");
                         break;
                     case 5:
@@ -806,37 +821,7 @@ namespace WebShop
             }
         }
 
-        public static void ManageFeaturedProduct()
-        {
-            using var db = new MyDbContext();
-            Console.WriteLine();
-            Console.WriteLine("List of existing products:");
-            var existingProducts = db.Products.ToList();
 
-            foreach (var product in existingProducts)
-            {
-                Console.WriteLine($"{product.Id}, {product.Name} - Featured: {product.FeaturedProduct}");
-            }
-            Console.WriteLine();
-            int productId = InputHelpers.GetIntegerInput("Enter the ID of the product you want to manage: ");
-            var selectedProduct = db.Products.FirstOrDefault(p => p.Id == productId);
-
-            if (selectedProduct != null)
-            {
-                Console.WriteLine($"Current Featured Status for {selectedProduct.Name}: {selectedProduct.FeaturedProduct}");
-
-                bool newFeaturedStatus = InputHelpers.GetYesOrNo("Is it a featured product? (Yes/No) ");
-                Console.WriteLine();
-                selectedProduct.FeaturedProduct = newFeaturedStatus;
-                db.SaveChanges();
-
-                Console.WriteLine("Featured status updated successfully!");
-            }
-            else
-            {
-                Console.WriteLine("Product not found.");
-            }
-        }
         public static void RemoveProductOrVariant()
         {
             using (var db = new MyDbContext())

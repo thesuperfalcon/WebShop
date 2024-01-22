@@ -21,12 +21,12 @@ namespace WebShop
             Add_new_product,
             Remove_product,
             Change_product,
-            Change_featured_product,
             Show_inventory_balance,
             Order_history,
             Customer_information,
             Add_new_customer,
             Show_statistic,
+            Log_Out,
             Exit
         }
         public enum LoginMenu
