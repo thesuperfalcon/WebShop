@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebShop.Models;
 using Dapper;
+using System.Security.Cryptography.X509Certificates;
 
 namespace WebShop
 {
@@ -53,9 +54,9 @@ namespace WebShop
             using (var connection = new SqlConnection(connString))
             {
                 connection.Open();
-                ShowStockCategory("Products with less than 1 in stock", "SELECT Name, Quantity FROM Products WHERE Quantity < 1 ORDER BY Quantity DESC", connection);
-                ShowStockCategory("Products with between 1 and 10 in stock", "SELECT Name, Quantity FROM Products WHERE Quantity BETWEEN 1 AND 10 ORDER BY Quantity DESC", connection);
-                ShowStockCategory("Products with more than 10 in stock", "SELECT Name, Quantity FROM Products WHERE Quantity > 10 ORDER BY Quantity DESC", connection);
+                //ShowStockCategory("Products with less than 1 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity <= 0\r\nORDER BY pv.Quantity DESC;", connection);
+                //ShowStockCategory("Products with between 1 and 10 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity >= 1 AND pv.Quantity <= 10\r\nORDER BY pv.Quantity DESC;", connection);
+                ShowStockCategory("Products with more than 10 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity > 10\r\nORDER BY pv.Quantity DESC;", connection);
 
                 Console.WriteLine("-------------------------------------------");
                 Console.Write("Press any key to return to the menu...");
@@ -66,16 +67,20 @@ namespace WebShop
 
         private static void ShowStockCategory(string categoryTitle, string sqlQuery, SqlConnection connection)
         {
+            using var db = new MyDbContext();
+
             Console.WriteLine($"\n\n{categoryTitle}");
             Console.WriteLine("-------------------------------------------");
 
-            var stockProducts = connection.Query<Product>(sqlQuery);
+            var stockProducts = connection.Query<StockInventory>(sqlQuery);
 
             if (stockProducts.Any())
             {
+                int i = 0;
                 foreach (var p in stockProducts)
                 {
-                    Console.WriteLine($"{p.Name}, Units left: {p.UnitsInStock}");
+                    i++;
+                    Console.WriteLine($"{i} {p.Name}, Units left: {p.Quantity} ");
                 }
             }
             else
@@ -202,7 +207,10 @@ namespace WebShop
         public static void PopularParcels()
         {
             Console.WriteLine("\n---------------Our most popular parcel service---------------");
-            using (var connection = new SqlConnection(/*"Anslutningssträng;"))*/))
+
+            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
+
+            using (var connection = new SqlConnection(connString))
             {
                 connection.Open();
 
@@ -295,7 +303,12 @@ namespace WebShop
         public static void TopSizes()
         {
             Console.WriteLine("\n---------------Our top sizes---------------");
-            using (var connection = new SqlConnection(/*"Anslutningssträng;"))*/))
+
+
+            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
+
+
+            using (var connection = new SqlConnection(connString))
             {
                 connection.Open();
 

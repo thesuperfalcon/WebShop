@@ -23,23 +23,28 @@ namespace WebShop
                 //}
 
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
             Customer customer = new Customer();
 =======
                 //Customer customer = new Customer();
 >>>>>>> c85c68c4c47a8d7448c838053c21ec79ef71d2ad
+=======
+                Customer customer = new Customer();
+>>>>>>> Stashed changes
 
-                ////Customer customer = db.Customers.Where(x => x.Id == 2).SingleOrDefault();
+                //////Customer customer = db.Customers.Where(x => x.Id == 2).SingleOrDefault();
 
-                //customer = LoginManager.LoginMenu(db);
+                customer = LoginManager.LoginMenu(db);
 
-                //AddData.RunAddDataMethods();
+                ////AddData.RunAddDataMethods();
 
 
                 //Customer customer = LoginManager.LoginMenu(db);
 
                 //Customer customer = db.Customers.FirstOrDefault(x => x.Id == 1);
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
             //TheMenu.ShowMenu(customer);
             //Admin.AdminMenu();
@@ -57,6 +62,10 @@ namespace WebShop
 =======
                 //TheMenu.ShowMenu(customer);
                 Admin.AdminMenu();
+=======
+                TheMenu.ShowMenu(customer);
+                //Admin.AdminMenu();
+>>>>>>> Stashed changes
                 //Admin.ChangeProduct();
                 //Admin.ManageFeaturedProduct();
 
