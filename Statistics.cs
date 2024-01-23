@@ -49,7 +49,7 @@ namespace WebShop
             }
         }
 
-        private static void ShowStockCategory(string categoryTitle, string sqlQuery, SqlConnection connection)
+        public static void ShowStockCategory(string categoryTitle, string sqlQuery, SqlConnection connection)
         {
             using var db = new MyDbContext();
 
