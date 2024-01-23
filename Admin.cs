@@ -62,7 +62,7 @@ namespace WebShop
                 connection.Open();
                 //ShowStockCategory("Products with less than 1 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity <= 0\r\nORDER BY pv.Quantity DESC;", connection);
                 //ShowStockCategory("Products with between 1 and 10 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity >= 1 AND pv.Quantity <= 10\r\nORDER BY pv.Quantity DESC;", connection);
-                ShowStockCategory("Products with more than 10 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity > 10\r\nORDER BY pv.Quantity DESC;", connection);
+                Statistics.ShowStockCategory("Products with more than 10 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity > 10\r\nORDER BY pv.Quantity DESC;", connection);
 
                 Console.WriteLine("-------------------------------------------");
                 Console.Write("Press any key to return to the menu...");
