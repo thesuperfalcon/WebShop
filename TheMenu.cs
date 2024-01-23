@@ -85,8 +85,12 @@ namespace WebShop
                 {
                     Console.WriteLine("Wrong input: ");
                 }
-                Console.ReadLine();
+                Console.SetCursorPosition(0, 27);
+                //Console.ReadLine();
                 Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Green;
+                welcomeWindow.DrawMessage("Welcome to Tace!");
+                Console.ResetColor();
             }
         }
 

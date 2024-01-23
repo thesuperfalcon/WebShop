@@ -212,10 +212,7 @@ namespace WebShop
 
             foreach (var product in products)
             {
-<<<<<<< HEAD
-=======
 
->>>>>>> 064da91cf9821d65dbe42895bc57a403ae0be540
                 featuredProductsWindow.TextRows.Add($"  ~ {product.Name} ~");
                 featuredProductsWindow.TextRows.Add($"{product.Description}");
                 featuredProductsWindow.TextRows.Add($"Price: {product.Price}:-");

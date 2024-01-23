@@ -187,7 +187,8 @@ namespace WebShop
                 else
                 {
                     Console.WriteLine("Returning to the menu.");
-                    return null;
+                    Console.Clear();
+                    return LoginMenu(db);
                 }
             }
 
