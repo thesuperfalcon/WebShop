@@ -98,8 +98,6 @@ namespace WebShop
             var allDeliveryTypes = db.DeliveryTypes.ToList();
             var allDeliveries = db.DeliveryNames.ToList();
 
-            //---------------------------Betalnings-vy---------------------------
-
             Console.WriteLine("Available Payment Types");
 
             foreach (var allPaymentType in allPaymentTypes)
@@ -127,8 +125,6 @@ namespace WebShop
             var selectedPaymentName = allPayments.FirstOrDefault(y => y.Id == inputPayment);
 
             var selectedPayment = Helpers.GetOrCreatePayment(db, selectedPaymentName, selectedPaymentType);
-
-            //-------------------Frakt-vy---------------------------
 
             var adress = Helpers.ShowAdressInformation(db, customer);
 
@@ -190,8 +186,6 @@ namespace WebShop
             Console.WriteLine($"Delivery_Cost: {selectedDeliveryType.DeliveryPrice}:-");
             Console.WriteLine($"Total_Cost including 25 % taxes: {totalPrice}:-");
 
-            // Totalpriset inklusive moms (25%)
-
             var finishCheckOut = InputHelpers.GetYesOrNo("Wanna_finish?: ");
             if (finishCheckOut == true)
             {
@@ -206,7 +200,6 @@ namespace WebShop
                 db.Add(productOrder);
                 db.SaveChanges();
 
-                // Töm varukorgen efter beställning
                 basket.Clear();
 
                 Console.WriteLine("Thank you for shopping :)");

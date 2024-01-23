@@ -201,6 +201,7 @@ namespace WebShop
 
             db.SaveChanges();
         }
+
         public static void ShowFeaturedProduct()
         {
             using var db = new MyDbContext();
@@ -211,25 +212,11 @@ namespace WebShop
 
             foreach (var product in products)
             {
-<<<<<<< HEAD
-=======
-                //Console.WriteLine($"Product Name: {product.Name}");
-                //Console.WriteLine($"Description: {product.Description}");
-                //Console.WriteLine($"Price: {product.Price}");
 
->>>>>>> 0b6fb78d74b66f532fec211252d99eb35ed8f06d
                 featuredProductsWindow.TextRows.Add($"  ~ {product.Name} ~");
                 featuredProductsWindow.TextRows.Add($"{product.Description}");
                 featuredProductsWindow.TextRows.Add($"Price: {product.Price}:-");
 
-<<<<<<< HEAD
-=======
-
-                Console.WriteLine($"Product Name: {product.Name}");
-                Console.WriteLine($"Description: {product.Description}");
-                Console.WriteLine($"Price: {product.Price}$");
-
->>>>>>> 0b6fb78d74b66f532fec211252d99eb35ed8f06d
                 try
                 {
                     var productVariants = db.ProductVariants
@@ -254,13 +241,9 @@ namespace WebShop
                     featuredProductsWindow.TextRows.Add($"Error retrieving product information: {ex.Message}");
                 }
 
-                featuredProductsWindow.TextRows.Add("");  
+                featuredProductsWindow.TextRows.Add("");
             }
-
             featuredProductsWindow.Draw();
-
-
-        
         }
 
         public static void UpdateQuantity(List<ProductOrder> basket)

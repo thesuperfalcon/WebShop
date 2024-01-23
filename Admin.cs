@@ -4,44 +4,23 @@ using WebShop.Models;
 using Dapper;
 using System.Security.Cryptography.X509Certificates;
 
+
 namespace WebShop
 {
     internal class Admin
     {
         public static void AdminMenu(Customer customer)
         {
-<<<<<<< HEAD
-            
             bool success = false;
 
             while (!success)
-            { 
-            Console.WriteLine();
-
-            foreach (int i in Enum.GetValues(typeof(MyEnums.AdminMenu)))
-=======
-            bool success = false;
-            while (!success)
->>>>>>> 0b6fb78d74b66f532fec211252d99eb35ed8f06d
             {
+                Console.Clear();
                 Console.WriteLine();
 
                 foreach (int i in Enum.GetValues(typeof(MyEnums.AdminMenu)))
                 {
-<<<<<<< HEAD
-                    case MyEnums.AdminMenu.Add_new_product: AddProduct(); break;
-                    case MyEnums.AdminMenu.Remove_product: RemoveProductOrVariant(); break;
-                    case MyEnums.AdminMenu.Change_product: ChangeProduct(); break;
-                    case MyEnums.AdminMenu.Show_inventory_balance: ShowInventoryBalance(); break;
-                    case MyEnums.AdminMenu.Order_history: OrderHistory(); break;
-                    case MyEnums.AdminMenu.Customer_information: UpdateCustomerInfo(); break;
-                    case MyEnums.AdminMenu.Add_new_customer: LoginManager.CreateCustomer(); break;
-                    case MyEnums.AdminMenu.Show_statistic: ShowStatistic(); break;
-                    case MyEnums.AdminMenu.Log_Out: success = true; break;
-                    case MyEnums.AdminMenu.Exit: Environment.Exit(0); break;
-=======
                     Console.WriteLine(i + ". " + Enum.GetName(typeof(MyEnums.AdminMenu), i).Replace('_', ' '));
->>>>>>> 0b6fb78d74b66f532fec211252d99eb35ed8f06d
                 }
                 int nr;
                 if (int.TryParse(Console.ReadKey(true).KeyChar.ToString(), out nr))
@@ -53,12 +32,11 @@ namespace WebShop
                         case MyEnums.AdminMenu.Add_new_product: AddProduct(); break;
                         case MyEnums.AdminMenu.Remove_product: RemoveProductOrVariant(); break;
                         case MyEnums.AdminMenu.Change_product: ChangeProduct(); break;
-                        case MyEnums.AdminMenu.Change_featured_product: ManageFeaturedProduct(); break;
-                        case MyEnums.AdminMenu.Show_inventory_balance: ShowInventoryBalance(); break;
-                        case MyEnums.AdminMenu.Order_history: OrderHistory(); break;
+                        case MyEnums.AdminMenu.Show_inventory_balance: Statistics.ShowInventoryBalance(); break;
+                        case MyEnums.AdminMenu.Order_history: Statistics.OrderHistory(); break;
                         case MyEnums.AdminMenu.Customer_information: UpdateCustomerInfo(); break;
                         case MyEnums.AdminMenu.Add_new_customer: LoginManager.CreateCustomer(customer); break;
-                        case MyEnums.AdminMenu.Show_statistic: ShowStatistic(); break;
+                        case MyEnums.AdminMenu.Show_statistic: Statistics.ShowStatistic(); break;
                         case MyEnums.AdminMenu.Log_Out: success = true; break;
                         case MyEnums.AdminMenu.Exit: Environment.Exit(0); break;
                     }
@@ -67,319 +45,11 @@ namespace WebShop
                 {
                     Console.WriteLine("Wrong input: ");
                 }
-                Console.ReadLine();
+                //Console.ReadLine();
                 Console.Clear();
             }
-<<<<<<< HEAD
-            else
-            {
-                Console.WriteLine("Wrong input: ");
-            }
-                Console.ReadLine();
-            Console.Clear();
-            }
-
-=======
->>>>>>> 0b6fb78d74b66f532fec211252d99eb35ed8f06d
-        }
-        //Lagersaldo:Dapper
-
-        public static void ShowInventoryBalance()
-        {
-            Console.WriteLine("---------------Inventory Balance---------------");
-
-            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
-
-            using (var connection = new SqlConnection(connString))
-            {
-                connection.Open();
-                //ShowStockCategory("Products with less than 1 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity <= 0\r\nORDER BY pv.Quantity DESC;", connection);
-                //ShowStockCategory("Products with between 1 and 10 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity >= 1 AND pv.Quantity <= 10\r\nORDER BY pv.Quantity DESC;", connection);
-                ShowStockCategory("Products with more than 10 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity > 10\r\nORDER BY pv.Quantity DESC;", connection);
-
-                Console.WriteLine("-------------------------------------------");
-                Console.Write("Press any key to return to the menu...");
-                Console.ReadKey(true);
-                return;
-                //AdminMenu(C);
-            }
         }
 
-        private static void ShowStockCategory(string categoryTitle, string sqlQuery, SqlConnection connection)
-        {
-            using var db = new MyDbContext();
-
-            Console.WriteLine($"\n\n{categoryTitle}");
-            Console.WriteLine("-------------------------------------------");
-
-            var stockProducts = connection.Query<StockInventory>(sqlQuery);
-
-            if (stockProducts.Any())
-            {
-                int i = 0;
-                foreach (var p in stockProducts)
-                {
-                    i++;
-                    Console.WriteLine($"{i} {p.Name}, Units left: {p.TotalQuantity} ");
-                }
-            }
-            else
-            {
-                Console.WriteLine("No products found.");
-            }
-        }
-
-        //Order history: Dapper
-        public static void OrderHistory()
-        {
-            Console.WriteLine("\n---------------Order history---------------");
-
-            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
-
-
-            using (var connection = new SqlConnection(connString))
-            {
-                connection.Open();
-
-                    var allOrders = connection.Query<FinalOrder>("SELECT * FROM FinalOrders");
-
-                foreach (var finalOrders in allOrders)
-                {
-                    Console.WriteLine($"\nOrderID: {finalOrders.Id}, Customer: {finalOrders.CustomerId}, Payment: {finalOrders.PaymentId}, Delivery: {finalOrders.DeliveryId}, Total Price: {finalOrders.TotalPrice} ");
-                }
-
-                Console.WriteLine("\n--------------------------------------------");
-
-                Console.Write("Press any key to return to the menu...\n");
-                Console.ReadKey(true);
-
-                //AdminMenu();
-                return;
-            }
-        }
-
-
-        //Statestikmeny
-        public static void ShowStatistic()
-        {
-            bool showMenu = true;
-
-            while (showMenu)
-            {
-
-                Console.Clear();
-                Console.WriteLine("-----Statstics Menu-----");
-                Console.WriteLine("1. Best Selling Products");
-                Console.WriteLine("2. Sales based on parcel services");
-                Console.WriteLine("3. Sales based on payment method");
-                Console.WriteLine("4. Most popular color");
-                Console.WriteLine("5. Most popular sizes");
-                Console.WriteLine("6. Return");
-                Console.WriteLine("---------------------------------");
-                int statisticChoice = InputHelpers.GetIntegerInput("Choose an option: ");
-
-                switch (statisticChoice)
-                {
-                    case 1:
-                        BestSelling();
-                        break;
-
-                    case 2:
-                        PopularParcels();
-                        break;
-
-                    case 3:
-                        PopularPayment();
-                        break;
-
-                    case 4:
-                        TopColors();
-                        break;
-
-                    case 5:
-                        TopSizes();
-                        break;
-
-                    case 6:
-                        return;
-                       /* AdminMenu()*/; //Gå tillbaka
-                        break;
-
-                    default:
-                        Console.WriteLine("Invalid option. Please try again.");
-                        break;
-                }
-            }
-        }
-
-        //Populäraste produkterna: LINQ
-        public static void BestSelling()
-        {
-            Console.WriteLine("\n---------------Our best selling products---------------");
-            using (var dbContext = new MyDbContext())
-            {
-                var topSoldProducts = dbContext.ProductOrders
-                    .Join(dbContext.ProductVariants, po => po.ProductVariantId, pv => pv.Id, (po, pv) => new { po, pv })
-                    .Join(dbContext.Products, x => x.pv.ProductId, p => p.Id, (x, p) => new { x.po, p })
-                    .GroupBy(x => x.p.Name)
-                    .Select(g => new
-                    {
-                        ProductName = g.Key,
-                        TotalSold = g.Sum(x => x.po.Quantity)
-                    })
-                    .OrderByDescending(x => x.TotalSold)
-                    .Take(5)
-                    .ToList();
-
-                foreach (var product in topSoldProducts)
-                {
-                    Console.WriteLine($"\n{product.ProductName}, Total Sold: {product.TotalSold}");
-                }
-                Console.WriteLine("\n--------------------------------------------");
-
-                Console.Write("Press any key to return to the menu...\n");
-
-                Console.ReadKey(true);
-
-                return;
-                //AdminMenu();
-            }
-        }
-
-        //Parcel services: Dapper
-        public static void PopularParcels()
-        {
-            Console.WriteLine("\n---------------Our most popular parcel service---------------");
-
-            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
-
-            using (var connection = new SqlConnection(connString))
-            {
-                connection.Open();
-
-                var popularParcels = connection.Query<string>(
-                    $"SELECT TOP (1) DN.Name as DeliveryName, COUNT(*) as Count " +
-                     "FROM FinalOrders FO " +
-                     "JOIN Deliveries D ON FO.DeliveryId = D.Id " +
-                     "JOIN DeliveryNames DN ON D.DeliveryNameId = DN.Id " +
-                     "GROUP BY DN.Name " +
-                     "ORDER BY Count DESC");
-
-                foreach (var parcelName in popularParcels)
-                {
-                    Console.WriteLine($"\n{parcelName}");
-                }
-                Console.WriteLine("\n--------------------------------------------");
-
-                Console.Write("Press any key to return to the menu...\n");
-
-                Console.ReadKey(true);
-
-                return;
-                //AdminMenu();
-            }
-        }
-
-
-        //Betalningsmetod: LINQ
-        public static void PopularPayment()
-        {
-            Console.WriteLine("\n---------------Our most popular payment method---------------");
-            using (var dbContext = new MyDbContext())
-            {
-                var paymentStatistics = dbContext.PaymentTypes
-                .Join(dbContext.FinalOrders, paymentType => paymentType.Id, finalOrder => finalOrder.PaymentId, (paymentType, finalOrder) => new { PaymentType = paymentType, FinalOrder = finalOrder })
-                .GroupBy(joinResult => joinResult.PaymentType.PaymentTypeName)
-                .Select(group => new
-                {
-                    PaymentTypeName = group.Key,
-                    OrderCount = group.Count()
-                })
-                 .OrderByDescending(result => result.OrderCount)
-                 .ToList();
-
-                foreach (var result in paymentStatistics)
-                {
-                    Console.WriteLine($"\nPaymentType: {result.PaymentTypeName}, OrderCount: {result.OrderCount}");
-                }
-                Console.WriteLine("\n--------------------------------------------");
-
-                Console.Write("Press any key to return to the menu...\n");
-
-                Console.ReadKey(true);
-
-                return;
-                //AdminMenu();
-            }
-        }
-
-
-        //Färg: LINQ
-        public static void TopColors()
-        {
-            Console.WriteLine("\n---------------Our most popular colors---------------");
-            using (var dbContext = new MyDbContext())
-            {
-                var mostPopularColours = dbContext.ProductOrders
-               .Join(dbContext.ProductVariants, po => po.ProductVariantId, pv => pv.Id, (po, pv) => new { po, pv })
-               .Join(dbContext.Colours, x => x.pv.ColourId, c => c.Id, (x, c) => new { x.po, c })
-               .GroupBy(x => x.c.ColourName)
-               .OrderByDescending(g => g.Count())
-               .Select(g => g.Key)
-               .Take(3)
-               .ToList();
-
-                foreach (var colour in mostPopularColours)
-                {
-                    Console.WriteLine(colour);
-                }
-            }
-            Console.WriteLine("\n--------------------------------------------");
-
-            Console.Write("Press any key to return to the menu...\n");
-
-            Console.ReadKey(true);
-
-            return;
-            //AdminMenu();
-        }
-
-
-        //Storlekar: Dapper
-        public static void TopSizes()
-        {
-            Console.WriteLine("\n---------------Our top sizes---------------");
-
-
-            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
-
-
-            using (var connection = new SqlConnection(connString))
-            {
-                connection.Open();
-
-                var popularSizes = connection.Query<string>(
-                    $"SELECT TOP (3) S.SizeName, COUNT(*) as Count " +
-                     "FROM ProductOrders PO " +
-                     "JOIN ProductVariants PV ON PO.ProductVariantId = PV.Id " +
-                     "JOIN Sizes S ON PV.SizeId = S.Id " +
-                     "GROUP BY S.SizeName " +
-                     "ORDER BY Count DESC");
-
-                foreach (var sizeName in popularSizes)
-                {
-                    Console.WriteLine($"\nSize: {sizeName}");
-                }
-                Console.WriteLine("\n--------------------------------------------");
-
-                Console.Write("Press any key to return to the menu...\n");
-
-                Console.ReadKey(true);
-
-                return;
-                //AdminMenu();
-            }
-        }
 
         public static void AddProduct()
         {
@@ -1254,7 +924,7 @@ namespace WebShop
                                         break;
                                     case 9:
                                         var roleChange = InputHelpers.GetYesOrNo("Admin(Yes/No): ");
-                                        if(roleChange == true)
+                                        if (roleChange == true)
                                         {
                                             customerToUpdate.IsAdmin = true;
                                         }
@@ -1291,6 +961,3 @@ namespace WebShop
         }
     }
 }
-
-
-

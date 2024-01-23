@@ -63,12 +63,12 @@ namespace WebShop
                 {
                     Console.Clear();
                     Console.WriteLine($"Welcome to the admin page {displayName}");
-                    
+
                     //Admin.AdminMenu();
                 }
                 else
                 {
-                    Console.Clear();                   
+                    Console.Clear();
                     TheMenu.ShowMenu(loggedInCustomer);
                 }
 
@@ -126,11 +126,11 @@ namespace WebShop
 
             var adminAccessPassword = "abc123";
 
-            int PhoneNumber = InputHelpers.GetIntegerInput("Enter phone number");
+            int PhoneNumber = InputHelpers.GetIntegerInput("Enter phone number: ");
             string email = InputHelpers.GetInput("Enter email: ");
             string password = InputHelpers.GetInput("Enter password: ");
-            bool isAdmin = InputHelpers.GetYesOrNo("Is admin?");
-            if(customer.IsAdmin == false)
+            bool isAdmin = InputHelpers.GetYesOrNo("Is admin?: ");
+            if (customer.IsAdmin == false)
             {
                 if (isAdmin)
                 {
@@ -143,7 +143,7 @@ namespace WebShop
                     }
                     else
                     {
-                        Console.WriteLine("Password invalid! Admin-role denide.");
+                        Console.WriteLine("Password invalid! Admin-role denided.");
                         isAdmin = false;
                     }
                 }
@@ -206,7 +206,7 @@ namespace WebShop
                 Password = password,
                 IsAdmin = isAdmin,
             };
-            
+
             db.Customers.Add(newCustomer);
             db.SaveChanges();
 
