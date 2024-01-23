@@ -32,13 +32,8 @@ namespace WebShop
                         case MyEnums.AdminMenu.Add_new_product: AddProduct(); break;
                         case MyEnums.AdminMenu.Remove_product: RemoveProductOrVariant(); break;
                         case MyEnums.AdminMenu.Change_product: ChangeProduct(); break;
-<<<<<<< HEAD
-                        case MyEnums.AdminMenu.Show_inventory_balance: ShowInventoryBalance(); break;
-                        case MyEnums.AdminMenu.Order_history: OrderHistory(); break;
-=======
                         case MyEnums.AdminMenu.Show_inventory_balance: Statistics.ShowInventoryBalance(); break;
                         case MyEnums.AdminMenu.Order_history: Statistics.OrderHistory(); break;
->>>>>>> 064da91cf9821d65dbe42895bc57a403ae0be540
                         case MyEnums.AdminMenu.Customer_information: UpdateCustomerInfo(); break;
                         case MyEnums.AdminMenu.Add_new_customer: LoginManager.CreateCustomer(customer); break;
                         case MyEnums.AdminMenu.Show_statistic: Statistics.ShowStatistic(); break;
@@ -53,7 +48,6 @@ namespace WebShop
                 //Console.ReadLine();
                 Console.Clear();
             }
-<<<<<<< HEAD
         }
         //Lagersaldo:Dapper
 
@@ -76,8 +70,6 @@ namespace WebShop
                 return;
                 //AdminMenu(C);
             }
-=======
->>>>>>> 064da91cf9821d65dbe42895bc57a403ae0be540
         }
 
 
