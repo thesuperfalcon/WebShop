@@ -5,42 +5,56 @@ using Microsoft.EntityFrameworkCore;
 using Dapper;
 using System.Security.Cryptography.X509Certificates;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace WebShop
 {
     public class Statistics
     {
         //Lagersaldo:Dapper
+        private static string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShop;Integrated Security=True;TrustServerCertificate=true;";
+
         public static void ShowInventoryBalance()
         {
 
             Console.WriteLine("---------------Inventory Balance---------------");
 
-            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
             using (var connection = new SqlConnection(connString))
             {
                 connection.Open();
 
-                ShowStockCategory("Products with less than 1 in stock", "SELECT p.Name, SUM(DISTINCT pv.Quantity) AS TotalQuantity " +
-                            "FROM Products p " +
-                            "JOIN ProductVariants pv ON p.Id = pv.ProductId " +
-                            "WHERE pv.Quantity <= 0 " +
-                            "GROUP BY p.Name " +
-                            "ORDER BY TotalQuantity DESC;", connection);
+                string sql1 = @"SELECT p.Name AS Name,
+                                p.Id AS ProductId,
+                                SUM(pv.Quantity) AS TotalQuantity
+                                FROM Products p
+                                INNER JOIN ProductVariants pv ON p.Id = pv.ProductId
+                                GROUP BY p.Name, p.Id
+                                HAVING SUM(pv.Quantity) >= 60
+                                ORDER BY TotalQuantity DESC;";
 
-                ShowStockCategory("Products with between 1 and 50 in stock", "SELECT p.Name, COALESCE(SUM(pv.Quantity), 0) AS TotalQuantity " +
-                    "FROM ProductVariants pv " +
-                    "JOIN Products p ON p.Id = pv.ProductId " +
-                    "GROUP BY p.Id, p.Name\n " +
-                    "HAVING COALESCE(SUM(pv.Quantity), 0) BETWEEN 1 AND 50 " +
-                    "ORDER BY TotalQuantity DESC;", connection);
+                string sql2 = @"SELECT p.Name AS Name,
+                                p.Id AS ProductId,
+                                SUM(pv.Quantity) AS TotalQuantity
+                                FROM Products p
+                                INNER JOIN ProductVariants pv ON p.Id = pv.ProductId
+                                GROUP BY p.Name, p.Id
+                                HAVING SUM(pv.Quantity) BETWEEN 61 AND 85
+                                ORDER BY TotalQuantity DESC;";
 
-                ShowStockCategory("Products with more than 50 in stock", "SELECT p.Name, SUM(DISTINCT pv.Quantity) AS TotalQuantity " +
-                    "FROM Products p " +
-                    "JOIN ProductVariants pv ON p.Id = pv.ProductId " +
-                    "WHERE pv.Quantity > 50 " +
-                    "GROUP BY p.Name " +
-                    "ORDER BY TotalQuantity DESC;", connection);
+                string sql3 = @"SELECT p.Name AS Name,
+                                p.Id AS ProductId,
+                                SUM(pv.Quantity) AS TotalQuantity
+                                FROM Products p
+                                INNER JOIN ProductVariants pv ON p.Id = pv.ProductId
+                                GROUP BY p.Name, p.Id
+                                HAVING SUM(pv.Quantity) >= 86
+                                ORDER BY TotalQuantity DESC;";
+
+                ShowStockCategory("Low-Inventory", sql1, connection);
+
+                ShowStockCategory("Medium-Inventory", sql2, connection);
+
+                ShowStockCategory("High-Inventory", sql3, connection);
 
                 Console.WriteLine("-------------------------------------------");
                 Console.Write("Press any key to return to the menu...");
@@ -78,7 +92,6 @@ namespace WebShop
         public static async Task OrderHistory()
         {
             Console.Clear();
-            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
             using (var connection = new SqlConnection(connString))
             {
                 Stopwatch stopwatch = new Stopwatch();
@@ -204,7 +217,6 @@ namespace WebShop
             Console.Clear();
             Console.WriteLine("\n---------------Our most popular parcel service---------------");
 
-            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
             using (var connection = new SqlConnection(connString))
             {
                 connection.Open();
@@ -306,7 +318,6 @@ namespace WebShop
             Console.Clear();
             Console.WriteLine("\n---------------Our top sizes---------------");
 
-            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
             using (var connection = new SqlConnection(connString))
             {
                 connection.Open();

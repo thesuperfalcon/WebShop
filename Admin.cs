@@ -9,6 +9,7 @@ namespace WebShop
 {
     internal class Admin
     {
+        private static string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShop;Integrated Security=True;TrustServerCertificate=true;";
         public static void AdminMenu(Customer customer)
         {
             bool success = false;
@@ -55,8 +56,6 @@ namespace WebShop
         {
             Console.WriteLine("---------------Inventory Balance---------------");
 
-            string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShopTestABC;Integrated Security=True;TrustServerCertificate=true;";
-
             using (var connection = new SqlConnection(connString))
             {
                 connection.Open();
@@ -79,13 +78,6 @@ namespace WebShop
             while (!success)
             {
                 using var db = new MyDbContext();
-                // Product Name
-                /* Product Description
-                 * Product Price
-                 * Product Supplier 
-                 * Product Featured
-                 * Product Category/Categories
-                 */
 
                 var productName = InputHelpers.GetInput("Product name: ");
 
