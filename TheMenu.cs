@@ -7,7 +7,7 @@ namespace WebShop
 {
     internal class TheMenu
     {
-        private static List<ProductOrder> basket = new List<ProductOrder>();
+        public static List<ProductOrder> basket = new List<ProductOrder>();
         public static void ShowMenu(Customer customer)
         {
             var welcomeWindow = new Window("", 0, 0, new List<string>());
@@ -35,7 +35,7 @@ namespace WebShop
                 basket = updatedBasket;
 
                 var messageWindow = new Window("", 20, 0, new List<string>());
-                messageWindow.DrawMessage($"User: Test Test {customerFullName}");
+                messageWindow.DrawMessage($"User: {customerFullName}");
 
                 var menuOptions = Enum.GetValues(typeof(MyEnums.Menu))
                        .Cast<MyEnums.Menu>()
@@ -77,19 +77,21 @@ namespace WebShop
                             break;
                     }
                     basket.Add(productBasket);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    welcomeWindow.DrawMessage("Welcome to Tace!");
+                    Console.ResetColor();
                 }
                 else
                 {
                     Console.WriteLine("Wrong input: ");
                 }
-
                 Console.ReadLine();
                 Console.Clear();
             }
         }
 
         //---------------------------Frakt-vy och betalnings-vy---------------------------
-        private static void CheckOut(List<ProductOrder> basket, Customer customer)
+        public static async Task CheckOut(List<ProductOrder> basket, Customer customer)
         {
             using var db = new MyDbContext();
 
@@ -108,7 +110,6 @@ namespace WebShop
             }
 
             Console.Write("Choose Payment Type (enter ID): ");
-
             var inputPaymentType = Helpers.GetGeneralId();
 
             var selectedPaymentType = allPaymentTypes.FirstOrDefault(x => x.Id == inputPaymentType);

@@ -33,18 +33,15 @@ namespace WebShop
                             Environment.Exit(0);
                             break;
                     }
-
                 }
                 Thread.Sleep(500);
                 Console.Clear();
             }
-
             return customer;
         }
 
         private static Customer Login(MyDbContext dbContext, out bool success)
         {
-
             var customer = new Customer();
             success = false;
 
@@ -81,7 +78,6 @@ namespace WebShop
 
             return customer;
         }
-
         private static bool ValidateLogin(MyDbContext dbContext, string enteredEmail, string enteredPassword, out bool isAdmin, out string displayName, out Customer loggedInCustomer)
         {
             isAdmin = false;
@@ -105,7 +101,6 @@ namespace WebShop
                 loggedInCustomer = customer;
                 return true;
             }
-
             return false;
         }
 
@@ -224,9 +219,7 @@ namespace WebShop
                 Console.Clear();
                 LoginMenu(db);
             }
-
             return newCustomer;
-
         }
     }
 }

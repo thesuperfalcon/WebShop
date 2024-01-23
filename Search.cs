@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Drawing;
 using WebShop.Models;
-using static WebShop.WindowUI;
 
 namespace WebShop
 {
@@ -19,11 +17,9 @@ namespace WebShop
                 Console.SetCursorPosition(0, 27);
                 var userInput = InputHelpers.GetInput("Search: ");
 
-
                 searchResults = db.Products
                     .Where(x => x.Name.Contains(userInput) || x.Categories.Any(c => c.CategoryName.Contains(userInput) && (c.CategoryName.StartsWith(userInput))))
                     .ToList();
-
 
                 if (searchResults.Count == 0)
                 {
@@ -41,12 +37,11 @@ namespace WebShop
                         Console.WriteLine($"{i + 1}. {searchResults[i].Name}");
                     }
 
-
                     var selectedIndex = InputHelpers.GetIntegerInput("Select the correct product or enter 0 to search again: ");
 
                     if (selectedIndex == 0)
                     {
-                        continue; 
+                        continue;
                     }
 
                     var selectedProduct = searchResults[selectedIndex - 1];
@@ -58,8 +53,7 @@ namespace WebShop
                         return basket;
                     }
                 }
-            } 
-
+            }
             return null;
         }
 
@@ -83,7 +77,6 @@ namespace WebShop
                 {
                     Console.WriteLine("Available Variants in stock:");
 
-
                     Console.Write("Size: ");
                     var sizes = productVariants.Select(variant => variant.Size?.SizeName ?? "N/A").Distinct();
                     Console.WriteLine(string.Join(", ", sizes));
@@ -92,13 +85,11 @@ namespace WebShop
                     var colors = productVariants.Select(variant => variant.Colour?.ColourName ?? "N/A").Distinct();
                     Console.WriteLine(string.Join(", ", colors));
 
-
                     foreach (var variant in productVariants)
                     {
                         //// Kommenterade bort quantity, ska det vara kvar? känns mer som en admin feature än vad kunderna behöver se när de söker på en produkt? , Quantity: {variant.Quantity}
                         Console.WriteLine($"- Size: {variant.Size?.SizeName ?? "N/A"}, Color: {variant.Colour?.ColourName ?? "N/A"}");
                     }
-
 
                     var basket = BasketHelpers.AddProductToBasket(product);
                     return basket;
@@ -112,10 +103,8 @@ namespace WebShop
             {
                 Console.WriteLine($"Error retrieving product information: {ex.Message}");
             }
-
             return null;
         }
-
 
         public static ProductOrder CategorySearch()
         {
@@ -179,7 +168,6 @@ namespace WebShop
                     Console.WriteLine("Invalid Category_Id. No category found.");
                 }
             }
-
             return basket;
         }
     }

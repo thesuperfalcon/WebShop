@@ -25,7 +25,7 @@ namespace WebShop
 
             public void Draw()
             {
-                var width = TextRows.OrderByDescending(s => s.Length).FirstOrDefault().Length;
+                var width = TextRows?.OrderByDescending(s => s.Length).FirstOrDefault()?.Length ?? 0;
 
                 // Kolla om Header är längre än det längsta ordet i listan
                 if (width < Header.Length + 4)
@@ -65,22 +65,18 @@ namespace WebShop
                 {
                     Lowest.LowestPosition = Top + TextRows.Count + 2;
                 }
-
                 Console.SetCursorPosition(0, Lowest.LowestPosition);
             }
-
 
             public static void DrawWindow(string header, int left, int top, List<string> content)
             {
                 int width = content.OrderByDescending(s => s.Length).FirstOrDefault().Length;
 
-                // Kolla om Header är längre än det längsta ordet i listan
                 if (width < header.Length + 4)
                 {
                     width = header.Length + 4;
                 };
 
-                // Rita Header
                 Console.SetCursorPosition(left, top);
                 if (header != "")
                 {
@@ -95,26 +91,21 @@ namespace WebShop
                     Console.Write('┌' + new String('─', width + 2) + '┐');
                 }
 
-                // Rita raderna i sträng-Listan
                 for (int j = 0; j < content.Count; j++)
                 {
                     Console.SetCursorPosition(left, top + j + 1);
                     Console.WriteLine('│' + " " + j + ". " + content[j] + new String(' ', width - content[j].Length + 1) + '│');
                 }
 
-                // Rita undre delen av fönstret
                 Console.SetCursorPosition(left, top + content.Count + 1);
                 Console.Write('└' + new String('─', width + 5) + '┘');
 
-                // Kolla vilket som är den nedersta positionen, i alla fönster, som ritats ut
                 if (Lowest.LowestPosition < top + content.Count + 2)
                 {
                     Lowest.LowestPosition = top + content.Count + 2;
                 }
-
                 Console.SetCursorPosition(0, Lowest.LowestPosition);
             }
-
 
             public void DrawMessage(string message)
             {
