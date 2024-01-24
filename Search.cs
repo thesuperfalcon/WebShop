@@ -23,7 +23,6 @@ namespace WebShop
 
                 if (searchResults.Count == 0)
                 {
-
                     Console.WriteLine("No products found! Try again...");
                 }
                 else

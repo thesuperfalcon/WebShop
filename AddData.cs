@@ -26,7 +26,8 @@ namespace WebShop
                 AddDeliveryAndPaymentInfo();
                 AddCustomerInfo();
                 AddMultipleProducts();
-                
+                AddFirstFinalOrder();
+
             }
             catch (Exception ex)
             {
@@ -143,8 +144,6 @@ namespace WebShop
         }
 
 
-        // Kolla på denna 
-
         private static void AddFirstCustomer()
         {
             using var db = new MyDbContext();
@@ -166,7 +165,7 @@ namespace WebShop
                 PhoneNumber = 123456789,
                 Email = "jens.svensson@gmail.com",
                 Password = "123",
-                IsAdmin = false,
+                IsAdmin = true,
             };
 
             
@@ -179,12 +178,12 @@ namespace WebShop
             {
                 var product1 = CreateProduct("Unicorn", "Fancy unicorn shirt", 99.99, false, 3, new[] { "Women", "T-Shirt" }, db);
                 var product2 = CreateProduct("Rainbow T-shirt", "Cute T-shirt with rainbows ", 199.99, false, 3, new[] { "Women", "T-Shirt" }, db);
-                var product3 = CreateProduct("Hoodie", "Nice hoodie with a cool hood", 49.99, false, 3, new[] { "Women", "Hoodie" }, db);
+                var product3 = CreateProduct("Hoodie", "Nice hoodie with a cool hood", 49.99, true, 3, new[] { "Women", "Hoodie" }, db);
                 var product4 = CreateProduct("Dress", "Cozy dress to look stylish", 79.99, false, 3, new[] { "Women", "Dress" }, db);
                 var product5 = CreateProduct("Men's Shirt", "Stylish men's shirt", 59.99, false, 3, new[] { "Men", "Shirt" }, db);
                 var product6 = CreateProduct("Men's Jeans", "Comfortable men's jeans", 89.99, false, 3, new[] { "Men", "Jeans", "Pants" }, db);
                 var product7 = CreateProduct("Men's Jacket", "Warm men's jacket", 129.99, false, 3, new[] { "Men", "Jacket" }, db);
-                var product8 = CreateProduct("Men's Sweater", "Cozy men's sweater", 69.99, false, 3, new[] { "Men", "Sweater" }, db);
+                var product8 = CreateProduct("Men's Sweater", "Cozy men's sweater", 69.99, true, 3, new[] { "Men", "Sweater" }, db);
                 var product9 = CreateProduct("Striped Pullover", "Classic striped pullover for men", 79.99, false, 3, new[] { "Men", "Sweater" }, db);
                 var product10 = CreateProduct("V-Neck Sweater", "Elegant v-neck sweater for a sophisticated look", 89.99, false, 3, new[] { "Men", "Sweater" }, db);
                 var product11 = CreateProduct("Crew Neck Sweater", "Comfortable crew neck sweater for casual wear", 59.99, false, 3, new[] { "Men", "Sweater" }, db);
@@ -229,7 +228,56 @@ namespace WebShop
                 db.SaveChanges();
             }
         }
+        private static void AddFirstFinalOrder()
+        {
+            using var db = new MyDbContext();
+            var customer = db.Customers.FirstOrDefault(c => c.FirstName.Name == "Jens" && c.LastName.Name == "Svensson");
 
+            var productVariant = db.ProductVariants
+                .Include(pv => pv.Product)
+                .Include(pv => pv.Colour)
+                .Include(pv => pv.Size)
+                .FirstOrDefault(pv =>
+                    pv.Product.Id == 6 &&
+                    pv.Colour.ColourName == "Green" &&
+                    pv.Size.SizeName == "S");
+
+            var deliveryType = db.DeliveryTypes.FirstOrDefault(dt => dt.DeliveryName == "Home-Delivery");
+            var paymentType = db.PaymentTypes.FirstOrDefault(pt => pt.PaymentTypeName == "30-days");
+
+            var totalPrice = productVariant.Product.Price * 1.25 + deliveryType.DeliveryPrice;
+            int quantity = 2;
+            var firstFinalOrder = new FinalOrder
+            {
+                Customer = customer,
+                Delivery = new Delivery
+                {
+                    DeliveryName = db.DeliveryNames.First(),
+                    DeliveryType = deliveryType,
+                    Adresses = new List<Adress> { db.Adresses.First() }
+                },
+                Payment = new Payment
+                {
+                    PaymentName = db.PaymentNames.First(),
+                    PaymentType = paymentType,
+                    PaymentTypeId = paymentType.Id
+                },
+                TotalPrice = (double)totalPrice,
+                ProductOrders = new List<ProductOrder>
+                {
+
+                new ProductOrder
+                {
+                    ProductVariant = productVariant,
+                    Quantity = quantity,
+                    TotalPrice = (quantity * productVariant.Product.Price).Value
+                }
+            }
+            };
+            db.FinalOrders.Add(firstFinalOrder);
+            db.SaveChanges();
+            Console.WriteLine("First order created successfully.");
+        }
         private static void AddProductVariants(MyDbContext db, Product product, params (string Color, string Size, int Quantity)[] variants)
         {
             var colors = db.Colours.Where(c => variants.Select(v => v.Color).Contains(c.ColourName)).ToList();

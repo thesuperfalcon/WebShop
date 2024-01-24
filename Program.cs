@@ -24,19 +24,16 @@ namespace WebShop
                 //}
 
                 Customer customer = new Customer();
-                //customer = LoginManager.LoginMenu(db);
+                customer = LoginManager.LoginMenu(db);
 
-                Customer customer1 = db.Customers.FirstOrDefault(customer => customer.Id == 2);
-
-                if (customer1.IsAdmin == true)
+                if (customer.IsAdmin == true)
                 {
-                    Admin.AdminMenu(customer1);
+                    Admin.AdminMenu(customer);
                 }
                 else
                 {
-                    TheMenu.ShowMenu(customer1);
+                    TheMenu.ShowMenu(customer);
                 }
-
             }
         }
     }

@@ -29,7 +29,7 @@ namespace WebShop
                                 FROM Products p
                                 INNER JOIN ProductVariants pv ON p.Id = pv.ProductId
                                 GROUP BY p.Name, p.Id
-                                HAVING SUM(pv.Quantity) >= 60
+                                HAVING SUM(pv.Quantity) <= 60
                                 ORDER BY TotalQuantity DESC;";
 
                 string sql2 = @"SELECT p.Name AS Name,

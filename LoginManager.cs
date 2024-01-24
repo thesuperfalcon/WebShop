@@ -122,8 +122,10 @@ namespace WebShop
             var adminAccessPassword = "abc123";
 
             int PhoneNumber = InputHelpers.GetIntegerInput("Enter phone number: ");
-            string email = InputHelpers.GetInput("Enter email: ");
-            string password = InputHelpers.GetInput("Enter password: ");
+            Console.Write("Enter email: ");
+            string email = Console.ReadLine();
+            Console.Write("Enter password: ");
+            string password = Console.ReadLine();
             bool isAdmin = InputHelpers.GetYesOrNo("Is admin?: ");
             if (customer.IsAdmin == false)
             {
