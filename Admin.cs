@@ -71,18 +71,24 @@ namespace WebShop
             }
         }
 
-
-        public static void AddProduct()
+        private static void AddProduct()
         {
             bool success = false;
+
             while (!success)
             {
+                var returnToMenu = InputHelpers.GetYesOrNo("Return to menu?: ");
+
+                if (returnToMenu)
+                {
+                    success = true;
+                    break;
+                }
+
                 using var db = new MyDbContext();
 
                 var productName = InputHelpers.GetInput("Product name: ");
-
                 var productDescription = InputHelpers.GetInput("Product description: ");
-
                 var productPrice = InputHelpers.GetDoubleInput("Product price: ");
 
                 var suppliers = db.ProductSuppliers.ToList();
@@ -93,7 +99,6 @@ namespace WebShop
                 }
 
                 var inputSupplierId = InputHelpers.GetIntegerInput("Supplier Id: ");
-
                 var productSupplier = db.ProductSuppliers.Where(x => x.Id == inputSupplierId).FirstOrDefault();
 
                 var categories = db.Categories.ToList();
@@ -106,25 +111,23 @@ namespace WebShop
                 Console.Write("Category / Categories (comma-separated): ");
                 var categoryNames = Console.ReadLine().Split(',');
 
-                var choosenCategories = new List<Category>();
+                var chosenCategories = new List<Category>();
 
                 foreach (var categoryName in categoryNames)
                 {
-
                     var categoryNameToUpper = InputHelpers.FormatString(categoryName);
-
                     var category = db.Categories.FirstOrDefault(c => c.CategoryName == categoryNameToUpper);
 
                     if (category != null)
                     {
-                        choosenCategories.Add(category);
+                        chosenCategories.Add(category);
                     }
                     else
                     {
                         var addCategory = new Category { CategoryName = categoryNameToUpper };
                         db.Add(addCategory);
                         db.SaveChanges();
-                        choosenCategories.Add(addCategory);
+                        chosenCategories.Add(addCategory);
                     }
                 }
 
@@ -133,19 +136,21 @@ namespace WebShop
                 Console.WriteLine("Summary:");
                 Console.WriteLine();
                 Console.WriteLine("Product name: " + productName);
-                Console.WriteLine("Product desciption: " + productDescription);
+                Console.WriteLine("Product description: " + productDescription);
                 Console.WriteLine("Product supplier: " + productSupplier.SupplierName);
                 Console.WriteLine("Price: " + productPrice + "$");
                 Console.Write("Categories: ");
-                foreach (var category in choosenCategories)
+
+                foreach (var category in chosenCategories)
                 {
                     Console.Write(category.CategoryName + " ");
                 }
+
                 Console.WriteLine();
 
                 var addProduct = InputHelpers.GetYesOrNo("Add new product? ");
 
-                if (addProduct == true)
+                if (addProduct)
                 {
                     var product = new Product()
                     {
@@ -153,26 +158,17 @@ namespace WebShop
                         Description = productDescription,
                         ProductSupplierId = productSupplier.Id,
                         Price = productPrice,
-                        Categories = new List<Category>(choosenCategories),
+                        Categories = new List<Category>(chosenCategories),
                         FeaturedProduct = featuredProduct
                     };
                     db.Add(product);
                     db.SaveChanges();
 
                     AddProductVariants(product);
-
-                }
-                else
-                {
-                    var returnToMenu = InputHelpers.GetYesOrNo("Return to menu?: ");
-                    if (returnToMenu == true)
-                    {
-                        success = true;
-                        break;
-                    }
                 }
             }
         }
+
         public static void AddProductVariants(Product product)
         {
 
@@ -379,17 +375,16 @@ namespace WebShop
             {
                 Console.WriteLine("Product not found.");
             }
-
         }
         private static void ChangeVariant(Product product)
         {
             using var db = new MyDbContext();
 
             var productVariants = db.ProductVariants
-                                    .Where(x => x.ProductId == product.Id)
-                                    .Include(x => x.Size)
-                                    .Include(x => x.Colour)
-                                    .ToList();
+                .Where(x => x.ProductId == product.Id)
+                .Include(x => x.Size)
+                .Include(x => x.Colour)
+                .ToList();
 
             Console.WriteLine($"Product {product.Id}: {product.Name}");
 
@@ -412,24 +407,29 @@ namespace WebShop
 
                 var userInput = InputHelpers.GetIntegerInput("Enter the ID of the color to change its variant: ");
 
-                var specificVariant = productVariants.FirstOrDefault(x => x.ColourId == userInput);
+                var variantsToChange = productVariants.Where(x => x.ColourId == userInput).ToList();
 
-
-                if (specificVariant != null)
+                if (variantsToChange.Any())
                 {
                     var colorsWithoutProductVariants = Helpers.GetColours(product, db);
                     foreach (var color in colorsWithoutProductVariants)
                     {
                         Console.WriteLine(color.Id + " " + color.ColourName);
                     }
+
                     var newColourId = InputHelpers.GetIntegerInput("Enter the ID of the new color: ");
                     var newColour = db.Colours.FirstOrDefault(c => c.Id == newColourId);
 
                     if (newColour != null)
                     {
-                        specificVariant.ColourId = newColour.Id;
+                        foreach (var variant in variantsToChange)
+                        {
+                            variant.ColourId = newColour.Id;
+                        }
 
-                        Console.WriteLine("Variant color changed successfully!");
+                        Console.WriteLine("Variants colors changed successfully!");
+
+                        db.SaveChanges();
                     }
                     else
                     {
@@ -444,39 +444,6 @@ namespace WebShop
             else
             {
                 Console.WriteLine("No variants found for the product.");
-            }
-
-
-            var coloursWithoutVariants = Helpers.GetColours(product, db);
-
-            if (coloursWithoutVariants.Count > 0)
-            {
-                Console.WriteLine("Colours without variants:");
-                foreach (var color in coloursWithoutVariants)
-                {
-                    Console.WriteLine($"{color.Id} {color.ColourName}");
-                }
-
-                var input = InputHelpers.GetIntegerInput("Enter the ID of the color to add a variant: ");
-
-                var specificColour = db.Colours.FirstOrDefault(x => x.Id == input);
-
-                if (specificColour != null)
-                {
-                    var specificVariant = new ProductVariant();
-                    Console.WriteLine($"Variant added successfully! Details:");
-                    Console.WriteLine($"Colour: {specificColour.ColourName}");
-                    Console.WriteLine($"Size: {specificVariant.Size?.SizeName}");
-
-                }
-                else
-                {
-                    Console.WriteLine("Invalid color ID. Please select a valid color to add a variant.");
-                }
-            }
-            else
-            {
-                Console.WriteLine("No colours without variants found for the product.");
             }
         }
 
