@@ -24,17 +24,16 @@ namespace WebShop
                 //    Console.WriteLine($"An error occurred: {ex.Message}");
                 //}
 
-                Customer customer1 = new Customer();
-                customer1 = db.Customers.SingleOrDefault(x => x.Id == 3);
-                //customer = LoginManager.LoginMenu(db);
+                Customer customer = new Customer();
+                customer = LoginManager.LoginMenu(db);
 
-                if (customer1.IsAdmin == true)
+                if (customer.IsAdmin == true)
                 {
-                    Admin.AdminMenu(customer1);
+                    Admin.AdminMenu(customer);
                 }
                 else
                 {
-                    TheMenu.ShowMenu(customer1);
+                    TheMenu.ShowMenu(customer);
                 }
             }
         }
