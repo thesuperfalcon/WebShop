@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebShop
 {
+    // Enums som definierar menyalternativ för huvudmenyn, adminmenyn och inloggningsmenyn.
     internal class MyEnums
     {
         public enum Menu

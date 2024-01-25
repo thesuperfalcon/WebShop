@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebShop.Models
 {
+    //Modellklass för att representera produktbeställningar
     public partial class ProductOrder
     {
         public int Id { get; set; }

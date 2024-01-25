@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebShop.Models
 {
+    //Intern modellklass för lagerinventering
     internal class StockInventory
     {
         public string Name { get; set; }

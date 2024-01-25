@@ -4,8 +4,10 @@ using WebShop.Models;
 
 namespace WebShop
 {
+    //Intern klass för att lägga till testdata i webbshopen.
     internal class AddData
     {
+        // Statiska arrayer med kategorier, storlekar, leverantörer, färger, leveransföretag och betalningssätt.
         public static string[] Categories = { "Men", "Women", "Pants", "T-Shirt", "Hoodie", "Jeans", "Jacket", "Sweater", "Dress" };
         private static string[] Sizes = { "S", "M", "L", "XL" };
         private static string[] Suppliers = { "Cocktailorde", "Dressman", "Gucci" };
@@ -15,7 +17,7 @@ namespace WebShop
         private static string[] PaymentCompanies = { "Klarna", "Visa", "Paypal" };
         private static string[] PaymentTypes = { "30-days", "Direct-Payment" };
 
-
+        // Metod för att köra alla AddData-metoder.
         public static void RunAddDataMethods()
         {
             try
@@ -36,6 +38,7 @@ namespace WebShop
             }
         }
 
+        // Metod för att lägga till produktinformation.
         private static void AddProductInfo()
         {
             using var db = new MyDbContext();
@@ -54,6 +57,8 @@ namespace WebShop
 
             db.SaveChanges();
         }
+
+        // Metod för att lägga till leverans- och betalningsinformation.
         private static void AddDeliveryAndPaymentInfo()
         {
             Random random = new Random();
@@ -84,6 +89,8 @@ namespace WebShop
             db.SaveChanges();
 
         }
+
+        // Metod för att lägga till kundinformation.
         private static void AddCustomerInfo()
         {
             using var db = new MyDbContext();
@@ -96,13 +103,13 @@ namespace WebShop
                 db.Countries.Add(country);
 
                 var cities = new Dictionary<string, Country>
-                {
-                    { "Nyköping", country },                    
-                    { "Göteborg", country },
-                    { "Uppsala", country },
-                    { "Umeå", country },
-                    { "Oslo", countryName == "Norway" ? country : null }
-                };
+                    {
+                        { "Nyköping", country },
+                        { "Göteborg", country },
+                        { "Uppsala", country },
+                        { "Umeå", country },
+                        { "Oslo", countryName == "Norway" ? country : null }
+                    };
 
                 foreach (var (cityName, countryEntity) in cities.Where(x => x.Value != null))
                 {
@@ -112,14 +119,14 @@ namespace WebShop
             }
 
             var addresses = new Dictionary<string, string>
-            {
-                 
-                { "Storgatan 42", "Göteborg" },
-                { "Bränntorp 1", "Stockholm" },
-                { "Skogsvägen 19", "Oslo" },
-                { "Drottninggatan 89", "Uppsala" },
-                { "Nyköpingsvägen 10", "Nyköping" }
-            };
+                {
+
+                    { "Storgatan 42", "Göteborg" },
+                    { "Bränntorp 1", "Stockholm" },
+                    { "Skogsvägen 19", "Oslo" },
+                    { "Drottninggatan 89", "Uppsala" },
+                    { "Nyköpingsvägen 10", "Nyköping" }
+                };
 
             foreach (var (addressName, cityName) in addresses)
             {
@@ -131,8 +138,8 @@ namespace WebShop
                 }
             }
 
-            var firstNames = new[] {  "Maria", "Pär", "Johanna", "Kalle" };
-            var lastNames = new[] {  "Göransson", "Eklund", "Karlsson", "Stridh" };
+            var firstNames = new[] { "Maria", "Pär", "Johanna", "Kalle" };
+            var lastNames = new[] { "Göransson", "Eklund", "Karlsson", "Stridh" };
 
             foreach (var firstName in firstNames)
                 db.FirstName.Add(new FirstName { Name = firstName });
@@ -143,17 +150,17 @@ namespace WebShop
             db.SaveChanges();
         }
 
-
+        // Metod för att lägga till första kunden.
         private static void AddFirstCustomer()
         {
             using var db = new MyDbContext();
 
             var firstNameJens = db.FirstName.FirstOrDefault(f => f.Name == "Jens") ?? new FirstName { Name = "Jens" };
-            var lastNameSvensson = db.LastName.FirstOrDefault(l => l.Name == "Svensson") ?? new LastName { Name = "Svensson" };            
-            var countryName = "Sweden"; 
+            var lastNameSvensson = db.LastName.FirstOrDefault(l => l.Name == "Svensson") ?? new LastName { Name = "Svensson" };
+            var countryName = "Sweden";
             var country = db.Countries.FirstOrDefault(c => c.CountryName == countryName) ?? new Country { CountryName = countryName };
 
-            var cityName = "Stockholm"; 
+            var cityName = "Stockholm";
             var city = db.Cities.FirstOrDefault(c => c.CityName == cityName && c.Country == country) ?? new City { CityName = cityName, Country = country };
             var addressKungsgatan = db.Adresses.FirstOrDefault(a => a.AdressName == "Kungsgatan 21") ?? new Adress { AdressName = "Kungsgatan 21", City = city };
 
@@ -168,10 +175,12 @@ namespace WebShop
                 IsAdmin = true,
             };
 
-            
+
             db.Customers.Add(firstCustomer);
             db.SaveChanges();
         }
+
+        // Metod för att lägga till flera produkter.
         private static void AddMultipleProducts()
         {
             using (var db = new MyDbContext())
@@ -193,7 +202,7 @@ namespace WebShop
                 var product15 = CreateProduct("Casual Denim Dress", "Relaxed fit denim dress for a laid-back style", 69.99, false, 3, new[] { "Women", "Dress" }, db);
                 var product16 = CreateProduct("Cozy Knit Cardigan", "Warm and comfortable knit cardigan", 54.99, false, 3, new[] { "Women", "Sweater" }, db);
                 var product17 = CreateProduct("Leather Jacket", "Stylish leather jacket for a trendy look", 119.99, false, 3, new[] { "Women", "Jacket" }, db);
-                var product18 = CreateProduct("Slim Fit Men's Jeans", "Modern slim fit jeans for men", 79.99, false, 3, new[] { "Men", "Jeans","Pants" }, db);
+                var product18 = CreateProduct("Slim Fit Men's Jeans", "Modern slim fit jeans for men", 79.99, false, 3, new[] { "Men", "Jeans", "Pants" }, db);
                 var product19 = CreateProduct("Graphic Print Men's T-Shirt", "Casual men's t-shirt with a cool graphic print", 44.99, false, 3, new[] { "Men", "T-Shirt" }, db);
                 var product20 = CreateProduct("Quilted Bomber Jacket", "Fashionable quilted bomber jacket for men", 89.99, false, 3, new[] { "Men", "Jacket" }, db);
 
@@ -228,6 +237,8 @@ namespace WebShop
                 db.SaveChanges();
             }
         }
+
+        // Metod för att lägga till första slutliga beställningen.
         private static void AddFirstFinalOrder()
         {
             using var db = new MyDbContext();
@@ -264,20 +275,22 @@ namespace WebShop
                 },
                 TotalPrice = (double)totalPrice,
                 ProductOrders = new List<ProductOrder>
-                {
+                    {
 
-                new ProductOrder
-                {
-                    ProductVariant = productVariant,
-                    Quantity = quantity,
-                    TotalPrice = (quantity * productVariant.Product.Price).Value
+                    new ProductOrder
+                    {
+                        ProductVariant = productVariant,
+                        Quantity = quantity,
+                        TotalPrice = (quantity * productVariant.Product.Price).Value
+                    }
                 }
-            }
             };
             db.FinalOrders.Add(firstFinalOrder);
             db.SaveChanges();
             Console.WriteLine("First order created successfully.");
         }
+
+        // Metod för att lägga till produktvarianter.
         private static void AddProductVariants(MyDbContext db, Product product, params (string Color, string Size, int Quantity)[] variants)
         {
             var colors = db.Colours.Where(c => variants.Select(v => v.Color).Contains(c.ColourName)).ToList();
@@ -293,6 +306,7 @@ namespace WebShop
                 .ToList();
         }
 
+        // Metod för att lägga till länder.
         private static void AddCountries()
         {
             using var db = new MyDbContext();
@@ -307,6 +321,7 @@ namespace WebShop
             db.SaveChanges();
         }
 
+        // Hjälpmetod för att skapa en produkt.
         private static Product CreateProduct(string name, string description, double price, bool featured, int supplierId, string[] categoryNames, MyDbContext db)
         {
             var categories = categoryNames

@@ -5,9 +5,12 @@ using static WebShop.WindowUI;
 
 namespace WebShop
 {
+    // Hanterar huvudmenyn och kundkorgen
     internal class TheMenu
     {
         public static List<ProductOrder> basket = new List<ProductOrder>();
+
+
         public static void ShowMenu(Customer customer)
         {
             var welcomeWindow = new Window("", 0, 0, new List<string>());
@@ -15,6 +18,7 @@ namespace WebShop
             welcomeWindow.DrawMessage("Welcome to Tace!");
             Console.ResetColor();
 
+            // Huvudloop för att visa menyn och hantera användarens val.
             bool loop = true;
             while (loop)
             {
@@ -37,6 +41,7 @@ namespace WebShop
                 var messageWindow = new Window("", 20, 0, new List<string>());
                 messageWindow.DrawMessage($"User: {customerFullName}");
 
+                // Hämta menyval från enum och skapa en meny.
                 var menuOptions = Enum.GetValues(typeof(MyEnums.Menu))
                        .Cast<MyEnums.Menu>()
                        .Select(menu => Enum.GetName(typeof(MyEnums.Menu), menu).Replace('_', ' '))
@@ -45,6 +50,7 @@ namespace WebShop
                 var windowMenu = new Window("Menu", 41, 4, menuOptions);
                 WindowUI.Window.DrawWindow("Menu", 41, 4, menuOptions);
 
+                // Visa utvalda produkter.
                 BasketHelpers.ShowFeaturedProduct();
                 var productBasket = new ProductOrder();
 
@@ -76,6 +82,7 @@ namespace WebShop
                             Environment.Exit(0);
                             break;
                     }
+                    // Lägg till produkten i varukorgen
                     basket.Add(productBasket);
                     Console.ForegroundColor = ConsoleColor.Green;
                     welcomeWindow.DrawMessage("Welcome to Tace!");
@@ -86,7 +93,6 @@ namespace WebShop
                     Console.WriteLine("Wrong input: ");
                 }
                 Console.SetCursorPosition(0, 27);
-                //Console.ReadLine();
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Green;
                 welcomeWindow.DrawMessage("Welcome to Tace!");
@@ -94,36 +100,40 @@ namespace WebShop
             }
         }
 
-        //---------------------------Frakt-vy och betalnings-vy---------------------------
-        public static async Task CheckOut(List<ProductOrder> basket, Customer customer)
+        // CheckOut-metoden hanterar genomförandet av köpet baserat på kundens varukorg och val.
+        public static void CheckOut(List<ProductOrder> basket, Customer customer)
         {
+            Console.WriteLine("\nCHECKOUT");
+            Console.WriteLine("----------------------------------");
             using var db = new MyDbContext();
 
+            // Hämtar nödvändig information från databasen.
             var allPaymentTypes = db.PaymentTypes.ToList();
             var allPayments = db.PaymentNames.ToList();
             var allDeliveryTypes = db.DeliveryTypes.ToList();
             var allDeliveries = db.DeliveryNames.ToList();
 
+            //Presenterar betalingstyper och betalningar och låter användaren göra val
             Console.WriteLine("Available Payment Types");
 
             foreach (var allPaymentType in allPaymentTypes)
             {
-                Console.WriteLine(allPaymentType.Id + " " + allPaymentType.PaymentTypeName);
+                Console.WriteLine(allPaymentType.Id + ". " + allPaymentType.PaymentTypeName);
             }
 
-            Console.Write("Choose Payment Type (enter ID): ");
+            Console.WriteLine("\nChoose Payment Type (enter ID) ");
             var inputPaymentType = Helpers.GetGeneralId();
 
             var selectedPaymentType = allPaymentTypes.FirstOrDefault(x => x.Id == inputPaymentType);
 
-            Console.WriteLine("Available Payments:");
+            Console.WriteLine("\nAvailable Payments:");
 
             foreach (var allPayment in allPayments)
             {
-                Console.WriteLine(allPayment.Id + " " + allPayment.Name);
+                Console.WriteLine(allPayment.Id + ". " + allPayment.Name);
             }
 
-            Console.Write("Choose Payment (enter ID): ");
+            Console.WriteLine("\nChoose Payment (enter ID) ");
 
             var inputPayment = Helpers.GetGeneralId();
 
@@ -131,9 +141,12 @@ namespace WebShop
 
             var selectedPayment = Helpers.GetOrCreatePayment(db, selectedPaymentName, selectedPaymentType);
 
-            var adress = Helpers.ShowAdressInformation(db, customer);
+            // Visar befintlig adressinformation för kunden och låter användaren välja befintlig eller att skapa en ny adress
 
-            var adressInfo = InputHelpers.GetYesOrNo($"Delivery to this adress?: ");
+            Console.WriteLine("\n----Existing address----");
+            var adress = Helpers.ShowAdressInformation(db, customer);
+            var adressInfo = InputHelpers.GetYesOrNo($"Do you want your delivery to this adress?: ");
+
             if (adressInfo == true)
             {
 
@@ -143,26 +156,27 @@ namespace WebShop
                 adress = Helpers.CreateAddress(db);
             }
 
-            Console.WriteLine("Available Delivery Types:");
+            //Presenterar leveranstyper och leveranser och låter användaren göra val
+            Console.WriteLine("\nAvailable Delivery Types:");
             foreach (var allDeliveryType in allDeliveryTypes)
             {
-                Console.WriteLine(allDeliveryType.Id + " " + allDeliveryType.DeliveryName + " " + allDeliveryType.DeliveryPrice + ":-");
+                Console.WriteLine(allDeliveryType.Id + ". " + allDeliveryType.DeliveryName + ": " + allDeliveryType.DeliveryPrice + ":-");
             }
 
-            Console.Write("Choose Delivery Type (enter ID): ");
+            Console.WriteLine("\nChoose Delivery Type (enter ID) ");
 
             var inputDeliveryType = Helpers.GetGeneralId();
 
             var selectedDeliveryType = allDeliveryTypes.FirstOrDefault(z => z.Id == inputDeliveryType);
 
-            Console.WriteLine("Available Deliveries:");
+            Console.WriteLine("\nAvailable Parcels:");
 
             foreach (var allDelivery in allDeliveries)
             {
-                Console.WriteLine(allDelivery.Id + " " + allDelivery.Name);
+                Console.WriteLine(allDelivery.Id + ". " + allDelivery.Name);
             }
 
-            Console.Write("Choose Delivery (enter ID): ");
+            Console.WriteLine("\nChoose Parcel (enter ID) ");
 
             var inputDelivery = Helpers.GetGeneralId();
 
@@ -172,28 +186,32 @@ namespace WebShop
 
             var deliveryPrice = Math.Round(selectedDeliveryType.DeliveryPrice, 2);
 
-            // Calculate the total value of the basket
+            //Räknar ut totalpriset för varukorgen
             var basketTotalValue = Helpers.CalculateBasketValue(basket, db);
 
             // Totalpriset inklusive moms (25%)
-
             var taxes = 1.25;
-
             double totalPrice = Math.Round((basketTotalValue + deliveryPrice) * taxes, 2);
 
-            //---------------------------Visa sammanfattning---------------------------
-            Console.WriteLine("Summary");
+            // Visa sammanfattning för användaren
+            Console.WriteLine("\n\tORDER SUMMARY");
+            Console.WriteLine("----------------------------------");
             BasketHelpers.DisplayProductDetails(basket, db);
+            Console.WriteLine("\n----------------------------------");
             Console.WriteLine($"Payment: {selectedPaymentName.Name}");
-            Console.WriteLine($"Payment_Type: {selectedPaymentType.PaymentTypeName}");
+            Console.WriteLine($"Payment type: {selectedPaymentType.PaymentTypeName}");
+            Console.WriteLine("\n----------------------------------");
             Console.WriteLine($"Delivery: {selectedDeliveryName.Name}");
-            Console.WriteLine($"Delivery_Type: {selectedDeliveryType.DeliveryName}");
-            Console.WriteLine($"Delivery_Cost: {selectedDeliveryType.DeliveryPrice}:-");
-            Console.WriteLine($"Total_Cost including 25 % taxes: {totalPrice}:-");
+            Console.WriteLine($"Delivery type: {selectedDeliveryType.DeliveryName}");
+            Console.WriteLine($"Delivery cost: {selectedDeliveryType.DeliveryPrice}:-");
+            Console.WriteLine("\n----------------------------------");
+            Console.WriteLine($"Total cost including 25 % taxes: {totalPrice}:-");
 
-            var finishCheckOut = InputHelpers.GetYesOrNo("Wanna_finish?: ");
+            //Erbjuder användaren att slutföra köp
+            var finishCheckOut = InputHelpers.GetYesOrNo("\nAre you done shopping?: ");
             if (finishCheckOut == true)
             {
+                // Skapar ny beställning och sparar den i databasen.
                 var productOrder = new FinalOrder()
                 {
                     CustomerId = customer.Id,
@@ -205,9 +223,11 @@ namespace WebShop
                 db.Add(productOrder);
                 db.SaveChanges();
 
+                //Tömmer varukorgen efter genomfört köp
                 basket.Clear();
 
-                Console.WriteLine("Thank you for shopping :)");
+                Console.WriteLine("\n\tThank you for your purchase! :)");
+                Thread.Sleep(2000);
             }
         }
     }

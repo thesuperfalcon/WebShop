@@ -1,4 +1,11 @@
-﻿namespace WebShop.Models
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+//Modellklasser för att representera slutliga beställningar, leveranser, betalningar och relaterade entiteter
+namespace WebShop.Models
 {
     public partial class FinalOrder
     {

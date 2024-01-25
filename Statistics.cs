@@ -11,18 +11,19 @@ namespace WebShop
 {
     public class Statistics
     {
-        //Lagersaldo:Dapper
+
         private static string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShop;Integrated Security=True;TrustServerCertificate=true;";
 
+        //Visar lagersaldo baserat på antalet produkter i lagret
         public static void ShowInventoryBalance()
         {
-
             Console.WriteLine("---------------Inventory Balance---------------");
 
             using (var connection = new SqlConnection(connString))
             {
                 connection.Open();
 
+                // SQL-query för att hämta produkter med lågt lager
                 string sql1 = @"SELECT p.Name AS Name,
                                 p.Id AS ProductId,
                                 SUM(pv.Quantity) AS TotalQuantity
@@ -32,6 +33,7 @@ namespace WebShop
                                 HAVING SUM(pv.Quantity) <= 60
                                 ORDER BY TotalQuantity DESC;";
 
+                // SQL-query för att hämta produkter med medium lager 
                 string sql2 = @"SELECT p.Name AS Name,
                                 p.Id AS ProductId,
                                 SUM(pv.Quantity) AS TotalQuantity
@@ -41,6 +43,7 @@ namespace WebShop
                                 HAVING SUM(pv.Quantity) BETWEEN 61 AND 85
                                 ORDER BY TotalQuantity DESC;";
 
+                // SQL-query för att hämta produkter med högt lager
                 string sql3 = @"SELECT p.Name AS Name,
                                 p.Id AS ProductId,
                                 SUM(pv.Quantity) AS TotalQuantity
@@ -63,6 +66,7 @@ namespace WebShop
             }
         }
 
+        // Visar produkter i en specifik lagerkategori.
         public static void ShowStockCategory(string categoryTitle, string sqlQuery, SqlConnection connection)
         {
             using var db = new MyDbContext();
@@ -88,7 +92,7 @@ namespace WebShop
         }
 
 
-        //Asynkron metod för orderhistorik i Dapper
+        // Asynkron metod för att visa orderhistorik med Dapper.
         public static async Task OrderHistory()
         {
             Console.Clear();
@@ -99,6 +103,7 @@ namespace WebShop
 
                 await connection.OpenAsync();
 
+                // Hämta alla order från databasen.
                 var allOrders = await connection.QueryAsync<FinalOrder>("SELECT * FROM FinalOrders");
 
                 Console.WriteLine("\n---------------Order history---------------");
@@ -107,7 +112,7 @@ namespace WebShop
                     Console.WriteLine($"\nOrderID: {finalOrders.Id}, Customer: {finalOrders.CustomerId}, Payment: {finalOrders.PaymentId}, Delivery: {finalOrders.DeliveryId}, Total Price: {finalOrders.TotalPrice} ");
                 }
 
-                //Tidtagare för query
+                // Tidtagare för att mäta exekveringstiden för SQL-queryn.
                 stopwatch.Stop();
                 Console.WriteLine($"\nQuery executed in: {stopwatch.ElapsedMilliseconds} milliseconds");
 
@@ -173,7 +178,7 @@ namespace WebShop
         }
 
 
-        //Populäraste produkterna: LINQ
+        // Visa bästsäljande produkter med LINQ.
         public static void ShowBestSelling()
         {
             Console.Clear();
@@ -205,13 +210,12 @@ namespace WebShop
                 Console.Write("Press any key to return to the menu...\n");
 
                 Console.ReadKey(true);
-
                 return;
             }
         }
 
 
-        //Populäraste parcel: Dapper
+        // Visa mest populära leveranstjänst med Dapper.
         public static void ShowPopularParcels()
         {
             Console.Clear();
@@ -245,7 +249,7 @@ namespace WebShop
         }
 
 
-        //populäraste betalningsmetod: LINQ
+        // Visa mest populära betalningsmetod med LINQ.
         public static void ShowPopularPayment()
         {
             Console.Clear();
@@ -278,7 +282,7 @@ namespace WebShop
             }
         }
 
-        //populäraste färgerna: LINQ
+        // Visa mest populära färger med LINQ.
         public static void ShowTopColors()
         {
             Console.Clear();
@@ -307,12 +311,10 @@ namespace WebShop
             Console.Write("Press any key to return to the menu...\n");
 
             Console.ReadKey(true);
-
             return;
         }
 
-
-        //populäraste storlekarna: Dapper
+        // Visa mest populära storlekar med Dapper.
         public static void ShowTopSizes()
         {
             Console.Clear();

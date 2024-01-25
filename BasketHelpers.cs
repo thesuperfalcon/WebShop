@@ -4,15 +4,17 @@ using static WebShop.WindowUI;
 
 namespace WebShop
 {
+    // BasketHelpers: En samling av hjälpmetoder för att hantera varukorgen i webbshopen.
     internal class BasketHelpers
     {
+        // Metod för att lägga till en produkt i varukorgen med val av färg och storlek
         public static ProductOrder AddProductToBasket(Product product)
         {
             using var db = new MyDbContext();
 
             try
             {
-                var addProduct = InputHelpers.GetYesOrNo("Add to cart?: ");
+                var addProduct = InputHelpers.GetYesOrNo("\nAdd to cart?: ");
 
                 if (addProduct)
                 {
@@ -24,10 +26,10 @@ namespace WebShop
 
                     foreach (var colour in colourChoice)
                     {
-                        Console.WriteLine($"{colour.Id} {colour.ColourName}");
+                        Console.WriteLine($"{colour.Id}. {colour.ColourName}");
                     }
 
-                    var colourIdInput = InputHelpers.GetIntegerInput("ColourId: ");
+                    var colourIdInput = InputHelpers.GetIntegerInput("\nEnter colour ID: ");
                     var selectedColour = db.Colours.FirstOrDefault(x => x.Id == colourIdInput);
 
                     var sizeChoice = db.ProductVariants
@@ -38,10 +40,10 @@ namespace WebShop
 
                     foreach (var size in sizeChoice)
                     {
-                        Console.WriteLine($"{size.Id} {size.SizeName}");
+                        Console.WriteLine($"{size.Id}. {size.SizeName}");
                     }
 
-                    var sizeIdInput = InputHelpers.GetIntegerInput("SizeId: ");
+                    var sizeIdInput = InputHelpers.GetIntegerInput("\nEnter size ID: ");
                     var selectedSize = db.Sizes.FirstOrDefault(x => x.Id == sizeIdInput);
 
                     var productVariant = db.ProductVariants
@@ -54,9 +56,9 @@ namespace WebShop
                         return null;
                     }
 
-                    Console.WriteLine($"Available Quantity: {productVariant.Quantity}");
+                    Console.WriteLine($"\nAvailable Quantity: {productVariant.Quantity}");
 
-                    var quantity = InputHelpers.GetIntegerInput("Amount?: ");
+                    var quantity = InputHelpers.GetIntegerInput("Enter the amount you want to order: ");
 
                     if (quantity >= 0 && quantity <= productVariant.Quantity)
                     {
@@ -67,7 +69,7 @@ namespace WebShop
 
                         double totalPrice = (productPrice * quantity).Value;
 
-                        var addToBasket = InputHelpers.GetYesOrNo("Add to basket?: ");
+                        var addToBasket = InputHelpers.GetYesOrNo("\nAdd to basket?: ");
 
                         if (addToBasket)
                         {
@@ -101,8 +103,12 @@ namespace WebShop
 
             return null;
         }
+
+
+        // Visar detaljer om produkterna i kundvagnen
         public static void DisplayProductDetails(List<ProductOrder> basket, MyDbContext db)
         {
+            Console.WriteLine("\n----Product details----");
             foreach (var item in basket)
             {
                 var productVariant = GetProductVariant(db, item.ProductVariantId);
@@ -119,6 +125,7 @@ namespace WebShop
             }
         }
 
+        // Visar kundvagnens innehåll och ger alternativ för att ändra kvantiteter eller ta bort produkter
         public static void ShowBasket(List<ProductOrder> basket)
         {
             using (var db = new MyDbContext())
@@ -150,11 +157,11 @@ namespace WebShop
 
                     Console.WriteLine($"Total price: {basketTotalValue}:-");
                     Console.WriteLine();
-                    var answer = InputHelpers.GetYesOrNo("Do you want to add more of a product or remove a product?: ");
+                    var answer = InputHelpers.GetYesOrNo("Do you want to add more of a product or remove a product? (yes/no): ");
 
                     if (answer == true)
                     {
-                        Console.WriteLine("1. Change the quantity of a product.");
+                        Console.WriteLine("\n1. Change the quantity of a product.");
                         Console.WriteLine("2. Remove a product from the basket.");
 
                         int choice;
@@ -181,8 +188,11 @@ namespace WebShop
                 }
             }
         }
+
+        // Hämtar en produktvariant baserat på dess ID
         public static ProductVariant GetProductVariant(MyDbContext db, int productVariantId)
         {
+            // Hämta en produktvariant från databasen
             var productVariant = db.ProductVariants
                 .Include(x => x.Product)
                 .Include(x => x.Colour)
@@ -191,6 +201,8 @@ namespace WebShop
 
             return productVariant;
         }
+
+        // Återställer kvantiteterna för produkter i kundvagnen till deras ursprungliga värden
         public static void RollbackQuantities(List<ProductOrder> basket, MyDbContext db)
         {
             foreach (var item in basket)
@@ -202,6 +214,7 @@ namespace WebShop
             db.SaveChanges();
         }
 
+        // Visar utvalda produkter som erbjudanden i en särskild gränssnittsfönster
         public static void ShowFeaturedProduct()
         {
             using var db = new MyDbContext();
@@ -246,6 +259,7 @@ namespace WebShop
             featuredProductsWindow.Draw();
         }
 
+        // Uppdaterar kvantiteten för en produkt i kundvagnen
         public static void UpdateQuantity(List<ProductOrder> basket)
         {
             using var db = new MyDbContext();
@@ -280,6 +294,8 @@ namespace WebShop
 
             ProcessOption(chosenProduct, option);
         }
+
+        // Tar bort en produkt från kundvagnen
         public static void RemoveProduct(List<ProductOrder> basket)
         {
             using (var db = new MyDbContext())
@@ -290,7 +306,7 @@ namespace WebShop
                     Console.WriteLine($"{productVariant.Id} {productVariant.Product.Name}");
                 }
 
-                int productVariantId = InputHelpers.GetIntegerInput("Enter the ID of the product you want to remove: ");
+                int productVariantId = InputHelpers.GetIntegerInput("\nEnter the ID of the product you want to remove: ");
 
                 var chosenProduct = basket.FirstOrDefault(p => p.ProductVariantId == productVariantId);
 
@@ -318,17 +334,22 @@ namespace WebShop
                 }
             }
         }
+
+        // Privata hjälpmetoder för att hantera kvantitetsuppdateringar och produktborttagning
         private static void DisplayProductQuantityOptions(ProductOrder chosenProduct)
         {
             var chosenProductName = chosenProduct.ProductVariant?.Product?.Name;
 
-            Console.WriteLine($"Current quantity of {chosenProductName}: {chosenProduct.Quantity}");
+            Console.WriteLine($"\nCurrent quantity: {chosenProductName} {chosenProduct.Quantity}");
             Console.WriteLine("Choose an option:");
             Console.WriteLine("1. Add quantity");
             Console.WriteLine("2. Remove quantity");
         }
+
+        // Hämtar användarens val för alternativ
         private static int GetOptionChoice()
         {
+
             int option;
             while (true)
             {
@@ -341,6 +362,7 @@ namespace WebShop
             }
         }
 
+        // Bearbetar användarens val för alternativ
         private static void ProcessOption(ProductOrder chosenProduct, int option)
         {
             switch (option)
@@ -357,17 +379,18 @@ namespace WebShop
             }
         }
 
-        //produkt-namn syns inte 
+        // Lägg till kvantitet för en produkt i kundvagnen
         private static void AddQuantity(ProductOrder chosenProduct)
         {
             using var db = new MyDbContext();
-            Console.WriteLine("Enter the quantity you want to add:");
+            Console.WriteLine("\nEnter the quantity you want to add:");
 
             if (int.TryParse(Console.ReadLine(), out int quantityToAdd))
             {
                 chosenProduct.Quantity += quantityToAdd;
                 var chosenProductName = chosenProduct.ProductVariant?.Product?.Name;
-                Console.WriteLine($"Added {quantityToAdd} more of {chosenProductName} to your basket.");
+                Console.WriteLine("Addition completed successfully. Returning to menu.");
+                Thread.Sleep(1500);
                 UpdateProductVariantQuantity(chosenProduct.ProductVariantId, quantityToAdd, db);
             }
             else
@@ -375,12 +398,12 @@ namespace WebShop
                 Console.WriteLine("Invalid quantity.");
             }
         }
-        //produkt-namn syns inte 
 
+        // Tar bort kvantitet för en produkt i kundvagnen
         private static void RemoveQuantity(ProductOrder chosenProduct)
         {
             using var db = new MyDbContext();
-            Console.WriteLine("Enter the quantity you want to remove:");
+            Console.WriteLine("\nEnter the quantity you want to remove:");
 
             if (int.TryParse(Console.ReadLine(), out int quantityToRemove))
             {
@@ -388,7 +411,8 @@ namespace WebShop
                 {
                     chosenProduct.Quantity -= quantityToRemove;
                     var chosenProductName = chosenProduct.ProductVariant?.Product?.Name;
-                    Console.WriteLine($"Removed {quantityToRemove} from {chosenProductName} in your basket.");
+                    Console.WriteLine("Removal successful. Returning to menu.");
+                    Thread.Sleep(1500);
                     UpdateProductVariantQuantity(chosenProduct.ProductVariantId, quantityToRemove, db);
                 }
                 else
@@ -402,6 +426,7 @@ namespace WebShop
             }
         }
 
+        // Uppdatera kvantiteten för en produktvariant i databasen
         private static void UpdateProductVariantQuantity(int productVariantId, int quantityChange, MyDbContext db)
         {
             var productVariant = db.ProductVariants.FirstOrDefault(pv => pv.Id == productVariantId);
@@ -412,9 +437,11 @@ namespace WebShop
                 db.SaveChanges();
             }
         }
+
+        // Visa innehållet i kundvagnen
         private static void DisplayBasket(List<ProductOrder> basket, MyDbContext db)
         {
-            Console.WriteLine("Products in your basket:");
+            Console.WriteLine("\nProducts in your basket:");
 
             foreach (var item in basket)
             {
@@ -423,17 +450,19 @@ namespace WebShop
             }
         }
 
+        // Hämta en specifik produkt från kundvagnen
         private static ProductOrder GetChosenProduct(List<ProductOrder> basket, int productIdInput)
         {
             return basket.FirstOrDefault(p => p.ProductVariantId == productIdInput);
         }
 
+        // Hämta användarens inmatning för produkt-ID
         private static int GetProductIdInput()
         {
             int productIdInput;
             while (true)
             {
-                Console.WriteLine("Enter the ID of the product you want to update (or 0 to cancel):");
+                Console.WriteLine("\nEnter the ID of the product you want to update (or 0 to cancel):");
 
                 if (int.TryParse(Console.ReadLine(), out productIdInput))
                 {

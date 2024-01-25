@@ -3,8 +3,10 @@ using WebShop.Models;
 
 namespace WebShop
 {
+    // Hanterar inloggning och skapande av användarkonton
     internal class LoginManager
     {
+        // Visar en meny för inloggning och skapande av nya konton.
         public static Customer LoginMenu(MyDbContext dbContext)
         {
             var customer = new Customer();
@@ -40,19 +42,22 @@ namespace WebShop
             return customer;
         }
 
+        // Metoden Login försöker logga in användaren genom att kontrollera angivet e-post och lösenord mot databasen.
         private static Customer Login(MyDbContext dbContext, out bool success)
         {
             var customer = new Customer();
             success = false;
 
-            Console.Write("Enter your email: ");
+            Console.Write("\nEnter your email: ");
             string enteredEmail = Console.ReadLine()?.ToLowerInvariant();
             Console.Write("Enter your password: ");
             string enteredPassword = Console.ReadLine()?.ToLowerInvariant();
 
+            // Om inloggningen lyckas, visas meny för administratör eller vanlig kund och returnerar den inloggade kunden.
             if (ValidateLogin(dbContext, enteredEmail, enteredPassword, out bool isAdmin, out string displayName, out Customer loggedInCustomer))
             {
-                Console.WriteLine("Login successful!");
+                Console.WriteLine("\nLogin successful!");
+                Thread.Sleep(500);
 
                 customer = loggedInCustomer;
 
@@ -60,8 +65,7 @@ namespace WebShop
                 {
                     Console.Clear();
                     Console.WriteLine($"Welcome to the admin page {displayName}");
-
-                    //Admin.AdminMenu();
+                    Thread.Sleep(500);
                 }
                 else
                 {
@@ -78,6 +82,8 @@ namespace WebShop
 
             return customer;
         }
+
+        // Verifierar giltigheten av inloggningsuppgifter i databasen.
         private static bool ValidateLogin(MyDbContext dbContext, string enteredEmail, string enteredPassword, out bool isAdmin, out string displayName, out Customer loggedInCustomer)
         {
             isAdmin = false;
@@ -104,6 +110,7 @@ namespace WebShop
             return false;
         }
 
+        // Skapar en ny användare genom att samla in och validera användarinformation.
         public static Customer CreateCustomer(Customer customer)
         {
             using var db = new MyDbContext();
@@ -119,6 +126,7 @@ namespace WebShop
                 return null;
             }
 
+            // Speciellt lösenord för bekräftelse av admin.
             var adminAccessPassword = "abc123";
 
             int PhoneNumber = InputHelpers.GetIntegerInput("Enter phone number: ");
@@ -213,7 +221,6 @@ namespace WebShop
                 Console.WriteLine("Customer added, returning to admin menu.");
                 Thread.Sleep(1500);
                 Console.Clear();
-                //Admin.AdminMenu();
             }
             else
             {

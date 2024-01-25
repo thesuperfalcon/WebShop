@@ -3,8 +3,10 @@ using WebShop.Models;
 
 namespace WebShop
 {
+    //Hjälpmetoder
     internal class Helpers
     {
+        // Hämtar färger som inte är associerade med en viss produkt
         public static List<Colour> GetColours(Product product, MyDbContext db)
         {
             var productColors = db.ProductVariants
@@ -18,6 +20,8 @@ namespace WebShop
 
             return colorsWithoutProductVariants;
         }
+
+        // Hämtar storleks-ID baserat på storleksnamn och produkt
         public static int GetSizeId(string size, Product product)
         {
             using var db = new MyDbContext();
@@ -28,6 +32,8 @@ namespace WebShop
 
             return sizeId;
         }
+
+        // Hämtar färg-ID baserat på färgnamn och produkt
         public static int GetColourId(string colour, Product product)
         {
             using var db = new MyDbContext();
@@ -38,11 +44,14 @@ namespace WebShop
 
             return colourId;
         }
+
+        // Generisk metod för att få inmatning av ID från användaren
         public static int GetGeneralId()
         {
             return InputHelpers.GetIntegerInput("Id: ");
         }
 
+        // Hämtar ett land från användaren baserat på landets ID
         public static Country GetCountry(MyDbContext db)
         {
             while (true)
@@ -65,6 +74,7 @@ namespace WebShop
             }
         }
 
+        // Hämtar eller skapar en stad baserat på användarinmatning och land
         public static City GetOrCreateCity(MyDbContext db, string cityName, Country country)
         {
             City newCity = null;
@@ -96,6 +106,8 @@ namespace WebShop
                 }
             }
         }
+
+        // Visar adressinformation för en given kund
         public static Adress ShowAdressInformation(MyDbContext db, Customer customer)
         {
             var customerAddressInfo = db.Customers
@@ -123,10 +135,10 @@ namespace WebShop
                 Console.WriteLine($"Postal-Code: {customerAddressInfo.PostalCode}");
                 Console.WriteLine($"Adress: {customerAddressInfo.AdressName}");
             }
-
             return customerAddressInfo;
         }
 
+        // Skapar en ny adress med användarens inmatning och lagrar den i databasen
         public static Adress CreateAddress(MyDbContext dbContext)
         {
             Console.WriteLine("Creating a new address:");
@@ -144,15 +156,12 @@ namespace WebShop
 
             if (existingAddress != null)
             {
-                //Console.WriteLine("Address with the same name and city already exists. Updating the existing address.");
-
-                // Perform update logic here
                 existingAddress.PostalCode = postalCode;
 
                 dbContext.SaveChanges();
 
                 Console.WriteLine($"Address '{addressName}' in {existingCity.CityName}, {existingCountry.CountryName} updated successfully.");
-                return existingAddress; // Return the updated address
+                return existingAddress;
             }
 
             var newAddress = new Adress
@@ -169,43 +178,8 @@ namespace WebShop
 
             return newAddress;
         }
-        //public static Adress CreateAddress(MyDbContext dbContext)
-        //{
-        //    Console.WriteLine("Creating a new address:");
 
-
-        //    var existingCountry = Helpers.GetCountry(dbContext);
-
-        //    string cityName = InputHelpers.GetInput("Enter city name: ");
-        //    var existingCity = Helpers.GetOrCreateCity(dbContext, cityName, existingCountry);
-
-        //    int postalCode = InputHelpers.GetIntegerInput("Enter postal code: ");
-
-        //    string addressName = InputHelpers.GetInput("Enter address name: ");
-
-
-        //    var existingAddress = dbContext.Adresses.FirstOrDefault(a => a.AdressName == addressName && a.CityId == existingCity.Id);
-
-        //    if (existingAddress != null)
-        //    {
-        //        Console.WriteLine("Address with the same name and city already exists. Returning to the menu.");
-        //        return null;
-        //    }
-
-        //    var newAddress = new Adress
-        //    {
-        //        AdressName = addressName,
-        //        CityId = existingCity.Id,
-        //        PostalCode = postalCode
-        //    };
-
-        //    dbContext.Adresses.Add(newAddress);
-        //    dbContext.SaveChanges();
-
-        //    Console.WriteLine($"Address '{addressName}' with Postal Code {postalCode} in {existingCity.CityName}, {existingCountry.CountryName} created successfully.");
-
-        //    return newAddress;
-        //}
+        // Beräknar det totala värdet av produkterna i kundvagnen
         public static double CalculateBasketValue(List<ProductOrder> basket, MyDbContext db)
         {
             double totalBasketPrice = 0.0;
@@ -238,9 +212,10 @@ namespace WebShop
                     }
                 }
             }
-
             return totalBasketPrice;
         }
+
+        // Hämtar eller skapar en leverans baserat på namn, typ och adress
         public static Delivery GetOrCreateDelivery(MyDbContext db, DeliveryName deliveryName, DeliveryType deliveryType, Adress address)
         {
             var deliveryNameId = deliveryName.Id;
@@ -283,6 +258,7 @@ namespace WebShop
             }
         }
 
+        // Hämtar eller skapar en betalning baserat på namn och typ
         public static Payment GetOrCreatePayment(MyDbContext db, PaymentName paymentName, PaymentType paymentType)
         {
             var existingPayment = db.Payments

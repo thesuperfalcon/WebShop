@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 
 namespace WebShop
 {
+    //UI för webbshoppen
     internal class WindowUI
     {
         public class Window
         {
+            // Egenskaper för fönstret: rubrik, position och textinnehåll.
             public string Header { get; set; }
             public int Left { get; set; }
             public int Top { get; set; }
             public List<string> TextRows { get; set; }
 
+            //Konstruktor som skapar ett fönster med givna egenskaper.
             public Window(string header, int left, int top, List<string> textRows)
             {
                 Header = header;
@@ -23,17 +26,16 @@ namespace WebShop
                 TextRows = textRows;
             }
 
+            // Ritar ut fönstret i konsolen.
             public void Draw()
             {
                 var width = TextRows?.OrderByDescending(s => s.Length).FirstOrDefault()?.Length ?? 0;
 
-                // Kolla om Header är längre än det längsta ordet i listan
                 if (width < Header.Length + 4)
                 {
                     width = Header.Length + 4;
                 };
 
-                // Rita Header
                 Console.SetCursorPosition(Left, Top);
                 if (Header != "")
                 {
@@ -48,19 +50,15 @@ namespace WebShop
                     Console.Write('┌' + new String('─', width + 2) + '┐');
                 }
 
-                // Rita raderna i sträng-Listan
                 for (int j = 0; j < TextRows.Count; j++)
                 {
                     Console.SetCursorPosition(Left, Top + j + 1);
                     Console.WriteLine('│' + " " + TextRows[j] + new String(' ', width - TextRows[j].Length + 1) + '│');
                 }
 
-                // Rita undre delen av fönstret
                 Console.SetCursorPosition(Left, Top + TextRows.Count + 1);
                 Console.Write('└' + new String('─', width + 2) + '┘');
 
-
-                // Kolla vilket som är den nedersta posotion, i alla fönster, som ritats ut
                 if (Lowest.LowestPosition < Top + TextRows.Count + 2)
                 {
                     Lowest.LowestPosition = Top + TextRows.Count + 2;
@@ -68,6 +66,7 @@ namespace WebShop
                 Console.SetCursorPosition(0, Lowest.LowestPosition);
             }
 
+            // Statisk metod för att rita ett fönster med given rubrik, position och innehåll.
             public static void DrawWindow(string header, int left, int top, List<string> content)
             {
                 int width = content.OrderByDescending(s => s.Length).FirstOrDefault().Length;
@@ -107,6 +106,7 @@ namespace WebShop
                 Console.SetCursorPosition(0, Lowest.LowestPosition);
             }
 
+            // Metod för att rita ut ett meddelande i konsolen.
             public void DrawMessage(string message)
             {
                 Console.SetCursorPosition(Left, Top);
@@ -115,10 +115,11 @@ namespace WebShop
                 Console.WriteLine('│' + " " + message + '│');
                 Console.SetCursorPosition(Left, Top + 2);
                 Console.Write('└' + new String('─', message.Length + 1) + '┘');
-                Lowest.LowestPosition = Top + 3; 
+                Lowest.LowestPosition = Top + 3;
             }
         }
 
+        // Håller reda på den lägsta positionen
         public static class Lowest
         {
             public static int LowestPosition { get; set; }

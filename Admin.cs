@@ -7,9 +7,12 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace WebShop
 {
+    //Admin-klassen hanterar adminfunktioner i webbshopen, som att lägga till produkter, ändra produkter, visa statistik osv.
     internal class Admin
     {
         private static string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShop;Integrated Security=True;TrustServerCertificate=true;";
+
+        //Visa adminmenu
         public static void AdminMenu(Customer customer)
         {
             bool success = false;
@@ -46,44 +49,24 @@ namespace WebShop
                 {
                     Console.WriteLine("Wrong input: ");
                 }
-                //Console.ReadLine();
                 Console.Clear();
             }
         }
-        //Lagersaldo:Dapper
 
-        public static void ShowInventoryBalance()
-        {
-            Console.WriteLine("---------------Inventory Balance---------------");
-
-            using (var connection = new SqlConnection(connString))
-            {
-                connection.Open();
-                //ShowStockCategory("Products with less than 1 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity <= 0\r\nORDER BY pv.Quantity DESC;", connection);
-                //ShowStockCategory("Products with between 1 and 10 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity >= 1 AND pv.Quantity <= 10\r\nORDER BY pv.Quantity DESC;", connection);
-                Statistics.ShowStockCategory("Products with more than 10 in stock", "SELECT p.Name, pv.Quantity\r\nFROM Products p\r\nJOIN ProductVariants pv ON p.Id = pv.ProductId\r\nWHERE pv.Quantity > 10\r\nORDER BY pv.Quantity DESC;", connection);
-
-                Console.WriteLine("-------------------------------------------");
-                Console.Write("Press any key to return to the menu...");
-                Console.ReadKey(true);
-                return;
-                //AdminMenu(C);
-            }
-        }
-
-        private static void AddProduct()
+        // Metod för att lägga till en ny produkt i webbshopen
+        public static void AddProduct()
         {
             bool success = false;
 
             while (!success)
             {
-               
+
                 using var db = new MyDbContext();
 
-                var productName = InputHelpers.GetInput("Product name: ");
+                // Input för produktdetaljer.
+                var productName = InputHelpers.GetInput("\nProduct name: ");
                 var productDescription = InputHelpers.GetInput("Product description: ");
                 var productPrice = InputHelpers.GetDoubleInput("Product price: ");
-
                 var suppliers = db.ProductSuppliers.ToList();
 
                 foreach (var supplier in suppliers)
@@ -101,7 +84,7 @@ namespace WebShop
                     Console.WriteLine(category.Id + ": " + category.CategoryName);
                 }
 
-                Console.Write("Category / Categories (comma-separated): ");
+                Console.Write("\nCategory / Categories (comma-separated): ");
                 var categoryNames = Console.ReadLine().Split(',');
 
                 var chosenCategories = new List<Category>();
@@ -124,7 +107,8 @@ namespace WebShop
                     }
                 }
 
-                var featuredProduct = InputHelpers.GetYesOrNo("Featured product?: ");
+                // Input för om produkten är "featured".
+                var featuredProduct = InputHelpers.GetYesOrNo("\nFeatured product?: ");
                 Console.Clear();
                 Console.WriteLine("Summary:");
                 Console.WriteLine();
@@ -141,10 +125,11 @@ namespace WebShop
 
                 Console.WriteLine();
 
-                var addProduct = InputHelpers.GetYesOrNo("Add new product? ");
+                var addProduct = InputHelpers.GetYesOrNo("\nAdd new product? \n");
 
                 if (addProduct)
                 {
+                    // Skapa produktobjekt och lägg till det i databasen.
                     var product = new Product()
                     {
                         Name = productName,
@@ -160,9 +145,16 @@ namespace WebShop
                     success = AddProductVariants(product);
 
                 }
+                else
+                {
+                    Console.Write("Press any key to return to the menu...");
+                    Console.ReadKey(true);
+                    return;
+                }
             }
         }
 
+        // Metod för att lägga till produktvarianter till en befintlig produkt.
         public static bool AddProductVariants(Product product)
         {
 
@@ -179,7 +171,7 @@ namespace WebShop
                 Console.WriteLine(colour.Id + ": " + colour.ColourName);
 
             }
-            Console.Write("Colour / Colours (comma-seperate): ");
+            Console.Write("\nColour / Colours (comma-seperate): ");
             var colourNames = Console.ReadLine().Split(',');
 
             foreach (var colourName in colourNames)
@@ -211,7 +203,7 @@ namespace WebShop
                 Console.WriteLine(size.SizeName);
 
             }
-            Console.WriteLine("Size / Sizes (comma-seperate): ");
+            Console.WriteLine("\nSize / Sizes (comma-seperate): ");
 
             var sizeNames = Console.ReadLine().Split(',');
 
@@ -229,7 +221,7 @@ namespace WebShop
 
                 }
             }
-
+            // Skapa produktvariantobjekt och lägg till dem i databasen.
             List<ProductVariant> variants = new List<ProductVariant>();
 
             foreach (var sizeVariant in choosenSizes)
@@ -237,7 +229,7 @@ namespace WebShop
                 foreach (var colourVaraint in choosenColours)
                 {
                     Console.WriteLine(sizeVariant.SizeName + " - " + colourVaraint.ColourName);
-                    var amount = InputHelpers.GetIntegerInput("Quantity to add: ");
+                    var amount = InputHelpers.GetIntegerInput("\nQuantity to add: ");
 
                     var productVariant = new ProductVariant()
                     {
@@ -256,42 +248,36 @@ namespace WebShop
 
             foreach (var variant in variants)
             {
-                //Console.WriteLine(variant.Id + " " + variant.Product.Name);
-
                 var variantSize = db.Sizes.FirstOrDefault(c => c.Id == variant.SizeId);
                 var variantColour = db.Colours.FirstOrDefault(c => c.Id == variant.ColourId);
                 Console.WriteLine("Size: " + variantSize.SizeName + ", Color: " + variantColour.ColourName + ", Quantity: " + variant.Quantity);
-                //Console.WriteLine(variantColour.ColourName);
-                //Console.WriteLine(variant.Quantity);
-
                 db.Add(variant);
 
             }
-            var addVaraints = InputHelpers.GetYesOrNo("Add variants to the new product? ");
+            var addVaraints = InputHelpers.GetYesOrNo("\nAdd variants to the new product? ");
             if (addVaraints == true)
             {
                 db.SaveChanges();
                 Console.WriteLine("Product added, returning to menu.");
                 Thread.Sleep(1500);
                 Console.Clear();
-
             }
             else
             {
                 Console.WriteLine("Product not added, returning to menu.");
                 Thread.Sleep(1500);
                 Console.Clear();
-
             }
             return true;
         }
 
+        // Metod för att ändra en befintlig produkt.
         public static void ChangeProduct()
         {
             using var db = new MyDbContext();
             Console.WriteLine();
 
-            Console.WriteLine("List of existing products: ");
+            Console.WriteLine("\nList of existing products: ");
             var existingProducts = db.Products.Include(p => p.ProductVariants).ToList();
 
             foreach (var product in existingProducts)
@@ -303,7 +289,7 @@ namespace WebShop
                 var distinctColours = product.ProductVariants.Select(pv => db.Colours.FirstOrDefault(c => c.Id == pv.ColourId)?.ColourName).Distinct().Where(c => c != null);
                 var distinctSizes = product.ProductVariants.Select(pv => db.Sizes.FirstOrDefault(s => s.Id == pv.SizeId)?.SizeName).Distinct().Where(s => s != null);
 
-                Console.Write("Colours: ");
+                Console.Write("\nColours: ");
                 Console.WriteLine(string.Join(", ", distinctColours));
 
                 Console.Write("Sizes: ");
@@ -312,7 +298,7 @@ namespace WebShop
                 Console.WriteLine();
             }
 
-            int productId = InputHelpers.GetIntegerInput("Enter the ID of the product you want to change: ");
+            int productId = InputHelpers.GetIntegerInput("\nEnter the ID of the product you want to change: ");
             var productToChange = db.Products.FirstOrDefault(p => p.Id == productId);
 
             if (productToChange != null)
@@ -326,7 +312,7 @@ namespace WebShop
                 Console.WriteLine("7. Add variant");
                 Console.WriteLine();
 
-                int chosenOption = InputHelpers.GetIntegerInput("Select what you want to change: ");
+                int chosenOption = InputHelpers.GetIntegerInput("\nSelect what you want to change: ");
                 switch (chosenOption)
                 {
                     case 1:
@@ -367,10 +353,11 @@ namespace WebShop
                 Console.WriteLine("Product not found.");
             }
         }
+
+        // Metod för att ändra färgen på en variant för en specifik produkt.
         private static void ChangeVariant(Product product)
         {
             using var db = new MyDbContext();
-
             var productVariants = db.ProductVariants
                 .Where(x => x.ProductId == product.Id)
                 .Include(x => x.Size)
@@ -396,7 +383,7 @@ namespace WebShop
                     Console.WriteLine(string.Join(", ", sizesForDistinctColour));
                 }
 
-                var userInput = InputHelpers.GetIntegerInput("Enter the ID of the color to change its variant: ");
+                var userInput = InputHelpers.GetIntegerInput("\nEnter the ID of the color to change its variant: ");
 
                 var variantsToChange = productVariants.Where(x => x.ColourId == userInput).ToList();
 
@@ -408,7 +395,7 @@ namespace WebShop
                         Console.WriteLine(color.Id + " " + color.ColourName);
                     }
 
-                    var newColourId = InputHelpers.GetIntegerInput("Enter the ID of the new color: ");
+                    var newColourId = InputHelpers.GetIntegerInput("\nEnter the ID of the new color: ");
                     var newColour = db.Colours.FirstOrDefault(c => c.Id == newColourId);
 
                     if (newColour != null)
@@ -438,6 +425,7 @@ namespace WebShop
             }
         }
 
+        // Metod för att lägga till en ny variant för en befintlig produkt.
         private static void AddVariant(Product product)
         {
             using var db = new MyDbContext();
@@ -507,7 +495,7 @@ namespace WebShop
             }
         }
 
-
+        // Metod för att ta bort en produkt eller produktvariant.
         public static void RemoveProductOrVariant()
         {
             using (var db = new MyDbContext())
@@ -515,7 +503,7 @@ namespace WebShop
                 Console.Clear();
                 ShowProductIds();
 
-                Console.Write("Enter the ID of the product you want to modify: ");
+                Console.Write("\nEnter the ID of the product you want to modify: ");
 
                 int productIdToUpdate = InputHelpers.GetIntegerInput("");
 
@@ -525,7 +513,7 @@ namespace WebShop
                 {
                     PrintProductDetails(productToUpdate);
 
-                    Console.WriteLine("1. Delete Entire Product");
+                    Console.WriteLine("\n1. Delete Entire Product");
                     Console.WriteLine("2. Delete Specific Variant");
                     Console.Write("Enter your choice: ");
 
@@ -543,8 +531,6 @@ namespace WebShop
                             break;
                         case 0:
                             return;
-                            //AdminMenu();
-                            break;
 
                         default:
                             Console.WriteLine("Invalid choice. Please enter 1 or 2.");
@@ -559,6 +545,7 @@ namespace WebShop
             }
         }
 
+        // Metod för att skriva ut detaljer om en produkt.
         private static void PrintProductDetails(Product product)
         {
             Console.Clear();
@@ -568,11 +555,11 @@ namespace WebShop
 
             if (product.ProductVariants.Any())
             {
-                Console.WriteLine("Available Product Variants:");
+                Console.WriteLine("\nAvailable Product Variants:");
                 Console.WriteLine("");
                 foreach (var variant in product.ProductVariants)
                 {
-                    Console.WriteLine($"   Variant ID: {variant.Id} - Color: {variant.Colour.ColourName} - Size: {variant.Size.SizeName}");
+                    Console.WriteLine($"Variant ID: {variant.Id} - Color: {variant.Colour.ColourName} - Size: {variant.Size.SizeName}");
                     Console.WriteLine("");
                 }
             }
@@ -582,9 +569,10 @@ namespace WebShop
             }
         }
 
+        // Metod för att ta bort hela produkten.
         private static void DeleteEntireProduct(MyDbContext db, Product productToDelete)
         {
-            var confirmDelete = InputHelpers.GetYesOrNo("Are you sure you want to delete this product?");
+            var confirmDelete = InputHelpers.GetYesOrNo("\nAre you sure you want to delete this product? ");
             if (confirmDelete)
             {
                 db.Products.Remove(productToDelete);
@@ -593,7 +581,6 @@ namespace WebShop
                 Thread.Sleep(2000);
                 Console.Clear();
                 return;
-                //AdminMenu();
             }
             else
             {
@@ -602,21 +589,20 @@ namespace WebShop
                 {
                     Console.WriteLine("Operation canceled. Returning to menu.");
                     return;
-                    //AdminMenu();
-
                 }
             }
         }
 
+        // Metod för att ta bort en specifik produktvariant.
         private static void DeleteProductVariant(MyDbContext db, Product productToUpdate)
         {
-            Console.WriteLine("Available Product Variants:");
+            Console.WriteLine("\nAvailable Product Variants:");
             foreach (var variant in productToUpdate.ProductVariants)
             {
                 Console.WriteLine($"Variant ID: {variant.Id} - Variant Name: {variant.Product.Name} - Variant color: {variant.Colour.ColourName} - Variant size: {variant.Size.SizeName}");
             }
 
-            Console.Write("Enter the ID of the variant you want to delete: ");
+            Console.Write("\nEnter the ID of the variant you want to delete: ");
             int variantIdToDelete = InputHelpers.GetIntegerInput("");
 
             var variantToDelete = productToUpdate.ProductVariants.FirstOrDefault(v => v.Id == variantIdToDelete);
@@ -638,7 +624,6 @@ namespace WebShop
                     Thread.Sleep(1500);
                     Console.Clear();
                     return;
-                    //AdminMenu();
                 }
             }
 
@@ -647,6 +632,8 @@ namespace WebShop
                 Console.WriteLine("Variant not found. Please enter a valid variant ID.");
             }
         }
+
+        // Metod för att visa alla tillgängliga produkt-ID.
         public static void ShowProductIds()
         {
             using (var db = new MyDbContext())
@@ -655,7 +642,7 @@ namespace WebShop
 
                 if (products.Any())
                 {
-                    Console.WriteLine("Available Product IDs:");
+                    Console.WriteLine("\nAvailable Product IDs:");
 
                     foreach (var product in products)
                     {
@@ -668,6 +655,8 @@ namespace WebShop
                 }
             }
         }
+
+        // Metod för att visa information om alla registrerade kunder.
         public static void ShowAllCustomers()
         {
             using (var db = new MyDbContext())
@@ -680,7 +669,7 @@ namespace WebShop
                             .ThenInclude(city => city.Country)
                     .ToList();
 
-                Console.WriteLine("All registred customers:");
+                Console.WriteLine("\nAll registred customers:");
                 Console.WriteLine();
                 foreach (var customer in customers)
                 {
@@ -712,6 +701,8 @@ namespace WebShop
             }
 
         }
+
+        // Metod för att uppdatera kundinformation.
         public static void UpdateCustomerInfo()
         {
             using (var db = new MyDbContext())
@@ -726,7 +717,7 @@ namespace WebShop
                     {
 
                         ShowAllCustomers();
-                        Console.Write("Enter the ID of the customer you want to update (or enter 0 to exit): ");
+                        Console.Write("\nEnter the ID of the customer you want to update (or enter 0 to exit): ");
                         customerIdToUpdate = InputHelpers.GetIntegerInput("");
 
                         if (customerIdToUpdate == 0)
@@ -735,8 +726,6 @@ namespace WebShop
                             Thread.Sleep(2000);
                             Console.Clear();
                             return;
-                            //AdminMenu();
-                            break;
                         }
                     }
 
@@ -779,7 +768,6 @@ namespace WebShop
                             Thread.Sleep(1000);
                             Console.Clear();
                             return;
-                            //AdminMenu();
                         }
                         else
                         {
@@ -792,7 +780,6 @@ namespace WebShop
                                 Thread.Sleep(1500);
                                 Console.Clear();
                                 return;
-                                //AdminMenu();
                             }
                             else
                             {
@@ -802,8 +789,6 @@ namespace WebShop
                                         Console.WriteLine("Exiting customer update and returning to admin menu");
                                         Console.Clear();
                                         return;
-                                        //AdminMenu();
-                                        break;
 
                                     case 1:
                                         Console.Write("Enter new First Name: ");
@@ -914,17 +899,15 @@ namespace WebShop
                             }
 
                             db.SaveChanges();
-                            Console.WriteLine("Customer information updated successfully.");
+                            Console.WriteLine("\nCustomer information updated successfully.");
 
-                            Console.Write("Do you want to update more data? (yes/no): ");
+                            Console.Write("\nDo you want to update more data? (yes/no): ");
                             if (Console.ReadLine()?.Trim().ToLower() != "yes")
                             {
-                                Console.WriteLine("Exiting customer update and returning to admin menu.");
+                                Console.WriteLine("\nExiting customer update and returning to admin menu.");
                                 Thread.Sleep(1000);
                                 Console.Clear();
                                 return;
-                                //AdminMenu();
-                                break;
                             }
                         }
                     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//Modellklasser som representerar kundinformation, förnamn, efternamn, adress, stad och land.
 namespace WebShop.Models
 {
     public partial class Customer

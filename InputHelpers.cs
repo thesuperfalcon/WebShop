@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace WebShop
 {
+    // En samling av hjälpmetoder för att interagera med användaren via konsolen,
+    // hantera inmatningar och bekräftelser samt konvertera och formatera data.
     internal class InputHelpers
     {
         public static string GetInput(string prompt)

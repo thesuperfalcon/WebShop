@@ -5,6 +5,7 @@ namespace WebShop
 {
     internal class Search
     {
+        // Hanterar sökfunktionen för produkter och visar resultatet för användaren.
         public static ProductOrder SearchFunction()
         {
             using var db = new MyDbContext();
@@ -17,6 +18,7 @@ namespace WebShop
                 Console.SetCursorPosition(0, 27);
                 var userInput = InputHelpers.GetInput("Search: ");
 
+                // Utför sökning baserat på produktnamn och kategorinamn.
                 searchResults = db.Products
                     .Where(x => x.Name.Contains(userInput) || x.Categories.Any(c => c.CategoryName.Contains(userInput) && (c.CategoryName.StartsWith(userInput))))
                     .ToList();
@@ -28,7 +30,7 @@ namespace WebShop
                 else
                 {
 
-                    Console.WriteLine("Search results:");
+                    Console.WriteLine("\nSearch results:");
 
                     for (int i = 0; i < searchResults.Count; i++)
                     {
@@ -36,7 +38,7 @@ namespace WebShop
                         Console.WriteLine($"{i + 1}. {searchResults[i].Name}");
                     }
 
-                    var selectedIndex = InputHelpers.GetIntegerInput("Select the correct product or enter 0 to search again: ");
+                    var selectedIndex = InputHelpers.GetIntegerInput("\nSelect the correct product or enter 0 to search again: ");
 
                     if (selectedIndex == 0)
                     {
@@ -45,7 +47,8 @@ namespace WebShop
 
                     var selectedProduct = searchResults[selectedIndex - 1];
 
-                    var showProduct = InputHelpers.GetYesOrNo($"Correct product: {selectedProduct.Name} ");
+                    // Visar detaljer om den valda produkten och ger användaren möjlighet att lägga till den i varukorgen.
+                    var showProduct = InputHelpers.GetYesOrNo($"\nCorrect product: {selectedProduct.Name} ");
                     if (showProduct)
                     {
                         var basket = ShowProductFromSearch(selectedProduct);
@@ -56,8 +59,10 @@ namespace WebShop
             return null;
         }
 
+        // Visar detaljer om en specifik produkt och ger användaren möjlighet att lägga till den i varukorgen.
         public static ProductOrder ShowProductFromSearch(Product product)
         {
+            Console.WriteLine("\n----Product info----");
             Console.WriteLine($"Product Name: {product.Name}");
             Console.WriteLine($"Description: {product.Description}");
             Console.WriteLine($"Price: {product.Price}");
@@ -74,7 +79,7 @@ namespace WebShop
 
                 if (productVariants.Any())
                 {
-                    Console.WriteLine("Available Variants in stock:");
+                    Console.WriteLine("\nAvailable Variants in stock:");
 
                     Console.Write("Size: ");
                     var sizes = productVariants.Select(variant => variant.Size?.SizeName ?? "N/A").Distinct();
@@ -86,10 +91,10 @@ namespace WebShop
 
                     foreach (var variant in productVariants)
                     {
-                        //// Kommenterade bort quantity, ska det vara kvar? känns mer som en admin feature än vad kunderna behöver se när de söker på en produkt? , Quantity: {variant.Quantity}
-                        Console.WriteLine($"- Size: {variant.Size?.SizeName ?? "N/A"}, Color: {variant.Colour?.ColourName ?? "N/A"}");
+                        Console.WriteLine($"Size: {variant.Size?.SizeName ?? "N/A"}, Color: {variant.Colour?.ColourName ?? "N/A"}");
                     }
 
+                    // Lägger till produkten i varukorgen och returnerar varukorgen
                     var basket = BasketHelpers.AddProductToBasket(product);
                     return basket;
                 }
@@ -105,6 +110,7 @@ namespace WebShop
             return null;
         }
 
+        // Hanterar sökfunktionen för produkter baserat på kategorier och visar resultatet för användaren.
         public static ProductOrder CategorySearch()
         {
             using var db = new MyDbContext();
@@ -122,7 +128,7 @@ namespace WebShop
                     Console.WriteLine($"{category.Id}. {category.CategoryName}");
                 }
 
-                var userChoice = InputHelpers.GetIntegerInput("Category_Id: ");
+                var userChoice = InputHelpers.GetIntegerInput("\nChoose category ID: ");
 
                 var selectedCategory = categories.FirstOrDefault(category => category.Id == userChoice);
 
@@ -136,7 +142,7 @@ namespace WebShop
 
                     if (specificProducts.Any())
                     {
-                        Console.WriteLine("Products in the selected category:");
+                        Console.WriteLine("\nProducts in the selected category:");
                         foreach (var product in specificProducts)
                         {
                             Console.WriteLine($"- {product.Id} Product Name: {product.Name}");
@@ -148,7 +154,7 @@ namespace WebShop
 
                         if (specificProduct != null)
                         {
-                            Console.WriteLine($"Selected Product {specificProduct.Id}");
+                            Console.WriteLine($"\nSelected Product {specificProduct.Id}");
                             basket = ShowProductFromSearch(specificProduct);
                             success = true;
                         }

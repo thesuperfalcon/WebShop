@@ -6,6 +6,7 @@ namespace WebShop
 {
     internal class Program
     {
+        //Huvudprogrammet
         static void Main(string[] args)
         {
             using var db = new MyDbContext();

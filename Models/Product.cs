@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static WebShop.Models.Size;
 
+//Modellklasser för att representera produktvarianter, produkter, storlekar, kategorier, färger och produktleverantörer
 namespace WebShop.Models
 {
     public partial class ProductVariant
