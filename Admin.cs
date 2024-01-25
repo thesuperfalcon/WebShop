@@ -77,14 +77,7 @@ namespace WebShop
 
             while (!success)
             {
-                var returnToMenu = InputHelpers.GetYesOrNo("Return to menu?: ");
-
-                if (returnToMenu)
-                {
-                    success = true;
-                    break;
-                }
-
+               
                 using var db = new MyDbContext();
 
                 var productName = InputHelpers.GetInput("Product name: ");
@@ -164,12 +157,13 @@ namespace WebShop
                     db.Add(product);
                     db.SaveChanges();
 
-                    AddProductVariants(product);
+                    success = AddProductVariants(product);
+
                 }
             }
         }
 
-        public static void AddProductVariants(Product product)
+        public static bool AddProductVariants(Product product)
         {
 
             Console.WriteLine(product.Id + " " + product.Name);
@@ -280,19 +274,16 @@ namespace WebShop
                 Console.WriteLine("Product added, returning to menu.");
                 Thread.Sleep(1500);
                 Console.Clear();
-                return;
 
-                //AdminMenu();
             }
             else
             {
                 Console.WriteLine("Product not added, returning to menu.");
                 Thread.Sleep(1500);
                 Console.Clear();
-                return;
 
-                //AdminMenu();
             }
+            return true;
         }
 
         public static void ChangeProduct()
