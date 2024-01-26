@@ -10,7 +10,7 @@ namespace WebShop
     //Admin-klassen hanterar adminfunktioner i webbshopen, som att lägga till produkter, ändra produkter, visa statistik osv.
     internal class Admin
     {
-        private static string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShop;Integrated Security=True;TrustServerCertificate=true;";
+        private static string connString = "Data Source=LAPTOP-P1B86F6E\\SQLEXPRESS;Initial Catalog=WebShop;Integrated Security=True;TrustServerCertificate=true;";
 
         //Visa adminmenu
         public static void AdminMenu(Customer customer)

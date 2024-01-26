@@ -12,7 +12,7 @@ namespace WebShop
     public class Statistics
     {
 
-        private static string connString = "Data Source=DESKTOP-1ASCK61\\SQLEXPRESS;Initial Catalog=WebShop;Integrated Security=True;TrustServerCertificate=true;";
+        private static string connString = "Data Source=LAPTOP-P1B86F6E\\SQLEXPRESS;Initial Catalog=WebShop;Integrated Security=True;TrustServerCertificate=true;";
 
         //Visar lagersaldo baserat på antalet produkter i lagret
         public static void ShowInventoryBalance()
