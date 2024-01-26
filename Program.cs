@@ -25,8 +25,7 @@ namespace WebShop
                 //}
 
                 Customer customer = new Customer();
-                //customer = LoginManager.LoginMenu(db);
-                customer = db.Customers.FirstOrDefault(x => x.Id == 1);
+                customer = LoginManager.LoginMenu(db);
 
                 if (customer.IsAdmin == true)
                 {
